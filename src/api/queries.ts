@@ -1,4 +1,10 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryKey,
+} from '@tanstack/react-query'
 import type {
   FAQListResponse,
   FavoriteResponse,
@@ -207,11 +213,14 @@ export function useFavoriteMutation(participantId: number) {
       if (!context) {
         return
       }
-      queryClient.setQueryData(['supporters', participantId], context.previousSupporters)
-      queryClient.setQueryData(['participant', participantId], context.previousDetail)
+      restoreQuery(queryClient, ['supporters', participantId], context.previousSupporters)
+      restoreQuery(queryClient, ['participant', participantId], context.previousDetail)
       for (const [key, data] of context.previousLists) {
-        queryClient.setQueryData(key, data)
+        restoreQuery(queryClient, key, data)
       }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries()
     },
     onSuccess: (payload, nextFavorite) => {
       queryClient.setQueryData<ParticipantSupporters>(['supporters', participantId], {
@@ -231,4 +240,16 @@ export function useFavoriteMutation(participantId: number) {
       )
     },
   })
+}
+
+function restoreQuery<T>(
+  queryClient: ReturnType<typeof useQueryClient>,
+  queryKey: QueryKey,
+  data: T | undefined,
+): void {
+  if (data === undefined) {
+    queryClient.removeQueries({ queryKey, exact: true })
+    return
+  }
+  queryClient.setQueryData(queryKey, data)
 }

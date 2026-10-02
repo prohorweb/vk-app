@@ -30,6 +30,7 @@ export function MapPanel({ id }: MapPanelProps) {
               isLoading={isLoading}
               isError={isError}
               isEmpty={!isLoading && !isError && participants.length === 0}
+              updatedAt={Math.max(participantsQuery.dataUpdatedAt, pointsQuery.dataUpdatedAt)}
             >
               <ParticipantList
                 participants={participants}

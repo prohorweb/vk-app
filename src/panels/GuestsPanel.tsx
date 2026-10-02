@@ -21,6 +21,7 @@ export function GuestsPanel({ id }: GuestsPanelProps) {
         isLoading={query.isLoading}
         isError={query.isError}
         isEmpty={!query.isLoading && !query.isError && items.length === 0}
+        updatedAt={query.dataUpdatedAt}
       >
         <Group>
           {items.map((item) => (

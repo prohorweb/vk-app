@@ -31,6 +31,13 @@ export function newsSourceLabel(source: NewsSource): string {
   return newsSourceLabels[source]
 }
 
+export function formatClock(timestamp: number): string {
+  return new Intl.DateTimeFormat('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(timestamp)
+}
+
 export function formatDateTime(value: string): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) {

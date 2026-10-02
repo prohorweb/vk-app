@@ -53,6 +53,7 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
           isLoading={query.isLoading}
           isError={query.isError}
           isEmpty={!query.isLoading && !query.isError && participants.length === 0}
+          updatedAt={query.dataUpdatedAt}
         >
           <ParticipantList
             participants={participants}

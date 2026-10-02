@@ -12,15 +12,39 @@ export class OfflineError extends Error {
 export class ApiError extends Error {
   status: number
 
-  constructor(status: number) {
-    super('request failed')
+  constructor(status: number, message = 'Ошибка запроса') {
+    super(status ? `${message} (${status})` : message)
     this.name = 'ApiError'
     this.status = status
   }
 }
 
-function apiBaseUrl(): string {
-  return import.meta.env.VITE_API_URL.replace(/\/$/, '')
+function readApiBaseUrl(): string | undefined {
+  const value = import.meta.env.VITE_API_URL
+  if (!value) {
+    return undefined
+  }
+  return value.replace(/\/$/, '')
+}
+
+export const apiBaseUrl = readApiBaseUrl()
+
+export const hasApiUrl = apiBaseUrl !== undefined
+
+const AUTH_PATH = '/api/v1/auth/vk'
+const RETRY_HEADER = 'x-auth-retry'
+
+let onUnauthorized: (() => Promise<boolean>) | null = null
+
+export function setUnauthorizedHandler(handler: () => Promise<boolean>): void {
+  onUnauthorized = handler
+}
+
+async function apiFetch(input: Request): Promise<Response> {
+  if (!hasApiUrl) {
+    throw new ApiError(0, 'Не задан VITE_API_URL')
+  }
+  return fetch(input)
 }
 
 const authMiddleware: Middleware = {
@@ -31,9 +55,35 @@ const authMiddleware: Middleware = {
     }
     return request
   },
+  async onResponse({ response, request, schemaPath }) {
+    if (response.status !== 401 || schemaPath === AUTH_PATH) {
+      return response
+    }
+    if (request.headers.get(RETRY_HEADER) === '1') {
+      return response
+    }
+
+    if (!onUnauthorized) {
+      return response
+    }
+
+    const signedIn = await onUnauthorized()
+    const token = getAccessToken()
+    if (!signedIn || !token) {
+      return response
+    }
+
+    const headers = new Headers(request.headers)
+    headers.set('Authorization', `Bearer ${token}`)
+    headers.set(RETRY_HEADER, '1')
+    return fetch(new Request(request, { headers }))
+  },
 }
 
-export const api = createClient<paths>({ baseUrl: apiBaseUrl() })
+export const api = createClient<paths>({
+  baseUrl: apiBaseUrl ?? 'http://127.0.0.1',
+  fetch: apiFetch,
+})
 
 api.use(authMiddleware)
 

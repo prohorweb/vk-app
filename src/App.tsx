@@ -1,4 +1,4 @@
-import { useActiveVkuiLocation } from '@vkontakte/vk-mini-apps-router'
+import { useActiveVkuiLocation, useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Epic, SplitCol, SplitLayout, View } from '@vkontakte/vkui'
 import { AppTabbar } from './components/AppTabbar.tsx'
 import { InProgressPanel } from './components/InProgressPanel.tsx'
@@ -44,6 +44,10 @@ export function App() {
     panel: activePanel = PANEL_START,
     panelsHistory = [],
   } = useActiveVkuiLocation()
+  const routeNavigator = useRouteNavigator()
+  const swipeBack = () => {
+    void routeNavigator.back()
+  }
 
   return (
     <SplitLayout>
@@ -53,6 +57,7 @@ export function App() {
             id={VIEW_START}
             activePanel={activePanelOf(activeView, VIEW_START, activePanel, PANEL_START)}
             history={activeView === VIEW_START ? panelsHistory : []}
+            onSwipeBack={swipeBack}
           >
             <InProgressPanel id={PANEL_START} title="Старт" />
           </View>
@@ -61,6 +66,7 @@ export function App() {
             id={VIEW_MAP}
             activePanel={activePanelOf(activeView, VIEW_MAP, activePanel, PANEL_MAP)}
             history={activeView === VIEW_MAP ? panelsHistory : []}
+            onSwipeBack={swipeBack}
           >
             <MapPanel id={PANEL_MAP} />
             <ParticipantPanel id={PANEL_MAP_PARTICIPANT} />
@@ -75,6 +81,7 @@ export function App() {
               PANEL_PARTICIPANTS,
             )}
             history={activeView === VIEW_PARTICIPANTS ? panelsHistory : []}
+            onSwipeBack={swipeBack}
           >
             <ParticipantsPanel id={PANEL_PARTICIPANTS} />
             <ParticipantPanel id={PANEL_PARTICIPANT} />
@@ -84,6 +91,7 @@ export function App() {
             id={VIEW_RESULTS}
             activePanel={activePanelOf(activeView, VIEW_RESULTS, activePanel, PANEL_RESULTS)}
             history={activeView === VIEW_RESULTS ? panelsHistory : []}
+            onSwipeBack={swipeBack}
           >
             <InProgressPanel id={PANEL_RESULTS} title="Результаты" />
           </View>
@@ -92,6 +100,7 @@ export function App() {
             id={VIEW_MORE}
             activePanel={activePanelOf(activeView, VIEW_MORE, activePanel, PANEL_MORE)}
             history={activeView === VIEW_MORE ? panelsHistory : []}
+            onSwipeBack={swipeBack}
           >
             <MorePanel id={PANEL_MORE} />
             <InProgressPanel id={PANEL_ROUTE} title="Маршрут" back />

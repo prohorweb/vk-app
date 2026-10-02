@@ -25,6 +25,25 @@ body {
   margin-inline: auto;
 }
 
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.app-shell__body {
+  flex: 1;
+  min-height: 0;
+}
+
+.offline-stamp {
+  padding: 8px 16px;
+  background: var(--vkui--color_background_secondary);
+  color: var(--vkui--color_text_secondary);
+  font-size: 13px;
+}
+
 .participant-actions {
   display: flex;
   flex-direction: column;
@@ -40,7 +59,9 @@ body {
 .map-screen {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - var(--vkui--size_panel_header_height--regular) - 48px);
+  min-height: calc(
+    100dvh - var(--vkui--size_panel_header_height--regular) - env(safe-area-inset-bottom)
+  );
 }
 
 .map-stub {

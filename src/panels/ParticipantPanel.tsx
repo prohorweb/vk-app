@@ -10,6 +10,7 @@ import {
   SimpleCell,
   Text,
 } from '@vkontakte/vkui'
+import { hasLaunchParams } from '../api/auth.ts'
 import { useFavoriteMutation, useParticipantQuery, useSupportersQuery } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
 import { participantStatusLabel } from '../lib/labels.ts'
@@ -55,6 +56,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
         isLoading={query.isLoading}
         isError={query.isError}
         isEmpty={!query.isLoading && !query.isError && !participant}
+        updatedAt={query.dataUpdatedAt}
       >
         {participant ? (
           <Group>
@@ -82,20 +84,22 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
             ) : null}
             <Div className="participant-actions">
               <Text>Болельщики: {supportersCount}</Text>
-              <Button
-                stretched
-                size="l"
-                mode={isFavorite ? 'secondary' : 'primary'}
-                appearance={isFavorite ? 'positive' : 'accent'}
-                onClick={() => {
-                  if (favorite.isPending) {
-                    return
-                  }
-                  favorite.mutate(!isFavorite)
-                }}
-              >
-                Болею за
-              </Button>
+              {hasLaunchParams() ? (
+                <Button
+                  stretched
+                  size="l"
+                  mode={isFavorite ? 'secondary' : 'primary'}
+                  appearance={isFavorite ? 'positive' : 'accent'}
+                  onClick={() => {
+                    if (favorite.isPending) {
+                      return
+                    }
+                    favorite.mutate(!isFavorite)
+                  }}
+                >
+                  Болею за
+                </Button>
+              ) : null}
               {favorite.isError ? <Text>Не удалось обновить поддержку</Text> : null}
             </Div>
           </Group>

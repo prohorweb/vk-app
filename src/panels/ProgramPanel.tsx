@@ -23,6 +23,7 @@ export function ProgramPanel({ id }: ProgramPanelProps) {
           isLoading={query.isLoading}
           isError={query.isError}
           isEmpty={!query.isLoading && !query.isError && items.length === 0}
+          updatedAt={query.dataUpdatedAt}
         >
           {items.map((event) => (
             <SimpleCell

@@ -2,11 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import vkBridge from '@vkontakte/vk-bridge'
 import { RouterProvider } from '@vkontakte/vk-mini-apps-router'
-import { QueryClientProvider } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import '@vkontakte/vkui/dist/vkui.css'
 import { App } from './App.tsx'
 import { AppConfig } from './AppConfig.tsx'
-import { queryClient } from './api/queryClient.ts'
+import { queryClient, queryPersistMaxAge, queryPersister } from './api/queryClient.ts'
 import { router } from './routes.ts'
 import './index.css'
 
@@ -20,12 +20,15 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: queryPersister, maxAge: queryPersistMaxAge }}
+    >
       <RouterProvider router={router}>
         <AppConfig>
           <App />
         </AppConfig>
       </RouterProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </StrictMode>,
 )
