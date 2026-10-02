@@ -25,6 +25,12 @@ body {
   margin-inline: auto;
 }
 
+.participant-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .async-view {
   display: flex;
   justify-content: center;

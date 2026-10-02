@@ -1,28 +1,28 @@
 import { SimpleCell } from '@vkontakte/vkui'
+import { participantStatusLabel } from '../lib/labels.ts'
 import { latestTrackPoint, trackStatusLabel } from '../lib/track.ts'
-import type { Participant, Stage, TrackPoint } from '../types/index.ts'
+import type { ParticipantListItem, TrackPoint } from '../types/index.ts'
 
 type ParticipantListProps = {
-  participants: Participant[]
-  stages?: Stage[]
+  participants: ParticipantListItem[]
   points?: TrackPoint[]
-  onOpen: (id: string) => void
+  onOpen: (id: number) => void
 }
 
-export function ParticipantList({ participants, stages, points, onOpen }: ParticipantListProps) {
+export function ParticipantList({ participants, points, onOpen }: ParticipantListProps) {
   return participants.map((participant) => {
     const point = points ? latestTrackPoint(points, participant.id) : undefined
-    const stage = stages?.find((item) => item.id === point?.stageId)
     const subtitle = points
       ? point
-        ? `${stage?.name ?? 'этап'} · ${trackStatusLabel(point.status)}`
+        ? `${point.stageName} · ${trackStatusLabel(point.status)}`
         : 'позиция неизвестна'
-      : `№ ${participant.bib}`
+      : `№ ${participant.number} · ${participantStatusLabel(participant.status)}`
 
     return (
       <SimpleCell
         key={participant.id}
         subtitle={subtitle}
+        indicator={points ? undefined : participant.supporters_count}
         chevron="always"
         onClick={() => onOpen(participant.id)}
       >

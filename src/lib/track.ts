@@ -12,7 +12,7 @@ export function trackStatusLabel(status: TrackPointStatus): string {
 
 export function latestTrackPoint(
   points: TrackPoint[],
-  participantId: string,
+  participantId: number,
 ): TrackPoint | undefined {
   return points
     .filter((point) => point.participantId === participantId)

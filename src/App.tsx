@@ -2,10 +2,13 @@ import { useActiveVkuiLocation } from '@vkontakte/vk-mini-apps-router'
 import { Epic, SplitCol, SplitLayout, View } from '@vkontakte/vkui'
 import { AppTabbar } from './components/AppTabbar.tsx'
 import { InProgressPanel } from './components/InProgressPanel.tsx'
+import { GuestsPanel } from './panels/GuestsPanel.tsx'
 import { MapPanel } from './panels/MapPanel.tsx'
 import { MorePanel } from './panels/MorePanel.tsx'
+import { NewsPanel } from './panels/NewsPanel.tsx'
 import { ParticipantPanel } from './panels/ParticipantPanel.tsx'
 import { ParticipantsPanel } from './panels/ParticipantsPanel.tsx'
+import { ProgramPanel } from './panels/ProgramPanel.tsx'
 import {
   PANEL_GUESTS,
   PANEL_MAP,
@@ -92,9 +95,9 @@ export function App() {
           >
             <MorePanel id={PANEL_MORE} />
             <InProgressPanel id={PANEL_ROUTE} title="Маршрут" back />
-            <InProgressPanel id={PANEL_PROGRAM} title="Программа" back />
-            <InProgressPanel id={PANEL_NEWS} title="Новости" back />
-            <InProgressPanel id={PANEL_GUESTS} title="Гостям" back />
+            <ProgramPanel id={PANEL_PROGRAM} />
+            <NewsPanel id={PANEL_NEWS} />
+            <GuestsPanel id={PANEL_GUESTS} />
             <InProgressPanel id={PANEL_PROFILE} title="Профиль" back />
           </View>
         </Epic>

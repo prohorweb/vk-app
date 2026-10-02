@@ -1,3 +1,7 @@
+import createClient, { type Middleware } from 'openapi-fetch'
+import type { paths } from './schema.d.ts'
+import { getAccessToken } from './token.ts'
+
 export class OfflineError extends Error {
   constructor() {
     super('offline')
@@ -15,37 +19,27 @@ export class ApiError extends Error {
   }
 }
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms)
-  })
+function apiBaseUrl(): string {
+  return import.meta.env.VITE_API_URL.replace(/\/$/, '')
 }
 
-export function resolveApiUrl(path: string): string {
-  const base = import.meta.env.VITE_API_URL
-  if (!base) {
-    return ''
-  }
-
-  const normalized = base.endsWith('/') ? base : `${base}/`
-  const relative = path.startsWith('/') ? path.slice(1) : path
-  return new URL(relative, normalized).toString()
+const authMiddleware: Middleware = {
+  async onRequest({ request }) {
+    const token = getAccessToken()
+    if (token) {
+      request.headers.set('Authorization', `Bearer ${token}`)
+    }
+    return request
+  },
 }
 
-/**
- * Собирает адрес из VITE_API_URL. Пока сервера нет, возвращает mock
- * и не ходит в сеть, чтобы заготовка открывалась без бэкенда.
- */
-export async function fetchJson<T>(path: string, mock: T): Promise<T> {
-  if (!navigator.onLine) {
-    throw new OfflineError()
-  }
+export const api = createClient<paths>({ baseUrl: apiBaseUrl() })
 
-  const endpoint = resolveApiUrl(path)
-  if (!endpoint) {
-    throw new ApiError(0)
-  }
+api.use(authMiddleware)
 
-  await delay(280)
-  return structuredClone(mock)
+export function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T {
+  if (result.error !== undefined || result.data === undefined) {
+    throw new ApiError(result.response.status || 0)
+  }
+  return result.data
 }
