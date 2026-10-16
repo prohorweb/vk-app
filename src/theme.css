@@ -1,0 +1,56 @@
+:root {
+  --avacha-brand-dark-blue: #045890;
+  --avacha-secondary-blue: #388bc7;
+  --avacha-secondary-light-blue: #a0daf7;
+  --avacha-brand-red: #e7372f;
+  --avacha-success: #2a7c35;
+}
+
+:root,
+.vkui--vkBase--light,
+.vkui--vkBase--dark,
+.vkui--vkIOS--light,
+.vkui--vkIOS--dark,
+.vkui--vkCom--light,
+.vkui--vkCom--dark {
+  --vkui--color_background_accent_themed: var(--avacha-brand-dark-blue);
+  --vkui--color_background_accent_themed--hover: #034e80;
+  --vkui--color_background_accent_themed--active: #03456f;
+  --vkui--font_family_base: 'Onest', sans-serif;
+  --vkui--font_family_accent: 'Onest', sans-serif;
+  --vkui--font_caption1--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_caption1_caps--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_caption2--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_caption2_caps--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_caption3--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_caption3_caps--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_display_title1--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_display_title2--font_family--compact: var(--vkui--font_family_base);
+  --vkui--font_display_title2--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_display_title3--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_display_title4--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_footnote--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_footnote_caps--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_headline--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_headline1--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_headline2--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_paragraph--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_subhead--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_text--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_title1--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_title2--font_family--regular: var(--vkui--font_family_base);
+  --vkui--font_title3--font_family--regular: var(--vkui--font_family_base);
+}
+
+.vkuiButton__modePrimary.vkuiButton__sizeL {
+  height: 44px;
+  border-radius: 8px;
+}
+
+.vkuiButton__modePrimary.vkuiButton__sizeL .vkuiButton__content {
+  color: #fff;
+  font-family: var(--vkui--font_family_base);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+}

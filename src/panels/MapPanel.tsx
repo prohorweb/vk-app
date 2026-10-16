@@ -1,46 +1,20 @@
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Group, Header, Panel, PanelHeader, Placeholder } from '@vkontakte/vkui'
-import { trackMockEnabled, useParticipantsQuery, useTrackPointsQuery } from '../api/queries.ts'
-import { AsyncView } from '../components/AsyncView.tsx'
-import { ParticipantList } from '../components/ParticipantList.tsx'
+import { Panel, PanelHeader } from '@vkontakte/vkui'
+import { Picture } from '../components/Picture.tsx'
 
 type MapPanelProps = {
   id: string
 }
 
 export function MapPanel({ id }: MapPanelProps) {
-  const routeNavigator = useRouteNavigator()
-  const participantsQuery = useParticipantsQuery()
-  const pointsQuery = useTrackPointsQuery()
-  const participants = participantsQuery.data ?? []
-  const isLoading = participantsQuery.isLoading || (trackMockEnabled && pointsQuery.isLoading)
-  const isError = participantsQuery.isError || (trackMockEnabled && pointsQuery.isError)
-
   return (
-    <Panel id={id}>
+    <Panel id={id} className="map-screen">
       <PanelHeader>Карта</PanelHeader>
-      <div className="map-screen">
-        <div className="map-stub">
-          <Placeholder>в работе</Placeholder>
-        </div>
-        <div className="map-sheet">
-          <span className="map-sheet__handle" />
-          <Group header={<Header size="s">Участники</Header>}>
-            <AsyncView
-              isLoading={isLoading}
-              isError={isError}
-              isEmpty={!isLoading && !isError && participants.length === 0}
-              updatedAt={Math.max(participantsQuery.dataUpdatedAt, pointsQuery.dataUpdatedAt)}
-            >
-              <ParticipantList
-                participants={participants}
-                points={trackMockEnabled ? pointsQuery.data : undefined}
-                onOpen={(participantId) => void routeNavigator.push(`/map/${participantId}`)}
-              />
-            </AsyncView>
-          </Group>
-        </div>
-      </div>
+      <Picture
+        className="map-screen__preview"
+        alt="Превью маршрута гонки «Авача»"
+        ratio="9 / 16"
+      />
+      <p className="map-screen__caption">Карта скоро появится</p>
     </Panel>
   )
 }

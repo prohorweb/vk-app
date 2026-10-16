@@ -26,6 +26,7 @@ export const PANEL_PROGRAM = 'panel_program'
 export const PANEL_NEWS = 'panel_news'
 export const PANEL_GUESTS = 'panel_guests'
 export const PANEL_PROFILE = 'panel_profile'
+export const PANEL_ABOUT = 'panel_about'
 
 export const PATH = {
   start: '/',
@@ -37,6 +38,7 @@ export const PATH = {
   program: '/more/program',
   news: '/more/news',
   guests: '/more/guests',
+  about: '/more/about',
   profile: '/more/profile',
 } as const
 
@@ -60,6 +62,7 @@ export const routes = RoutesConfig.create([
       createPanel(PANEL_PROGRAM, PATH.program),
       createPanel(PANEL_NEWS, PATH.news),
       createPanel(PANEL_GUESTS, PATH.guests),
+      createPanel(PANEL_ABOUT, PATH.about),
       createPanel(PANEL_PROFILE, PATH.profile),
     ]),
   ]),

@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { useActiveVkuiLocation, useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Epic, SplitCol, SplitLayout, View } from '@vkontakte/vkui'
 import { AppTabbar } from './components/AppTabbar.tsx'
 import { InProgressPanel } from './components/InProgressPanel.tsx'
+import { isStartSeen } from './lib/startGate.ts'
+import { AboutPanel } from './panels/AboutPanel.tsx'
 import { GuestsPanel } from './panels/GuestsPanel.tsx'
 import { MapPanel } from './panels/MapPanel.tsx'
 import { MorePanel } from './panels/MorePanel.tsx'
@@ -9,7 +12,10 @@ import { NewsPanel } from './panels/NewsPanel.tsx'
 import { ParticipantPanel } from './panels/ParticipantPanel.tsx'
 import { ParticipantsPanel } from './panels/ParticipantsPanel.tsx'
 import { ProgramPanel } from './panels/ProgramPanel.tsx'
+import { ResultsPanel } from './panels/ResultsPanel.tsx'
+import { StartPanel } from './panels/StartPanel.tsx'
 import {
+  PANEL_ABOUT,
   PANEL_GUESTS,
   PANEL_MAP,
   PANEL_MAP_PARTICIPANT,
@@ -45,21 +51,26 @@ export function App() {
     panelsHistory = [],
   } = useActiveVkuiLocation()
   const routeNavigator = useRouteNavigator()
+  const [startSeen, setStartSeen] = useState(isStartSeen)
   const swipeBack = () => {
     void routeNavigator.back()
   }
+  const showTabbar = activeView !== VIEW_START || startSeen
 
   return (
     <SplitLayout>
       <SplitCol width="100%" maxWidth="100%" stretchedOnMobile autoSpaced>
-        <Epic activeStory={activeView} tabbar={<AppTabbar activeView={activeView} />}>
+        <Epic
+          activeStory={activeView}
+          tabbar={showTabbar ? <AppTabbar activeView={activeView} /> : undefined}
+        >
           <View
             id={VIEW_START}
             activePanel={activePanelOf(activeView, VIEW_START, activePanel, PANEL_START)}
             history={activeView === VIEW_START ? panelsHistory : []}
             onSwipeBack={swipeBack}
           >
-            <InProgressPanel id={PANEL_START} title="Старт" />
+            <StartPanel id={PANEL_START} onBegin={() => setStartSeen(true)} />
           </View>
 
           <View
@@ -93,7 +104,7 @@ export function App() {
             history={activeView === VIEW_RESULTS ? panelsHistory : []}
             onSwipeBack={swipeBack}
           >
-            <InProgressPanel id={PANEL_RESULTS} title="Результаты" />
+            <ResultsPanel id={PANEL_RESULTS} />
           </View>
 
           <View
@@ -103,11 +114,17 @@ export function App() {
             onSwipeBack={swipeBack}
           >
             <MorePanel id={PANEL_MORE} />
-            <InProgressPanel id={PANEL_ROUTE} title="Маршрут" back />
+            <InProgressPanel
+              id={PANEL_ROUTE}
+              title="Маршрут"
+              heroAlt="Иллюстрация маршрута гонки «Авача»"
+              back
+            />
             <ProgramPanel id={PANEL_PROGRAM} />
             <NewsPanel id={PANEL_NEWS} />
             <GuestsPanel id={PANEL_GUESTS} />
-            <InProgressPanel id={PANEL_PROFILE} title="Профиль" back />
+            <AboutPanel id={PANEL_ABOUT} />
+            <InProgressPanel id={PANEL_PROFILE} title="Профиль" heroAlt="Иллюстрация профиля" back />
           </View>
         </Epic>
       </SplitCol>

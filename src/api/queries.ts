@@ -13,8 +13,14 @@ import type {
   ParticipantListItem,
   ParticipantSort,
   ParticipantSupporters,
+  RaceStandings,
   ScheduleEventListResponse,
+  StageProtocol,
+  StagePublic,
+  SupporterRatingEntry,
   TrackPoint,
+  SeasonPublic,
+  DisciplinePublic,
 } from '../types/index.ts'
 import { api, OfflineError, unwrap } from './client.ts'
 import { trackPoints } from './mock.ts'
@@ -26,6 +32,12 @@ export const trackMockEnabled = import.meta.env.VITE_USE_MOCK === 'true'
 type ParticipantFilters = {
   search?: string
   sort?: ParticipantSort
+  disciplineId?: number | null
+}
+
+/** Черновик этапа (status=draft) в селекторы не попадает. */
+export function isListedStage(stage: { status: string }): boolean {
+  return stage.status !== 'draft'
 }
 
 export async function fetchParticipants(
@@ -36,6 +48,7 @@ export async function fetchParticipants(
     params: {
       query: {
         search: search || undefined,
+        discipline_id: filters.disciplineId ?? undefined,
         sort: filters.sort ?? 'bib',
       },
     },
@@ -67,11 +80,41 @@ export async function fetchNews(): Promise<NewsPostListResponse> {
   return unwrap(result)
 }
 
-export async function fetchSchedule(): Promise<ScheduleEventListResponse> {
+export async function fetchSchedule(stageId?: number | null): Promise<ScheduleEventListResponse> {
   const result = await api.GET('/api/v1/content/schedule', {
-    params: { query: { limit: 50, offset: 0 } },
+    params: {
+      query: {
+        limit: 50,
+        offset: 0,
+        stage_id: stageId ?? undefined,
+      },
+    },
   })
   return unwrap(result)
+}
+
+export async function fetchActiveSeason(): Promise<SeasonPublic | null> {
+  const result = await api.GET('/api/v1/directory/seasons/active')
+  if (result.response.status === 404) {
+    return null
+  }
+  return unwrap(result)
+}
+
+export async function fetchPublicStages(seasonId: number): Promise<StagePublic[]> {
+  const result = await api.GET('/api/v1/directory/stages', {
+    params: { query: { season_id: seasonId } },
+  })
+  return unwrap(result)
+    .filter(isListedStage)
+    .sort((left, right) => left.order_index - right.order_index || left.number - right.number)
+}
+
+export async function fetchDisciplines(seasonId: number): Promise<DisciplinePublic[]> {
+  const result = await api.GET('/api/v1/directory/disciplines', {
+    params: { query: { season_id: seasonId } },
+  })
+  return unwrap(result).sort((left, right) => left.sort_order - right.sort_order || left.id - right.id)
 }
 
 export async function fetchFaq(): Promise<FAQListResponse> {
@@ -101,10 +144,11 @@ export async function fetchTrackPoints(): Promise<TrackPoint[]> {
 export function useParticipantsQuery(filters: ParticipantFilters = {}) {
   const search = filters.search?.trim() ?? ''
   const sort = filters.sort ?? 'bib'
+  const disciplineId = filters.disciplineId ?? null
 
   return useQuery({
-    queryKey: ['participants', { search, sort }],
-    queryFn: () => fetchParticipants({ search, sort }),
+    queryKey: ['participants', { search, sort, disciplineId }],
+    queryFn: () => fetchParticipants({ search, sort, disciplineId }),
     placeholderData: keepPreviousData,
   })
 }
@@ -125,6 +169,98 @@ export function useSupportersQuery(id: number | undefined) {
   })
 }
 
+export async function fetchStandings(): Promise<RaceStandings> {
+  const result = await api.GET('/api/v1/results/standings')
+  return unwrap(result)
+}
+
+export async function fetchStageProtocol(stageId: number): Promise<StageProtocol | null> {
+  const result = await api.GET('/api/v1/results/stage/{stage_id}', {
+    params: { path: { stage_id: stageId } },
+  })
+  if (result.response.status === 404) {
+    return null
+  }
+  return unwrap(result)
+}
+
+export async function fetchProtocolsForStages(stages: StagePublic[]): Promise<StageProtocol[]> {
+  const protocols = await Promise.all(stages.map((stage) => fetchStageProtocol(stage.id)))
+  const order = new Map(stages.map((stage) => [stage.id, stage.order_index]))
+  return protocols
+    .filter((protocol): protocol is StageProtocol => protocol !== null && protocol.publication !== 'draft')
+    .sort((left, right) => (order.get(left.stage_id) ?? 0) - (order.get(right.stage_id) ?? 0))
+}
+
+export function useStageProtocolQuery(stageId: number | null) {
+  return useQuery({
+    queryKey: ['results', 'protocol', stageId],
+    queryFn: () => fetchStageProtocol(stageId ?? 0),
+    enabled: stageId !== null,
+  })
+}
+
+export async function fetchSupportersRating(): Promise<SupporterRatingEntry[]> {
+  const result = await api.GET('/api/v1/participants/supporters/rating', {
+    params: { query: { limit: 200 } },
+  })
+  return unwrap(result)
+}
+
+export function useActiveSeasonQuery() {
+  return useQuery({
+    queryKey: ['directory', 'season'],
+    queryFn: fetchActiveSeason,
+  })
+}
+
+export function usePublicStagesQuery() {
+  const seasonQuery = useActiveSeasonQuery()
+  const seasonId = seasonQuery.data?.id
+
+  return useQuery({
+    queryKey: ['directory', 'stages', seasonId ?? null],
+    queryFn: () => fetchPublicStages(seasonId ?? 0),
+    enabled: seasonId !== undefined,
+  })
+}
+
+export function useDisciplinesQuery() {
+  const seasonQuery = useActiveSeasonQuery()
+  const seasonId = seasonQuery.data?.id
+
+  return useQuery({
+    queryKey: ['directory', 'disciplines', seasonId ?? null],
+    queryFn: () => fetchDisciplines(seasonId ?? 0),
+    enabled: seasonId !== undefined,
+  })
+}
+
+export function useSupportersRatingQuery() {
+  return useQuery({
+    queryKey: ['supporters-rating'],
+    queryFn: fetchSupportersRating,
+  })
+}
+
+export function useStandingsQuery() {
+  return useQuery({
+    queryKey: ['results', 'standings'],
+    queryFn: fetchStandings,
+  })
+}
+
+export function useProtocolsQuery() {
+  const stagesQuery = usePublicStagesQuery()
+  const stages = stagesQuery.data ?? []
+
+  return useQuery({
+    queryKey: ['results', 'protocols', stages.map((stage) => stage.id)],
+    queryFn: () => fetchProtocolsForStages(stages),
+    enabled: stagesQuery.isSuccess,
+  })
+}
+
 export function useNewsQuery() {
   return useQuery({
     queryKey: ['news'],
@@ -132,10 +268,10 @@ export function useNewsQuery() {
   })
 }
 
-export function useScheduleQuery() {
+export function useScheduleQuery(stageId: number | null = null) {
   return useQuery({
-    queryKey: ['schedule'],
-    queryFn: fetchSchedule,
+    queryKey: ['schedule', stageId],
+    queryFn: () => fetchSchedule(stageId),
   })
 }
 

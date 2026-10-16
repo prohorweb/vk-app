@@ -1,13 +1,15 @@
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Panel, PanelHeader, PanelHeaderBack, Placeholder } from '@vkontakte/vkui'
+import { SectionHero } from './SectionHero.tsx'
 
 type InProgressPanelProps = {
   id: string
   title: string
+  heroAlt: string
   back?: boolean
 }
 
-export function InProgressPanel({ id, title, back = false }: InProgressPanelProps) {
+export function InProgressPanel({ id, title, heroAlt, back = false }: InProgressPanelProps) {
   const routeNavigator = useRouteNavigator()
 
   return (
@@ -17,6 +19,7 @@ export function InProgressPanel({ id, title, back = false }: InProgressPanelProp
       >
         {title}
       </PanelHeader>
+      <SectionHero alt={heroAlt} />
       <Placeholder stretched>в работе</Placeholder>
     </Panel>
   )

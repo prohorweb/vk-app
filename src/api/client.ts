@@ -20,11 +20,15 @@ export class ApiError extends Error {
 }
 
 function readApiBaseUrl(): string | undefined {
-  const value = import.meta.env.VITE_API_URL
-  if (!value) {
-    return undefined
+  const value = import.meta.env.VITE_API_URL?.trim()
+  if (value) {
+    return value.replace(/\/$/, '')
   }
-  return value.replace(/\/$/, '')
+  // В dev пустой адрес — тот же origin, что у Vite. /api проксируется на бэкенд.
+  if (import.meta.env.DEV) {
+    return ''
+  }
+  return undefined
 }
 
 export const apiBaseUrl = readApiBaseUrl()

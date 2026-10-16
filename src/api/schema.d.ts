@@ -49,6 +49,30 @@ export interface paths {
         get: operations["me_api_v1_auth_me_get"];
         put?: never;
         post?: never;
+        /**
+         * Delete Me
+         * @description Удалить аккаунт (152-ФЗ).
+         */
+        delete: operations["delete_me_api_v1_auth_me_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept Consent
+         * @description Зафиксировать согласие или отзыв на обработку ПДн.
+         */
+        post: operations["accept_consent_api_v1_auth_me_consent_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -127,6 +151,89 @@ export interface paths {
          * @description Получить полное содержимое одной опубликованной новости.
          */
         get: operations["get_news_post_api_v1_content_news__news_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/results/standings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Сводная таблица лидеров (официальная)
+         * @description Сводная таблица лидеров по сумме опубликованных этапов.
+         *
+         *     Учитываются этапы с publication=provisional|official.
+         *     Draft-черновики не показываются.
+         */
+        get: operations["standings_api_v1_results_standings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/results/stage/{stage_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Протокол этапа
+         * @description Протокол этапа: участники, время, штрафы, обязательные остановки.
+         */
+        get: operations["stage_protocol_api_v1_results_stage__stage_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/results/leaderboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Таблица лидеров
+         * @description Таблица лидеров.
+         */
+        get: operations["leaderboard_api_v1_results_leaderboard_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/results/entry/{participant_id}/control-times": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Отметки участника на контрольных пунктах
+         * @description Все отметки участника на КП (по этапу или по всем).
+         */
+        get: operations["control_times_api_v1_results_entry__participant_id__control_times_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -267,10 +374,370 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * История уведомлений
+         * @description Мои уведомления с пагинацией.
+         */
+        get: operations["list_notifications_api_v1_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Примеры текстов уведомлений
+         * @description Примеры — для экрана настроек уведомлений.
+         *
+         *     Формулировки с «данные на HH:MM», без «прямо сейчас».
+         */
+        get: operations["preview_notifications_api_v1_notifications_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Настройки уведомлений
+         * @description Текущие настройки push-уведомлений.
+         */
+        get: operations["get_notification_settings_api_v1_notifications_settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Изменить настройки уведомлений
+         * @description Включить или выключить push-уведомления.
+         */
+        patch: operations["update_notification_settings_api_v1_notifications_settings_patch"];
+        trace?: never;
+    };
+    "/api/v1/directory/stages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Stages */
+        get: operations["list_stages_api_v1_directory_stages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/directory/disciplines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Disciplines */
+        get: operations["list_disciplines_api_v1_directory_disciplines_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/directory/seasons/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Active Season */
+        get: operations["get_active_season_api_v1_directory_seasons_active_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login Admin
+         * @description Проверяем логин/пароль администратора и выдаём JWT
+         */
+        post: operations["login_admin_api_v1_admin_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/equipment/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Equipment Health
+         * @description Возвращаем состояние всех трекеров для админки
+         */
+        get: operations["equipment_health_api_v1_admin_equipment_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/race/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update Race Status
+         * @description Меняем текущий статус гонки
+         */
+        post: operations["update_race_status_api_v1_admin_race_status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/directory/seasons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Seasons */
+        get: operations["list_seasons_api_v1_admin_directory_seasons_get"];
+        put?: never;
+        /** Create Season */
+        post: operations["create_season_api_v1_admin_directory_seasons_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/directory/seasons/{season_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Season */
+        patch: operations["update_season_api_v1_admin_directory_seasons__season_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/directory/disciplines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Disciplines */
+        get: operations["list_disciplines_api_v1_admin_directory_disciplines_get"];
+        put?: never;
+        /** Create Discipline */
+        post: operations["create_discipline_api_v1_admin_directory_disciplines_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/directory/disciplines/{discipline_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Discipline */
+        patch: operations["update_discipline_api_v1_admin_directory_disciplines__discipline_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/directory/stages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Stages */
+        get: operations["list_stages_api_v1_admin_directory_stages_get"];
+        put?: never;
+        /** Create Stage */
+        post: operations["create_stage_api_v1_admin_directory_stages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/directory/stages/{stage_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Stage */
+        patch: operations["update_stage_api_v1_admin_directory_stages__stage_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/admin/directory/stages/{stage_id}/route": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Stage Route */
+        get: operations["get_stage_route_api_v1_admin_directory_stages__stage_id__route_get"];
+        /** Replace Stage Route */
+        put: operations["replace_stage_route_api_v1_admin_directory_stages__stage_id__route_put"];
+        post?: never;
+        /** Clear Stage Route */
+        delete: operations["clear_stage_route_api_v1_admin_directory_stages__stage_id__route_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/marks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Official Mark */
+        post: operations["create_official_mark_api_v1_admin_marks_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/marks/{mark_id}/correct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Correct Official Mark */
+        post: operations["correct_official_mark_api_v1_admin_marks__mark_id__correct_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AdminLoginRequest
+         * @description Данные для входа администратора по логину и паролю
+         */
+        AdminLoginRequest: {
+            /** Login */
+            login: string;
+            /** Password */
+            password: string;
+        };
+        /**
+         * AdminLoginResponse
+         * @description JWT-токен администратора и время жизни сессии
+         */
+        AdminLoginResponse: {
+            /** Access Token */
+            access_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
+            /** Expires In */
+            expires_in: number;
+        };
         /**
          * AuthResponse
          * @description Ответ на успешный вход через VK ID.
@@ -288,6 +755,154 @@ export interface components {
             user: components["schemas"]["UserProfile"];
             /** Is New User */
             is_new_user: boolean;
+        };
+        /**
+         * CheckpointKind
+         * @enum {string}
+         */
+        CheckpointKind: "start" | "finish" | "checkpoint";
+        /**
+         * ConsentIn
+         * @description Согласие или отзыв согласия на обработку ПДн.
+         */
+        ConsentIn: {
+            /** Accepted */
+            accepted: boolean;
+            /** Policy Version */
+            policy_version: string;
+        };
+        /**
+         * ControlTimeEntry
+         * @description Отметка участника на контрольном пункте.
+         */
+        ControlTimeEntry: {
+            /** Checkpoint Id */
+            checkpoint_id: number;
+            /** Checkpoint Code */
+            checkpoint_code: string;
+            /** Checkpoint Name */
+            checkpoint_name: string;
+            checkpoint_kind: components["schemas"]["CheckpointKind"];
+            /**
+             * Mark Time
+             * Format: date-time
+             */
+            mark_time: string;
+            /**
+             * Penalty Minutes
+             * @default 0
+             */
+            penalty_minutes: number;
+            /**
+             * Mandatory Stop Minutes
+             * @default 0
+             */
+            mandatory_stop_minutes: number;
+        };
+        /** DisciplineCreateRequest */
+        DisciplineCreateRequest: {
+            /** Season Id */
+            season_id: number;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+        };
+        /**
+         * DisciplinePublicResponse
+         * @description Дисциплина для фильтра на экранах «Карта» и «Участники».
+         */
+        DisciplinePublicResponse: {
+            /** Id */
+            id: number;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /** DisciplineResponse */
+        DisciplineResponse: {
+            /** Id */
+            id: number;
+            /** Season Id */
+            season_id: number;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Sort Order */
+            sort_order: number;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /** DisciplineUpdateRequest */
+        DisciplineUpdateRequest: {
+            /** Season Id */
+            season_id?: number | null;
+            /** Code */
+            code?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Sort Order */
+            sort_order?: number | null;
+            /** Is Active */
+            is_active?: boolean | null;
+        };
+        /**
+         * EquipmentHealthItem
+         * @description Состояние одного трекера для админки
+         */
+        EquipmentHealthItem: {
+            /** Id */
+            id: number;
+            /** Iridium Number */
+            iridium_number: string;
+            /** Imei */
+            imei: string;
+            /** Name */
+            name: string;
+            /** Participant Id */
+            participant_id?: number | null;
+            /** Stage Id */
+            stage_id?: number | null;
+            /** Is Active */
+            is_active: boolean;
+            /** Battery Percent */
+            battery_percent?: number | null;
+            /** Sos Active */
+            sos_active: boolean;
+            /** Last Message At */
+            last_message_at?: string | null;
+            /** Health Status */
+            health_status: string;
+            /** Freshness Status */
+            freshness_status: string;
+            /** Delayed After Seconds */
+            delayed_after_seconds: number;
+            /** Stale After Seconds */
+            stale_after_seconds: number;
+        };
+        /**
+         * EquipmentHealthResponse
+         * @description Сводка по состоянию оборудования
+         */
+        EquipmentHealthResponse: {
+            /** Items */
+            items: components["schemas"]["EquipmentHealthItem"][];
+            /** Total */
+            total: number;
         };
         /**
          * FAQItemResponse
@@ -345,6 +960,32 @@ export interface components {
         /** HTTPValidationError */
         HTTPValidationError: {
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * LeaderboardEntry
+         * @description Строка таблицы лидеров.
+         */
+        LeaderboardEntry: {
+            /** Participant Id */
+            participant_id: number;
+            /** Participant Name */
+            participant_name: string;
+            /** Participant Number */
+            participant_number: number;
+            /** Position */
+            position: number;
+            /** Final Time Seconds */
+            final_time_seconds?: number | null;
+            /**
+             * Stages Finished
+             * @default 0
+             */
+            stages_finished: number;
+            /**
+             * Mode
+             * @default official
+             */
+            mode: string;
         };
         /**
          * NewsPostListItemResponse
@@ -427,6 +1068,187 @@ export interface components {
          */
         NewsSource: "manual" | "vk";
         /**
+         * NotificationEventType
+         * @enum {string}
+         */
+        NotificationEventType: "stage_start" | "stage_finish" | "checkpoint_passed" | "leader_changed" | "participant_finished" | "broadcast" | "favorite_update";
+        /**
+         * NotificationItem
+         * @description Одно уведомление.
+         */
+        NotificationItem: {
+            /** Id */
+            id: number;
+            event_type: components["schemas"]["NotificationEventType"];
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            status: components["schemas"]["NotificationStatus"];
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /** Sent At */
+            sent_at?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * NotificationListResponse
+         * @description История уведомлений пользователя.
+         */
+        NotificationListResponse: {
+            /** Items */
+            items: components["schemas"]["NotificationItem"][];
+            /** Total */
+            total: number;
+        };
+        /**
+         * NotificationPreferenceOut
+         * @description Настройка по одному типу события (заглушка, будет в след. эпике).
+         */
+        NotificationPreferenceOut: {
+            event_type: components["schemas"]["NotificationEventType"];
+            /** Title */
+            title: string;
+            /** Enabled */
+            enabled: boolean;
+        };
+        /**
+         * NotificationPreviewListResponse
+         * @description Список preview для экрана настроек.
+         */
+        NotificationPreviewListResponse: {
+            /** Items */
+            items: components["schemas"]["NotificationPreviewResponse"][];
+        };
+        /**
+         * NotificationPreviewResponse
+         * @description Пример текста уведомления.
+         */
+        NotificationPreviewResponse: {
+            event_type: components["schemas"]["NotificationEventType"];
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+        };
+        /**
+         * NotificationSettingsResponse
+         * @description Текущие настройки уведомлений пользователя.
+         */
+        NotificationSettingsResponse: {
+            /** Notifications Allowed */
+            notifications_allowed: boolean;
+            /**
+             * Vk Limit Note
+             * @default VK ограничивает: до 2 уведомлений в час и до 10 в сутки
+             */
+            vk_limit_note: string;
+            /** Preferences */
+            preferences?: components["schemas"]["NotificationPreferenceOut"][];
+        };
+        /**
+         * NotificationSettingsUpdate
+         * @description Изменение настроек уведомлений.
+         */
+        NotificationSettingsUpdate: {
+            /**
+             * Notifications Allowed
+             * @description Согласие на push-уведомления
+             */
+            notifications_allowed?: boolean | null;
+        };
+        /**
+         * NotificationStatus
+         * @enum {string}
+         */
+        NotificationStatus: "pending" | "sent" | "skipped" | "failed";
+        /** OfficialMarkCorrectRequest */
+        OfficialMarkCorrectRequest: {
+            /**
+             * Mark Time
+             * Format: date-time
+             */
+            mark_time: string;
+            /**
+             * Penalty Minutes
+             * @default 0
+             */
+            penalty_minutes: number;
+            /**
+             * Mandatory Stop Minutes
+             * @default 0
+             */
+            mandatory_stop_minutes: number;
+            /** Comment */
+            comment?: string | null;
+            /** Cancel Reason */
+            cancel_reason: string;
+        };
+        /** OfficialMarkCreateRequest */
+        OfficialMarkCreateRequest: {
+            /** Participant Id */
+            participant_id: number;
+            /** Checkpoint Id */
+            checkpoint_id: number;
+            /**
+             * Mark Time
+             * Format: date-time
+             */
+            mark_time: string;
+            /**
+             * Penalty Minutes
+             * @default 0
+             */
+            penalty_minutes: number;
+            /**
+             * Mandatory Stop Minutes
+             * @default 0
+             */
+            mandatory_stop_minutes: number;
+            /** Comment */
+            comment?: string | null;
+        };
+        /** OfficialMarkResponse */
+        OfficialMarkResponse: {
+            /** Id */
+            id: number;
+            /** Participant Id */
+            participant_id: number;
+            /** Checkpoint Id */
+            checkpoint_id: number;
+            /**
+             * Mark Time
+             * Format: date-time
+             */
+            mark_time: string;
+            /** Penalty Minutes */
+            penalty_minutes: number;
+            /** Mandatory Stop Minutes */
+            mandatory_stop_minutes: number;
+            /** Comment */
+            comment: string | null;
+            /** Entered By Admin Id */
+            entered_by_admin_id: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Is Cancelled */
+            is_cancelled: boolean;
+            /** Cancel Reason */
+            cancel_reason: string | null;
+            /** Cancels Mark Id */
+            cancels_mark_id: number | null;
+        };
+        /**
          * ParticipantDetail
          * @description Полная карточка участника.
          */
@@ -439,6 +1261,8 @@ export interface components {
             number: number;
             /** Region */
             region?: string | null;
+            /** Discipline Id */
+            discipline_id?: number | null;
             /** Discipline */
             discipline?: string | null;
             /** Photo Url */
@@ -467,6 +1291,8 @@ export interface components {
             number: number;
             /** Region */
             region?: string | null;
+            /** Discipline Id */
+            discipline_id?: number | null;
             /** Discipline */
             discipline?: string | null;
             /** Photo Url */
@@ -499,6 +1325,62 @@ export interface components {
              * @default false
              */
             is_favorite: boolean;
+        };
+        /**
+         * PublicationStatus
+         * @description Статус публикации результатов этапа/гонки
+         * @enum {string}
+         */
+        PublicationStatus: "draft" | "provisional" | "official";
+        /**
+         * RaceStandings
+         * @description Сводная таблица лидеров.
+         */
+        RaceStandings: {
+            /**
+             * Mode
+             * @default official
+             */
+            mode: string;
+            /** Rows */
+            rows: components["schemas"]["StandingRow"][];
+        };
+        /**
+         * RaceState
+         * @enum {string}
+         */
+        RaceState: "upcoming" | "live" | "finished";
+        /**
+         * RaceStatusResponse
+         * @description Текущее состояние гонки для админки
+         */
+        RaceStatusResponse: {
+            /** Id */
+            id: number;
+            status: components["schemas"]["RaceState"];
+            /** Current Stage Id */
+            current_stage_id?: number | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * RaceStatusUpdateRequest
+         * @description Данные для смены текущего состояния гонки
+         */
+        RaceStatusUpdateRequest: {
+            status: components["schemas"]["RaceState"];
+            /** Current Stage Id */
+            current_stage_id?: number | null;
+        };
+        /** RouteCoordinate */
+        RouteCoordinate: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
         };
         /**
          * ScheduleEventListResponse
@@ -549,6 +1431,261 @@ export interface components {
          * @enum {string}
          */
         ScheduleKind: "race" | "cultural" | "other";
+        /** SeasonCreateRequest */
+        SeasonCreateRequest: {
+            /** Year */
+            year: number;
+            /** Title */
+            title: string;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /**
+             * Is Active
+             * @default false
+             */
+            is_active: boolean;
+        };
+        /**
+         * SeasonPublicResponse
+         * @description Активный сезон — минимум для шапки приложения.
+         */
+        SeasonPublicResponse: {
+            /** Id */
+            id: number;
+            /** Year */
+            year: number;
+            /** Title */
+            title: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Ends At */
+            ends_at: string | null;
+        };
+        /** SeasonResponse */
+        SeasonResponse: {
+            /** Id */
+            id: number;
+            /** Year */
+            year: number;
+            /** Title */
+            title: string;
+            /** Starts At */
+            starts_at: string | null;
+            /** Ends At */
+            ends_at: string | null;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /** SeasonUpdateRequest */
+        SeasonUpdateRequest: {
+            /** Year */
+            year?: number | null;
+            /** Title */
+            title?: string | null;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+        };
+        /** StageAdminResponse */
+        StageAdminResponse: {
+            /** Id */
+            id: number;
+            /** Season Id */
+            season_id: number | null;
+            /** Number */
+            number: number;
+            /** Name */
+            name: string;
+            /** Distance Km */
+            distance_km: number;
+            /** Start Time */
+            start_time: string | null;
+            /** Finish Time */
+            finish_time: string | null;
+            /** Order Index */
+            order_index: number;
+            /** Tracker Interval Seconds */
+            tracker_interval_seconds: number;
+            status: components["schemas"]["StageStatus"];
+        };
+        /** StageCreateRequest */
+        StageCreateRequest: {
+            /** Season Id */
+            season_id: number;
+            /** Number */
+            number: number;
+            /** Name */
+            name: string;
+            /**
+             * Distance Km
+             * @default 0
+             */
+            distance_km: number;
+            /** Start Time */
+            start_time?: string | null;
+            /** Finish Time */
+            finish_time?: string | null;
+            /**
+             * Order Index
+             * @default 0
+             */
+            order_index: number;
+            /**
+             * Tracker Interval Seconds
+             * @default 1200
+             */
+            tracker_interval_seconds: number;
+            /** @default planned */
+            status: components["schemas"]["StageStatus"];
+        };
+        /**
+         * StageProtocol
+         * @description Протокол этапа.
+         */
+        StageProtocol: {
+            /** Stage Id */
+            stage_id: number;
+            /** Stage Name */
+            stage_name: string;
+            publication: components["schemas"]["PublicationStatus"];
+            /** Rows */
+            rows: components["schemas"]["StageProtocolRow"][];
+        };
+        /**
+         * StageProtocolRow
+         * @description Строка протокола этапа.
+         */
+        StageProtocolRow: {
+            /** Participant Id */
+            participant_id: number;
+            /** Participant Name */
+            participant_name: string;
+            /** Participant Number */
+            participant_number: number;
+            /** Start Time */
+            start_time?: string | null;
+            /** Finish Time */
+            finish_time?: string | null;
+            /** Elapsed Time Seconds */
+            elapsed_time_seconds?: number | null;
+            /**
+             * Total Penalty Seconds
+             * @default 0
+             */
+            total_penalty_seconds: number;
+            /**
+             * Total Mandatory Stop Seconds
+             * @default 0
+             */
+            total_mandatory_stop_seconds: number;
+            /** Final Time Seconds */
+            final_time_seconds?: number | null;
+            /** Position */
+            position?: number | null;
+        };
+        /**
+         * StagePublicResponse
+         * @description Этап для переключателя на карте и раздела «Маршрут».
+         */
+        StagePublicResponse: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: number;
+            /** Name */
+            name: string;
+            /** Distance Km */
+            distance_km: number;
+            /** Start Time */
+            start_time: string | null;
+            /** Finish Time */
+            finish_time: string | null;
+            /** Order Index */
+            order_index: number;
+            status: components["schemas"]["StageStatus"];
+        };
+        /** StageRoutePointResponse */
+        StageRoutePointResponse: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Position */
+            position: number;
+        };
+        /** StageRouteReplaceRequest */
+        StageRouteReplaceRequest: {
+            /** Points */
+            points: components["schemas"]["RouteCoordinate"][];
+        };
+        /** StageRouteResponse */
+        StageRouteResponse: {
+            /** Stage Id */
+            stage_id: number;
+            /** Points */
+            points: components["schemas"]["StageRoutePointResponse"][];
+        };
+        /**
+         * StageStatus
+         * @enum {string}
+         */
+        StageStatus: "planned" | "active" | "finished";
+        /** StageUpdateRequest */
+        StageUpdateRequest: {
+            /** Season Id */
+            season_id?: number | null;
+            /** Number */
+            number?: number | null;
+            /** Name */
+            name?: string | null;
+            /** Distance Km */
+            distance_km?: number | null;
+            /** Start Time */
+            start_time?: string | null;
+            /** Finish Time */
+            finish_time?: string | null;
+            /** Order Index */
+            order_index?: number | null;
+            /** Tracker Interval Seconds */
+            tracker_interval_seconds?: number | null;
+            status?: components["schemas"]["StageStatus"] | null;
+        };
+        /**
+         * StandingRow
+         * @description Строка сводной таблицы.
+         */
+        StandingRow: {
+            /** Participant Id */
+            participant_id: number;
+            /** Participant Name */
+            participant_name: string;
+            /** Participant Number */
+            participant_number: number;
+            /**
+             * Total Penalty Seconds
+             * @default 0
+             */
+            total_penalty_seconds: number;
+            /**
+             * Total Mandatory Stop Seconds
+             * @default 0
+             */
+            total_mandatory_stop_seconds: number;
+            /** Final Time Seconds */
+            final_time_seconds?: number | null;
+            /** Position */
+            position?: number | null;
+            /**
+             * Stages Finished
+             * @default 0
+             */
+            stages_finished: number;
+        };
         /**
          * SupporterRatingEntry
          * @description Строка рейтинга народной поддержки.
@@ -585,6 +1722,23 @@ export interface components {
             photo_url?: string | null;
             /** Notifications Allowed */
             notifications_allowed: boolean;
+            /**
+             * Is Favorite App
+             * @default false
+             */
+            is_favorite_app: boolean;
+            /**
+             * Onboarding Passed
+             * @default false
+             */
+            onboarding_passed: boolean;
+            /**
+             * Consent Required
+             * @default false
+             */
+            consent_required: boolean;
+            /** Policy Version */
+            policy_version?: string | null;
         };
         /**
          * VKAuthRequest
@@ -698,13 +1852,53 @@ export interface operations {
     me_api_v1_auth_me_get: {
         parameters: {
             query?: never;
-            header?: {
-                authorization?: string | null;
-            };
+            header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfile"];
+                };
+            };
+        };
+    };
+    delete_me_api_v1_auth_me_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    accept_consent_api_v1_auth_me_consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentIn"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -858,6 +2052,122 @@ export interface operations {
             };
         };
     };
+    standings_api_v1_results_standings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RaceStandings"];
+                };
+            };
+        };
+    };
+    stage_protocol_api_v1_results_stage__stage_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StageProtocol"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    leaderboard_api_v1_results_leaderboard_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderboardEntry"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    control_times_api_v1_results_entry__participant_id__control_times_get: {
+        parameters: {
+            query?: {
+                /** @description Фильтр по этапу */
+                stage_id?: number | null;
+            };
+            header?: never;
+            path: {
+                participant_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ControlTimeEntry"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_schedule_events_api_v1_content_schedule_get: {
         parameters: {
             query?: {
@@ -961,7 +2271,7 @@ export interface operations {
             query?: {
                 /** @description Поиск по имени */
                 search?: string | null;
-                discipline?: string | null;
+                discipline_id?: number | null;
                 status?: components["schemas"]["ParticipantStatus"] | null;
                 sort?: string;
                 limit?: number;
@@ -1027,9 +2337,7 @@ export interface operations {
     get_supporters_api_v1_participants__participant_id__supporters_get: {
         parameters: {
             query?: never;
-            header?: {
-                authorization?: string | null;
-            };
+            header?: never;
             path: {
                 participant_id: number;
             };
@@ -1060,9 +2368,7 @@ export interface operations {
     favorite_add_api_v1_participants__participant_id__favorite_post: {
         parameters: {
             query?: never;
-            header?: {
-                authorization?: string | null;
-            };
+            header?: never;
             path: {
                 participant_id: number;
             };
@@ -1093,9 +2399,7 @@ export interface operations {
     favorite_remove_api_v1_participants__participant_id__favorite_delete: {
         parameters: {
             query?: never;
-            header?: {
-                authorization?: string | null;
-            };
+            header?: never;
             path: {
                 participant_id: number;
             };
@@ -1110,6 +2414,728 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FavoriteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_notifications_api_v1_notifications_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_notifications_api_v1_notifications_preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationPreviewListResponse"];
+                };
+            };
+        };
+    };
+    get_notification_settings_api_v1_notifications_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationSettingsResponse"];
+                };
+            };
+        };
+    };
+    update_notification_settings_api_v1_notifications_settings_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationSettingsUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationSettingsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_stages_api_v1_directory_stages_get: {
+        parameters: {
+            query?: {
+                season_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StagePublicResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_disciplines_api_v1_directory_disciplines_get: {
+        parameters: {
+            query?: {
+                season_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisciplinePublicResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_active_season_api_v1_directory_seasons_active_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonPublicResponse"];
+                };
+            };
+        };
+    };
+    login_admin_api_v1_admin_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminLoginResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    equipment_health_api_v1_admin_equipment_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EquipmentHealthResponse"];
+                };
+            };
+        };
+    };
+    update_race_status_api_v1_admin_race_status_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RaceStatusUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RaceStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_seasons_api_v1_admin_directory_seasons_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonResponse"][];
+                };
+            };
+        };
+    };
+    create_season_api_v1_admin_directory_seasons_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SeasonCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_season_api_v1_admin_directory_seasons__season_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SeasonUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_disciplines_api_v1_admin_directory_disciplines_get: {
+        parameters: {
+            query?: {
+                season_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisciplineResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_discipline_api_v1_admin_directory_disciplines_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisciplineCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisciplineResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_discipline_api_v1_admin_directory_disciplines__discipline_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                discipline_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisciplineUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisciplineResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_stages_api_v1_admin_directory_stages_get: {
+        parameters: {
+            query?: {
+                season_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StageAdminResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_stage_api_v1_admin_directory_stages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StageCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StageAdminResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_stage_api_v1_admin_directory_stages__stage_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StageUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StageAdminResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_stage_route_api_v1_admin_directory_stages__stage_id__route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StageRouteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replace_stage_route_api_v1_admin_directory_stages__stage_id__route_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StageRouteReplaceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StageRouteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clear_stage_route_api_v1_admin_directory_stages__stage_id__route_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_official_mark_api_v1_admin_marks_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfficialMarkCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficialMarkResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    correct_official_mark_api_v1_admin_marks__mark_id__correct_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mark_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OfficialMarkCorrectRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OfficialMarkResponse"];
                 };
             };
             /** @description Validation Error */

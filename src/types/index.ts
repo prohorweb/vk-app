@@ -16,6 +16,16 @@ export type FAQListResponse = components['schemas']['FAQListResponse']
 export type VKAuthRequest = components['schemas']['VKAuthRequest']
 export type VKUserInfo = components['schemas']['VKUserInfo']
 export type AuthResponse = components['schemas']['AuthResponse']
+export type RaceStandings = components['schemas']['RaceStandings']
+export type StandingRow = components['schemas']['StandingRow']
+export type StageProtocol = components['schemas']['StageProtocol']
+export type StageProtocolRow = components['schemas']['StageProtocolRow']
+export type PublicationStatus = components['schemas']['PublicationStatus']
+export type SupporterRatingEntry = components['schemas']['SupporterRatingEntry']
+export type SeasonPublic = components['schemas']['SeasonPublicResponse']
+export type DisciplinePublic = components['schemas']['DisciplinePublicResponse']
+export type StagePublic = components['schemas']['StagePublicResponse']
+export type StageStatus = components['schemas']['StageStatus']
 
 export const participantSorts = ['bib', 'name', 'supporters'] as const
 

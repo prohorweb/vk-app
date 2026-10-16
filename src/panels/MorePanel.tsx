@@ -7,6 +7,7 @@ const sections = [
   { path: PATH.program, title: 'Программа' },
   { path: PATH.news, title: 'Новости' },
   { path: PATH.guests, title: 'Гостям' },
+  { path: PATH.about, title: 'О гонке' },
   { path: PATH.profile, title: 'Профиль' },
 ] as const
 

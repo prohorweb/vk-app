@@ -2,6 +2,7 @@ import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Accordion, Div, Group, Panel, PanelHeader, PanelHeaderBack, Text } from '@vkontakte/vkui'
 import { useFaqQuery } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
+import { SectionHero } from '../components/SectionHero.tsx'
 
 type GuestsPanelProps = {
   id: string
@@ -17,6 +18,8 @@ export function GuestsPanel({ id }: GuestsPanelProps) {
       <PanelHeader before={<PanelHeaderBack onClick={() => void routeNavigator.back()} />}>
         Гостям
       </PanelHeader>
+      <SectionHero alt="Иллюстрация раздела для гостей гонки «Авача»" />
+      <p className="section-lead">Добро пожаловать на Камчатку!</p>
       <AsyncView
         isLoading={query.isLoading}
         isError={query.isError}
