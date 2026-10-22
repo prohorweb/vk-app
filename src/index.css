@@ -394,14 +394,37 @@ body {
   background: var(--vkui--color_separator_primary);
 }
 
+.route-sheet__peek {
+  flex: none;
+  padding: 0 16px 12px;
+}
+
 .route-sheet__scroll {
   flex: 1;
   min-height: 0;
-  padding: 0 16px 16px;
+  padding: 0 16px;
+}
+
+.route-sheet--full .route-sheet__scroll {
+  padding-bottom: 16px;
 }
 
 .route-sheet__title {
-  margin: 0 0 4px;
+  margin: 0;
+}
+
+.route-sheet__title-separator {
+  margin: 12px -16px;
+}
+
+.route-sheet__peek-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.route-sheet__stats--primary {
+  color: var(--vkui--color_text_primary);
 }
 
 .route-sheet__stats,

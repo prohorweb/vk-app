@@ -1,4 +1,4 @@
-import { Accordion, Subhead, Text, Title } from '@vkontakte/vkui'
+import { Accordion, Separator, Subhead, Text, Title } from '@vkontakte/vkui'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
 import type { RouteMapFilter, RouteSheetSnap } from '../../api/mocks/route.ts'
 import {
@@ -10,22 +10,32 @@ import {
 } from '../../api/mocks/route.ts'
 import { ElevationProfile } from './ElevationProfile.tsx'
 
-const SNAP_RATIO: Record<RouteSheetSnap, number> = {
-  collapsed: 0.22,
-  half: 0.5,
-  full: 1,
+const HALF_RATIO = 0.5
+
+function halfHeight(maxH: number): number {
+  return Math.round(maxH * HALF_RATIO)
 }
 
-function snapHeight(snap: RouteSheetSnap, maxH: number): number {
-  return Math.round(maxH * SNAP_RATIO[snap])
+function snapHeight(snap: RouteSheetSnap, maxH: number, collapsedH: number): number {
+  if (snap === 'collapsed') {
+    return Math.min(collapsedH, maxH)
+  }
+  if (snap === 'half') {
+    return halfHeight(maxH)
+  }
+  return maxH
 }
 
-function nearestSnap(visibleH: number, maxH: number): RouteSheetSnap {
-  const options: RouteSheetSnap[] = ['collapsed', 'half', 'full']
+function nearestSnap(visibleH: number, maxH: number, collapsedH: number): RouteSheetSnap {
+  const options: { snap: RouteSheetSnap; h: number }[] = [
+    { snap: 'collapsed', h: snapHeight('collapsed', maxH, collapsedH) },
+    { snap: 'half', h: snapHeight('half', maxH, collapsedH) },
+    { snap: 'full', h: snapHeight('full', maxH, collapsedH) },
+  ]
   let best: RouteSheetSnap = 'collapsed'
   let bestDelta = Number.POSITIVE_INFINITY
-  for (const snap of options) {
-    const delta = Math.abs(snapHeight(snap, maxH) - visibleH)
+  for (const { snap, h } of options) {
+    const delta = Math.abs(h - visibleH)
     if (delta < bestDelta) {
       bestDelta = delta
       best = snap
@@ -34,21 +44,27 @@ function nearestSnap(visibleH: number, maxH: number): RouteSheetSnap {
   return best
 }
 
-function snapFromVelocity(visibleH: number, velocityPxPerMs: number, maxH: number): RouteSheetSnap {
+function snapFromVelocity(
+  visibleH: number,
+  velocityPxPerMs: number,
+  maxH: number,
+  collapsedH: number,
+): RouteSheetSnap {
   const threshold = 0.35
+  const halfH = snapHeight('half', maxH, collapsedH)
   if (velocityPxPerMs > threshold) {
-    if (visibleH > snapHeight('half', maxH)) {
+    if (visibleH > halfH) {
       return 'half'
     }
     return 'collapsed'
   }
   if (velocityPxPerMs < -threshold) {
-    if (visibleH < snapHeight('half', maxH)) {
+    if (visibleH < halfH) {
       return 'half'
     }
     return 'full'
   }
-  return nearestSnap(visibleH, maxH)
+  return nearestSnap(visibleH, maxH, collapsedH)
 }
 
 type RouteSheetProps = {
@@ -74,13 +90,16 @@ function readTabbarTotalPx(): number {
 
 export function RouteSheet({ mapFilter, initialSnap, viewportRef, headerRef }: RouteSheetProps) {
   const [maxH, setMaxH] = useState(480)
+  const [collapsedH, setCollapsedH] = useState(160)
   const [snap, setSnap] = useState<RouteSheetSnap>(initialSnap ?? 'collapsed')
-  const [visibleH, setVisibleH] = useState(() => Math.round(480 * SNAP_RATIO.collapsed))
+  const [visibleH, setVisibleH] = useState(160)
   const [dragging, setDragging] = useState(false)
   const visibleRef = useRef(visibleH)
   visibleRef.current = visibleH
   const dragRef = useRef<{ startY: number; startVisible: number } | null>(null)
   const moveHistory = useRef<{ t: number; y: number }[]>([])
+  const grabRef = useRef<HTMLDivElement>(null)
+  const peekRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current
@@ -110,12 +129,28 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef, headerRef }: R
     }
   }, [viewportRef, headerRef])
 
+  useLayoutEffect(() => {
+    const grab = grabRef.current
+    const peek = peekRef.current
+    if (!grab || !peek) {
+      return
+    }
+    const measureCollapsed = () => {
+      setCollapsedH(grab.offsetHeight + peek.offsetHeight)
+    }
+    measureCollapsed()
+    const observer = new ResizeObserver(measureCollapsed)
+    observer.observe(grab)
+    observer.observe(peek)
+    return () => observer.disconnect()
+  }, [mapFilter])
+
   const applySnap = useCallback(
     (next: RouteSheetSnap) => {
       setSnap(next)
-      setVisibleH(snapHeight(next, maxH))
+      setVisibleH(snapHeight(next, maxH, collapsedH))
     },
-    [maxH],
+    [maxH, collapsedH],
   )
 
   useEffect(() => {
@@ -125,10 +160,10 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef, headerRef }: R
   }, [initialSnap, applySnap])
 
   useEffect(() => {
-    setVisibleH(snapHeight(snap, maxH))
-  }, [maxH, snap])
+    setVisibleH(snapHeight(snap, maxH, collapsedH))
+  }, [maxH, collapsedH, snap])
 
-  const minVisible = snapHeight('collapsed', maxH)
+  const minVisible = snapHeight('collapsed', maxH, collapsedH)
   const maxVisible = maxH
   const offsetY = maxH - visibleH
 
@@ -168,7 +203,7 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef, headerRef }: R
         velocity = (last.y - first.y) / dt
       }
     }
-    applySnap(snapFromVelocity(visibleRef.current, velocity, maxH))
+    applySnap(snapFromVelocity(visibleRef.current, velocity, maxH, collapsedH))
   }
 
   const isAll = mapFilter === 'all'
@@ -199,23 +234,43 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef, headerRef }: R
       }}
       {...(snap !== 'full' ? dragProps : {})}
     >
-      <div
-        className="route-sheet__grab"
-        {...(snap === 'full' ? dragProps : {})}
-      >
+      <div ref={grabRef} className="route-sheet__grab" {...(snap === 'full' ? dragProps : {})}>
         <span className="route-sheet__grab-bar" aria-hidden />
       </div>
-      <div className="route-sheet__scroll">
+      <div ref={peekRef} className="route-sheet__peek">
         {isAll ? (
           <>
             <Title level="3" className="route-sheet__title">
               {routeAllSummary.title}
             </Title>
-            <Text className="route-sheet__stats">
-              {routeAllSummary.distanceKm} км • {routeAllSummary.elevationGainM} м ↑
-            </Text>
-            <Subhead className="route-sheet__meta">{routeAllSummary.stagesLabel}</Subhead>
-            <Text className="route-sheet__subtitle">{routeAllSummary.subtitle}</Text>
+            <Separator className="route-sheet__title-separator" />
+            <div className="route-sheet__peek-stats">
+              <Text className="route-sheet__stats route-sheet__stats--primary">
+                {routeAllSummary.distanceKm} км • {routeAllSummary.elevationGainM} м ↑
+              </Text>
+              <Subhead className="route-sheet__meta">{routeAllSummary.stagesLabel}</Subhead>
+              <Text className="route-sheet__subtitle">{routeAllSummary.subtitle}</Text>
+            </div>
+          </>
+        ) : stage && stageDetail ? (
+          <>
+            <Title level="3" className="route-sheet__title">
+              {stageDetail.headline}
+            </Title>
+            <Separator className="route-sheet__title-separator" />
+            <div className="route-sheet__peek-stats">
+              <Text className="route-sheet__stats route-sheet__stats--primary">
+                {stageDetail.distanceKm} км • {stageDetail.elevationGainM} м ↑
+              </Text>
+              <Text className="route-sheet__subtitle">{stageDetail.startLabel}</Text>
+              <Text className="route-sheet__subtitle">{stageDetail.finishLabel}</Text>
+            </div>
+          </>
+        ) : null}
+      </div>
+      <div className="route-sheet__scroll">
+        {isAll ? (
+          <>
             {showProfile ? (
               <section className="route-sheet__section">
                 <Title level="3" className="route-sheet__section-title">
@@ -251,14 +306,6 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef, headerRef }: R
           </>
         ) : stage && stageDetail ? (
           <>
-            <Title level="3" className="route-sheet__title">
-              {stageDetail.headline}
-            </Title>
-            <Text className="route-sheet__stats">
-              {stageDetail.distanceKm} км • {stageDetail.elevationGainM} м ↑
-            </Text>
-            <Text className="route-sheet__subtitle">{stageDetail.startLabel}</Text>
-            <Text className="route-sheet__subtitle">{stageDetail.finishLabel}</Text>
             {showProfile ? (
               <section className="route-sheet__section">
                 <Title level="3" className="route-sheet__section-title">
