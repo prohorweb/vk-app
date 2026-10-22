@@ -1,29 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-  Icon24Cancel,
-  Icon24InfoCircleOutline,
-  Icon24LocationMapOutline,
-  Icon24SquareStackUpOutline,
-  Icon24User,
-  Icon24Volume,
-} from '@vkontakte/icons'
+import { Icon24Cancel } from '@vkontakte/icons'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Card, SimpleCell } from '@vkontakte/vkui'
 import { setMoreMenuReturn } from '../lib/moreMenuReturn.ts'
 import { PATH } from '../routes.ts'
+import { MoreMenuIcon, type MoreMenuIconId } from './MoreMenuIcon.tsx'
 
 type MoreMenuSheetProps = {
   open: boolean
   onClose: () => void
 }
 
-const items = [
-  { path: PATH.profile, label: 'Профиль', Icon: Icon24User },
-  { path: PATH.about, label: 'О гонке', Icon: Icon24InfoCircleOutline },
-  { path: PATH.route, label: 'Маршрут', Icon: Icon24LocationMapOutline },
-  { path: PATH.guests, label: 'Гостям', Icon: Icon24SquareStackUpOutline },
-  { path: PATH.news, label: 'Новости', Icon: Icon24Volume },
-] as const
+const items: { path: string; label: string; icon: MoreMenuIconId }[] = [
+  { path: PATH.profile, label: 'Профиль', icon: 'profile' },
+  { path: PATH.about, label: 'О гонке', icon: 'about' },
+  { path: PATH.route, label: 'Маршрут', icon: 'route' },
+  { path: PATH.guests, label: 'Гостям', icon: 'guests' },
+  { path: PATH.news, label: 'Новости', icon: 'news' },
+]
 
 const SWIPE_CLOSE_THRESHOLD_PX = 56
 
@@ -170,11 +164,11 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
         <button type="button" className="more-menu-sheet__close" aria-label="Закрыть" onClick={requestClose}>
           <Icon24Cancel />
         </button>
-        {items.map(({ path, label, Icon }) => (
+        {items.map(({ path, label, icon }) => (
           <SimpleCell
             key={path}
             className="more-menu-sheet__cell"
-            before={<Icon />}
+            before={<MoreMenuIcon id={icon} />}
             onClick={() => openSection(path)}
           >
             {label}

@@ -730,6 +730,30 @@ body {
   display: block;
 }
 
+.more-menu-sheet__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  color: var(--vkui--color_icon_accent);
+}
+
+.more-menu-sheet__icon svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.more-menu-sheet__cell .vkuiSimpleCell__before {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  min-width: 24px;
+}
+
 .more-menu-sheet__cell:focus,
 .more-menu-sheet__cell:focus-visible {
   background: var(--vkui--color_background_modal) !important;
