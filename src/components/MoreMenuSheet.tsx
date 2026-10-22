@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { Icon24Cancel } from '@vkontakte/icons'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Card, SimpleCell } from '@vkontakte/vkui'
+import { SimpleCell } from '@vkontakte/vkui'
 import { setMoreMenuReturn } from '../lib/moreMenuReturn.ts'
 import { PATH } from '../routes.ts'
+import { BottomSheet } from './BottomSheet.tsx'
 import { MoreMenuIcon, type MoreMenuIconId } from './MoreMenuIcon.tsx'
 
 type MoreMenuSheetProps = {
@@ -19,38 +20,9 @@ const items: { path: string; label: string; icon: MoreMenuIconId }[] = [
   { path: PATH.news, label: 'Новости', icon: 'news' },
 ]
 
-const SWIPE_CLOSE_THRESHOLD_PX = 56
-
 export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
   const routeNavigator = useRouteNavigator()
-  const [mounted, setMounted] = useState(open)
-  const [visible, setVisible] = useState(false)
-  const panelRef = useRef<HTMLDivElement>(null)
-  const dragRef = useRef<{ startY: number; deltaY: number } | null>(null)
   const ignorePopStateRef = useRef(false)
-
-  useEffect(() => {
-    if (open) {
-      setMounted(true)
-      const frame = requestAnimationFrame(() => {
-        requestAnimationFrame(() => setVisible(true))
-      })
-      return () => cancelAnimationFrame(frame)
-    }
-    setVisible(false)
-  }, [open])
-
-  useEffect(() => {
-    if (!visible) {
-      return
-    }
-    const frame = requestAnimationFrame(() => {
-      if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur()
-      }
-    })
-    return () => cancelAnimationFrame(frame)
-  }, [visible])
 
   useEffect(() => {
     if (!open) {
@@ -87,15 +59,6 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
     onClose()
   }, [onClose])
 
-  const handlePanelTransitionEnd = (event: React.TransitionEvent<HTMLDivElement>) => {
-    if (event.target !== panelRef.current || event.propertyName !== 'transform') {
-      return
-    }
-    if (!visible) {
-      setMounted(false)
-    }
-  }
-
   const openSection = (path: string) => {
     const returnPath = window.location.hash.replace(/^#/, '') || '/'
     setMoreMenuReturn(returnPath)
@@ -103,78 +66,27 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
     void routeNavigator.push(path)
   }
 
-  const onTouchStart = (event: React.TouchEvent) => {
-    const touch = event.touches[0]
-    if (!touch) {
-      return
-    }
-    dragRef.current = { startY: touch.clientY, deltaY: 0 }
-  }
-
-  const onTouchMove = (event: React.TouchEvent) => {
-    const drag = dragRef.current
-    const touch = event.touches[0]
-    if (!drag || !touch || !panelRef.current) {
-      return
-    }
-    drag.deltaY = Math.max(0, touch.clientY - drag.startY)
-    panelRef.current.classList.add('more-menu-sheet__panel--dragging')
-    panelRef.current.style.transform = `translateY(${drag.deltaY}px)`
-  }
-
-  const onTouchEnd = () => {
-    const drag = dragRef.current
-    dragRef.current = null
-    if (!panelRef.current) {
-      return
-    }
-    panelRef.current.classList.remove('more-menu-sheet__panel--dragging')
-    panelRef.current.style.transform = ''
-    if (drag && drag.deltaY >= SWIPE_CLOSE_THRESHOLD_PX) {
-      requestClose()
-    }
-  }
-
-  if (!mounted) {
-    return null
-  }
-
   return (
-    <div
-      className={['more-menu-sheet', visible ? 'more-menu-sheet--visible' : ''].filter(Boolean).join(' ')}
-      role="presentation"
+    <BottomSheet
+      open={open}
+      onClose={requestClose}
+      ariaLabel="Дополнительное меню"
+      sheetClassName="more-menu-sheet"
+      panelClassName="more-menu-sheet__panel"
     >
-      <button
-        type="button"
-        className="more-menu-sheet__backdrop"
-        aria-label="Закрыть"
-        onClick={requestClose}
-      />
-      <Card
-        mode="shadow"
-        getRootRef={panelRef}
-        className="more-menu-sheet__panel"
-        role="dialog"
-        aria-label="Дополнительное меню"
-        onTransitionEnd={handlePanelTransitionEnd}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <button type="button" className="more-menu-sheet__close" aria-label="Закрыть" onClick={requestClose}>
-          <Icon24Cancel />
-        </button>
-        {items.map(({ path, label, icon }) => (
-          <SimpleCell
-            key={path}
-            className="more-menu-sheet__cell"
-            before={<MoreMenuIcon id={icon} />}
-            onClick={() => openSection(path)}
-          >
-            {label}
-          </SimpleCell>
-        ))}
-      </Card>
-    </div>
+      <button type="button" className="more-menu-sheet__close" aria-label="Закрыть" onClick={requestClose}>
+        <Icon24Cancel />
+      </button>
+      {items.map(({ path, label, icon }) => (
+        <SimpleCell
+          key={path}
+          className="more-menu-sheet__cell"
+          before={<MoreMenuIcon id={icon} />}
+          onClick={() => openSection(path)}
+        >
+          {label}
+        </SimpleCell>
+      ))}
+    </BottomSheet>
   )
 }

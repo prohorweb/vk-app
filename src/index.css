@@ -17,6 +17,9 @@ body {
 :root {
   --app-tabbar-height: 48px;
   --app-tabbar-total-height: calc(var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
+  --start-screen-inline: 21.111%;
+  --start-logo-top: 180px;
+  --start-logo-width: 72%;
 }
 
 .app-frame {
@@ -85,42 +88,108 @@ body {
 }
 
 .start-screen .vkuiPanel__in {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   height: 100%;
   min-height: 0;
-  overflow: auto;
-  background: var(--vkui--color_background_content);
-}
-
-.start-screen__hero {
-  flex: 0 0 auto;
   overflow: hidden;
   background: var(--avacha-brand-dark-blue);
 }
 
-/* Кроп макетного start-hero.png: −52px сверху, −70px снизу; см. docs/assets-todo.md */
-.start-screen__hero .picture__img {
-  top: -52px;
-  height: calc(100% + 122px);
-  object-fit: cover;
-  object-position: center 42%;
+.start-screen__bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
 }
 
-.start-screen__body {
+.start-screen__bg-picture {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: unset !important;
+}
+
+/* Временный кроп start-hero.png: только верх (фон), без встроенного UI; см. docs/assets-todo.md */
+.start-screen__bg-picture .picture__img {
+  width: 100%;
+  height: 100%;
+  transform: scale(2.95);
+  transform-origin: top center;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.start-screen__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(4 88 144 / 0) 32%,
+    rgb(4 88 144 / 0.4) 52%,
+    rgb(4 88 144 / 0.88) 78%,
+    rgb(4 88 144 / 0.95) 100%
+  );
+  pointer-events: none;
+}
+
+.start-screen__content {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100%;
+  padding-top: var(--start-logo-top);
+}
+
+.start-screen__logo {
+  flex: none;
+  width: var(--start-logo-width);
+  margin-inline: auto;
+}
+
+.start-screen__logo-picture {
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.start-screen__logo-picture .picture__img {
+  transform: scale(3.1);
+  transform-origin: center 31%;
+  object-fit: cover;
+  object-position: center 31%;
+}
+
+.start-screen__form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
   gap: 16px;
-  padding: 20px 16px 28px;
+  box-sizing: border-box;
+  min-height: 0;
+  margin-top: 12px;
+  padding: 0 var(--start-screen-inline) clamp(32px, 11vh, 88px);
 }
 
 .start-screen__title {
   margin: 0;
-  color: var(--vkui--color_text_primary);
-  text-align: center;
-  font-size: 16px;
-  line-height: 20px;
+  color: var(--vkui--color_text_primary_invariably);
+  font-size: 18px;
+  line-height: 22px;
   font-weight: 400;
+  text-align: left;
+}
+
+.start-screen__consent {
+  color: var(--vkui--color_text_primary_invariably);
+}
+
+.start-screen__begin.vkuiButton__sizeL {
+  height: 48px;
+  min-height: 48px;
+  border-radius: 12px;
+  background: var(--avacha-brand-dark-blue) !important;
 }
 
 .participants-toolbar {
@@ -271,10 +340,24 @@ body {
 .filter-sheet {
   position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: 40;
+  box-sizing: border-box;
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
+
+.filter-sheet__backdrop,
+.more-menu-sheet__backdrop {
+  opacity: 0;
+  transition: opacity 250ms ease-out;
+}
+
+.filter-sheet--visible .filter-sheet__backdrop,
+.more-menu-sheet--visible .more-menu-sheet__backdrop {
+  opacity: 1;
 }
 
 .filter-sheet__backdrop {
@@ -282,39 +365,82 @@ body {
   inset: 0;
   border: 0;
   background: var(--vkui--color_overlay_primary);
+  pointer-events: auto;
+}
+
+.filter-sheet__panel,
+.more-menu-sheet__panel {
+  transform: translateY(100%);
+  transition: transform 250ms ease-out;
+}
+
+.filter-sheet--visible .filter-sheet__panel,
+.more-menu-sheet--visible .more-menu-sheet__panel {
+  transform: translateY(0);
+}
+
+.filter-sheet__panel--dragging,
+.more-menu-sheet__panel--dragging {
+  transition: none;
 }
 
 .filter-sheet__panel {
   position: relative;
-  width: min(100%, 360px);
-  max-height: 80%;
-  padding: 8px 16px 24px;
+  z-index: 1;
+  width: 100%;
+  max-width: min(100%, 360px);
+  max-height: min(72vh, 100%);
+  padding: 0 16px 12px;
   overflow: auto;
-  border-start-start-radius: 12px;
-  border-start-end-radius: 12px;
+  border-radius: 12px;
+  pointer-events: auto;
+}
+
+.filter-sheet__panel.vkuiCard {
   background: var(--vkui--color_background_modal);
+  box-shadow: none;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.3));
 }
 
 .filter-sheet__head {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
+  align-self: stretch;
+  flex: none;
+  box-sizing: border-box;
+  min-height: 56px;
+  margin-inline: -16px;
   margin-bottom: 8px;
+  padding: 4px;
 }
 
-.filter-sheet__head h2 {
+.filter-sheet__title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
+  padding-inline: 8px 4px;
   font-size: 21px;
   line-height: 26px;
   font-weight: 600;
 }
 
 .filter-sheet__close {
-  display: inline-flex;
-  padding: 8px;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
   border: 0;
   background: transparent;
-  color: var(--vkui--color_icon_accent);
+  color: var(--vkui--color_icon_accent_themed);
+  cursor: pointer;
+}
+
+.filter-sheet__close svg {
+  display: block;
 }
 
 .filter-sheet__legend {
@@ -630,6 +756,7 @@ body {
   inset-inline-start: 50%;
   inline-size: min(100%, 360px);
   transform: translateX(-50%);
+  z-index: 10;
 }
 
 .app-tabbar.vkuiTabbar__host {
@@ -708,15 +835,20 @@ body {
   padding-bottom: var(--app-tabbar-total-height);
 }
 
+html.app-hide-tabbar .app-tabbar {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .more-menu-sheet {
   position: fixed;
   inset: 0;
-  z-index: 30;
+  z-index: 40;
   box-sizing: border-box;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 0 10px var(--app-tabbar-total-height);
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
   pointer-events: none;
 }
 
@@ -725,13 +857,7 @@ body {
   inset: 0;
   border: 0;
   background: var(--vkui--color_overlay_primary);
-  opacity: 0;
-  transition: opacity 250ms ease-out;
   pointer-events: auto;
-}
-
-.more-menu-sheet--visible .more-menu-sheet__backdrop {
-  opacity: 1;
 }
 
 .more-menu-sheet__panel {
@@ -740,24 +866,16 @@ body {
   width: 100%;
   max-width: min(100%, 360px);
   max-height: min(72vh, 100%);
-  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 0 12px;
   overflow: auto;
-  border-radius: 12px 12px 0 0;
-  transform: translateY(100%);
-  transition: transform 250ms ease-out;
+  border-radius: 12px;
   pointer-events: auto;
-}
-
-.more-menu-sheet__panel--dragging {
-  transition: none;
-}
-
-.more-menu-sheet--visible .more-menu-sheet__panel {
-  transform: translateY(0);
 }
 
 .more-menu-sheet__panel.vkuiCard {
   background: var(--vkui--color_background_modal);
+  box-shadow: none;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.3));
 }
 
 .more-menu-sheet__close {
@@ -804,6 +922,12 @@ body {
   justify-content: center;
   width: 24px;
   min-width: 24px;
+  margin-right: 12px;
+}
+
+.more-menu-sheet__panel .more-menu-sheet__cell {
+  min-height: 48px;
+  padding-inline: 16px 44px;
 }
 
 .more-menu-sheet__cell:focus,
@@ -812,7 +936,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .filter-sheet__backdrop,
   .more-menu-sheet__backdrop,
+  .filter-sheet__panel,
   .more-menu-sheet__panel {
     transition: none;
   }

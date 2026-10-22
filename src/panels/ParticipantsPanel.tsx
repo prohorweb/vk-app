@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Icon24ChevronRight, Icon24Dismiss, Icon24Filter } from '@vkontakte/icons'
+import { Icon24Cancel, Icon24ChevronRight, Icon24Filter } from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, Radio, Search } from '@vkontakte/vkui'
 import { trackerGap } from '../api/gaps.ts'
 import { useDisciplinesQuery, useParticipantsQuery, useStandingsQuery } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
+import { BottomSheet } from '../components/BottomSheet.tsx'
 import { ParticipantAvatar } from '../components/ParticipantAvatar.tsx'
 import { useDebounced } from '../hooks/useDebounced.ts'
 import { formatCount } from '../lib/labels.ts'
@@ -88,6 +89,16 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
   const isLoading = participantsQuery.isLoading
   const isError = participantsQuery.isError
 
+  useEffect(() => {
+    if (!filterOpen) {
+      return
+    }
+    document.documentElement.classList.add('app-hide-tabbar')
+    return () => {
+      document.documentElement.classList.remove('app-hide-tabbar')
+    }
+  }, [filterOpen])
+
   return (
     <Panel id={id}>
       <PanelHeader>Участники</PanelHeader>
@@ -166,73 +177,69 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
           </section>
         ))}
       </AsyncView>
-      {filterOpen ? (
-        <div className="filter-sheet" role="presentation">
+      <BottomSheet
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        ariaLabel="Фильтр"
+        sheetClassName="filter-sheet"
+        panelClassName="filter-sheet__panel"
+      >
+        <div className="filter-sheet__head">
+          <h2 className="filter-sheet__title">Фильтр</h2>
           <button
             type="button"
-            className="filter-sheet__backdrop"
-            aria-label="Закрыть фильтр"
+            className="filter-sheet__close"
+            aria-label="Закрыть"
             onClick={() => setFilterOpen(false)}
-          />
-          <div className="filter-sheet__panel" role="dialog" aria-label="Фильтр">
-            <div className="filter-sheet__head">
-              <button
-                type="button"
-                className="filter-sheet__close"
-                aria-label="Закрыть"
-                onClick={() => setFilterOpen(false)}
-              >
-                <Icon24Dismiss />
-              </button>
-              <h2>Фильтр</h2>
-            </div>
-            <div className="filter-sheet__options">
-              <p className="filter-sheet__legend">Сортировка</p>
-              {sortOptions.map((option) => (
-                <Radio
-                  key={option.value}
-                  name="participant-sort"
-                  value={option.value}
-                  checked={draftSort === option.value}
-                  onChange={() => setDraftSort(option.value)}
-                >
-                  {option.label}
-                </Radio>
-              ))}
-              <p className="filter-sheet__legend">Дисциплина</p>
-              <Radio
-                name="participant-discipline"
-                checked={draftDisciplineId === null}
-                onChange={() => setDraftDisciplineId(null)}
-              >
-                Все дисциплины
-              </Radio>
-              {disciplines.map((discipline) => (
-                <Radio
-                  key={discipline.id}
-                  name="participant-discipline"
-                  checked={draftDisciplineId === discipline.id}
-                  onChange={() => setDraftDisciplineId(discipline.id)}
-                >
-                  {discipline.name}
-                </Radio>
-              ))}
-            </div>
-            <Button
-              stretched
-              size="l"
-              mode="primary"
-              onClick={() => {
-                setSort(draftSort)
-                setDisciplineId(draftDisciplineId)
-                setFilterOpen(false)
-              }}
-            >
-              Показать результаты
-            </Button>
-          </div>
+          >
+            <Icon24Cancel />
+          </button>
         </div>
-      ) : null}
+        <div className="filter-sheet__options">
+          <p className="filter-sheet__legend">Сортировка</p>
+          {sortOptions.map((option) => (
+            <Radio
+              key={option.value}
+              name="participant-sort"
+              value={option.value}
+              checked={draftSort === option.value}
+              onChange={() => setDraftSort(option.value)}
+            >
+              {option.label}
+            </Radio>
+          ))}
+          <p className="filter-sheet__legend">Дисциплина</p>
+          <Radio
+            name="participant-discipline"
+            checked={draftDisciplineId === null}
+            onChange={() => setDraftDisciplineId(null)}
+          >
+            Все дисциплины
+          </Radio>
+          {disciplines.map((discipline) => (
+            <Radio
+              key={discipline.id}
+              name="participant-discipline"
+              checked={draftDisciplineId === discipline.id}
+              onChange={() => setDraftDisciplineId(discipline.id)}
+            >
+              {discipline.name}
+            </Radio>
+          ))}
+        </div>
+        <Button
+          stretched
+          size="l"
+          mode="primary"
+          onClick={() => {
+            setSort(draftSort)
+            setDisciplineId(draftDisciplineId)
+            setFilterOpen(false)
+          }}
+        >
+          Показать результаты
+        </Button>
+      </BottomSheet>
     </Panel>
   )
 }

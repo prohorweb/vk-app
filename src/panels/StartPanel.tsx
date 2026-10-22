@@ -17,6 +17,8 @@ type AllowNotificationsResult = {
   result?: boolean
 }
 
+const startHeroSrc = publicImage('start-hero.png')
+
 async function requestPushPermission(): Promise<boolean> {
   try {
     const response = (await vkBridge.send(
@@ -66,24 +68,50 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
 
   return (
     <Panel id={id} className="start-screen">
-      <div className="start-screen__hero">
+      <div className="start-screen__bg" aria-hidden>
         <Picture
-          src={publicImage('start-hero.png')}
-          alt="Эмблема всероссийской гонки «Авача» на фоне камчатского склона"
-          ratio="5 / 6"
-          position="center 42%"
+          src={startHeroSrc}
+          alt=""
+          ratio="1 / 1"
+          className="start-screen__bg-picture"
+          fit="cover"
+          position="center top"
         />
       </div>
-      <div className="start-screen__body">
-        <p className="start-screen__title">
-          Гонка на длинные дистанции «Авача» (Камчатский край, г. Петропавловск-Камчатский)
-        </p>
-        <Checkbox checked={pushConsent} onChange={(event) => setPushConsent(event.target.checked)}>
-          Согласен(а) на получение push-уведомлений
-        </Checkbox>
-        <Button stretched size="l" mode="primary" loading={pending} onClick={() => void handleBegin()}>
-          Начать
-        </Button>
+      <div className="start-screen__gradient" aria-hidden />
+      <div className="start-screen__content">
+        <div className="start-screen__logo">
+          <Picture
+            src={startHeroSrc}
+            alt="Эмблема всероссийской гонки «Авача»"
+            ratio="1 / 1"
+            className="start-screen__logo-picture"
+            fit="cover"
+            position="center 34%"
+          />
+        </div>
+        <div className="start-screen__form">
+          <p className="start-screen__title">
+            Гонка на длинные дистанции «Авача» (Камчатский край, г. Петропавловск-Камчатский)
+          </p>
+          <Checkbox
+            className="start-screen__consent"
+            checked={pushConsent}
+            onChange={(event) => setPushConsent(event.target.checked)}
+          >
+            Согласен(а) на получение push-уведомлений
+          </Checkbox>
+          <Button
+            className="start-screen__begin"
+            stretched
+            size="l"
+            mode="primary"
+            loading={pending}
+            onClick={() => void handleBegin()}
+          >
+            Начать
+          </Button>
+        </div>
       </div>
     </Panel>
   )
