@@ -1578,6 +1578,433 @@ html.app-hide-tabbar .app-tabbar {
   margin-bottom: 8px;
 }
 
+.program-screen .vkuiPanel__in {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.program-screen__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: 8px;
+}
+
+.program-screen__footer {
+  flex: none;
+  padding: 12px 16px 16px;
+  background: var(--vkui--color_background_content);
+}
+
+.program-race-card {
+  display: flex;
+  gap: 12px;
+  margin: 12px 16px 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_accent_themed);
+  color: var(--vkui--color_text_contrast);
+}
+
+.program-race-card__logo {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+
+.program-race-card__title {
+  margin: 0 0 4px;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.program-race-card__meta,
+.program-race-card__dates {
+  margin: 0;
+  font-size: 14px;
+  line-height: 18px;
+  opacity: 0.92;
+}
+
+.program-days {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+  overflow-x: auto;
+}
+
+.program-days__chip {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  min-width: 44px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--vkui--color_background_secondary);
+  color: var(--vkui--color_text_secondary);
+  cursor: pointer;
+}
+
+.program-days__chip--active {
+  background: var(--vkui--color_background_accent_themed);
+  color: var(--vkui--color_text_contrast);
+}
+
+.program-days__day {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.program-days__weekday {
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.program-day-card {
+  margin: 0 16px 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
+  box-shadow: var(--vkui--elevation1);
+}
+
+.program-day-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.program-day-card__title {
+  margin: 0;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.program-day-card__count {
+  flex: none;
+  color: var(--vkui--color_text_accent_themed);
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.program-events {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.program-events__row {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--vkui--color_separator_primary);
+}
+
+.program-events__row:first-child {
+  border-top: 0;
+}
+
+.program-events__time {
+  flex: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--vkui--color_background_secondary);
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.program-events__name {
+  margin: 0 0 2px;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+.program-events__place {
+  margin: 0;
+  color: var(--vkui--color_text_secondary);
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.program-events__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--vkui--color_background_secondary);
+  color: var(--vkui--color_text_primary);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.program-all-day {
+  margin: 0 16px 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
+  box-shadow: var(--vkui--elevation1);
+}
+
+.program-all-day__title {
+  margin: 0 0 12px;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.program-all-day__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.program-all-day__tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--vkui--color_background_secondary);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.program-all-day__icon {
+  display: flex;
+  color: var(--vkui--color_icon_accent_themed);
+}
+
+.spectator-map-screen .vkuiPanel__in {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.spectator-map-screen__viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.spectator-map-screen__filters {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  right: 56px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  pointer-events: auto;
+}
+
+.spectator-map-screen__filter {
+  flex: none;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--vkui--color_background_contrast);
+  box-shadow: var(--vkui--elevation2);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.spectator-map-screen__filter--active {
+  background: var(--vkui--color_background_accent_themed);
+  color: var(--vkui--color_text_contrast);
+}
+
+.spectator-map-screen__markers {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.spectator-map-marker {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--vkui--color_background_accent_themed);
+  box-shadow: var(--vkui--elevation2);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.spectator-map-marker--active {
+  background: var(--avacha-route-checkpoint);
+}
+
+.spectator-arrival__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.spectator-arrival__top-label {
+  margin: 0;
+  font-weight: 600;
+}
+
+.spectator-arrival__updated {
+  margin: 0;
+  color: var(--vkui--color_text_secondary);
+}
+
+.spectator-arrival__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.spectator-arrival__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--vkui--color_separator_primary);
+}
+
+.spectator-arrival__place {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--vkui--color_background_positive);
+  color: var(--vkui--color_text_contrast);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.spectator-arrival__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.spectator-arrival__name {
+  margin: 0;
+  font-weight: 500;
+}
+
+.spectator-arrival__region {
+  margin: 2px 0 0;
+  color: var(--vkui--color_text_secondary);
+}
+
+.spectator-arrival__times {
+  flex: none;
+  text-align: end;
+}
+
+.spectator-arrival__time {
+  margin: 0;
+  font-weight: 500;
+}
+
+.spectator-arrival__gap {
+  margin: 2px 0 0;
+  color: var(--avacha-brand-red);
+  font-size: 14px;
+}
+
+.spectator-location-card {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
+
+.spectator-location-card__panel {
+  pointer-events: auto;
+  padding: 8px 16px 16px;
+  border-radius: 12px 12px 0 0;
+  background: var(--vkui--color_background_modal);
+  box-shadow: var(--vkui--elevation3);
+}
+
+.spectator-location-card__grab-bar {
+  display: block;
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 12px;
+  border-radius: 2px;
+  background: var(--vkui--color_separator_primary);
+}
+
+.spectator-location-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.spectator-location-card__title {
+  flex: 1;
+  margin: 0;
+}
+
+.spectator-location-card__close {
+  display: flex;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--vkui--color_icon_secondary);
+  cursor: pointer;
+}
+
+.spectator-location-card__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: var(--vkui--color_text_secondary);
+}
+
+.spectator-location-card__phone {
+  color: var(--vkui--color_text_link);
+  text-decoration: none;
+}
+
+.spectator-location-card__hours {
+  display: block;
+  margin: 0 0 16px;
+  color: var(--vkui--color_text_secondary);
+}
+
 .program-row {
   display: flex;
   align-items: flex-start;

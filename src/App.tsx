@@ -12,6 +12,7 @@ import { ParticipantPanel } from './panels/ParticipantPanel.tsx'
 import { ParticipantsPanel } from './panels/ParticipantsPanel.tsx'
 import { ProfilePanel } from './panels/ProfilePanel.tsx'
 import { ProgramPanel } from './panels/ProgramPanel.tsx'
+import { SpectatorMapPanel } from './panels/SpectatorMapPanel.tsx'
 import { ResultsPanel } from './panels/ResultsPanel.tsx'
 import { RoutePanel } from './panels/RoutePanel.tsx'
 import { StartPanel } from './panels/StartPanel.tsx'
@@ -25,6 +26,7 @@ import {
   PANEL_PARTICIPANTS,
   PANEL_PROFILE,
   PANEL_PROGRAM,
+  PANEL_SPECTATOR_MAP,
   PANEL_RESULTS,
   PANEL_ROUTE,
   PANEL_START,
@@ -126,6 +128,7 @@ export function App() {
           >
             <RoutePanel id={PANEL_ROUTE} />
             <ProgramPanel id={PANEL_PROGRAM} />
+            <SpectatorMapPanel id={PANEL_SPECTATOR_MAP} />
             <NewsPanel id={PANEL_NEWS} />
             <GuestsPanel id={PANEL_GUESTS} />
             <AboutPanel id={PANEL_ABOUT} />

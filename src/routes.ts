@@ -22,6 +22,7 @@ export const PANEL_PARTICIPANT = 'panel_participant'
 export const PANEL_RESULTS = 'panel_results'
 export const PANEL_ROUTE = 'panel_route'
 export const PANEL_PROGRAM = 'panel_program'
+export const PANEL_SPECTATOR_MAP = 'panel_spectator_map'
 export const PANEL_NEWS = 'panel_news'
 export const PANEL_GUESTS = 'panel_guests'
 export const PANEL_PROFILE = 'panel_profile'
@@ -34,6 +35,7 @@ export const PATH = {
   participants: '/participants',
   route: '/more/route',
   program: '/more/program',
+  spectatorMap: '/more/program/spectator',
   news: '/more/news',
   guests: '/more/guests',
   about: '/more/about',
@@ -65,6 +67,7 @@ export const routes = RoutesConfig.create([
     createView(VIEW_MORE, [
       createPanel(PANEL_ROUTE, PATH.route),
       createPanel(PANEL_PROGRAM, PATH.program),
+      createPanel(PANEL_SPECTATOR_MAP, PATH.spectatorMap),
       createPanel(PANEL_NEWS, PATH.news),
       createPanel(PANEL_GUESTS, PATH.guests),
       createPanel(PANEL_ABOUT, PATH.about),
