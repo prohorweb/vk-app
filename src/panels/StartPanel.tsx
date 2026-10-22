@@ -70,7 +70,7 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
         <img className="start-screen__bg-img" src={startBg} alt="" decoding="async" />
         <div className="start-screen__bg-film" />
       </div>
-      <div className="start-screen__stack">
+      <div className="start-screen__logo-wrap">
         <img
           className="start-screen__logo"
           src={startLogo}
@@ -79,28 +79,28 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
           height={240}
           decoding="async"
         />
-        <div className="start-screen__form">
-          <p className="start-screen__title">
-            Гонка на длинные дистанции «Авача» (Камчатский край, г. Петропавловск-Камчатский)
-          </p>
-          <Checkbox
-            className="start-screen__consent"
-            checked={pushConsent}
-            onChange={(event) => setPushConsent(event.target.checked)}
-          >
-            Согласен(а) на получение push-уведомлений
-          </Checkbox>
-          <Button
-            className="start-screen__begin"
-            stretched
-            size="l"
-            mode="primary"
-            loading={pending}
-            onClick={() => void handleBegin()}
-          >
-            Начать
-          </Button>
-        </div>
+      </div>
+      <div className="start-screen__form">
+        <p className="start-screen__title">
+          Гонка на длинные дистанции «Авача» (Камчатский край, г. Петропавловск-Камчатский)
+        </p>
+        <Checkbox
+          className="start-screen__consent"
+          checked={pushConsent}
+          onChange={(event) => setPushConsent(event.target.checked)}
+        >
+          Согласен(а) на получение push-уведомлений
+        </Checkbox>
+        <Button
+          className="start-screen__begin"
+          stretched
+          size="l"
+          mode="primary"
+          loading={pending}
+          onClick={() => void handleBegin()}
+        >
+          Начать
+        </Button>
       </div>
     </Panel>
   )
