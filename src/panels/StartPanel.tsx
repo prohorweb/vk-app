@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import vkBridge from '@vkontakte/vk-bridge'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Button, Checkbox, Panel } from '@vkontakte/vkui'
-import { Picture } from '../components/Picture.tsx'
+import startBg from '../assets/start/bg.jpg'
+import startLogo from '../assets/start/logo.png'
 import { applyStartNotificationConsent } from '../lib/notificationSettings.ts'
-import { publicImage } from '../lib/publicImage.ts'
 import { isStartSeen, markStartSeen } from '../lib/startGate.ts'
 import { PATH } from '../routes.ts'
 
@@ -16,8 +16,6 @@ type StartPanelProps = {
 type AllowNotificationsResult = {
   result?: boolean
 }
-
-const startHeroSrc = publicImage('start-hero.png')
 
 async function requestPushPermission(): Promise<boolean> {
   try {
@@ -69,27 +67,18 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
   return (
     <Panel id={id} className="start-screen">
       <div className="start-screen__bg" aria-hidden>
-        <Picture
-          src={startHeroSrc}
-          alt=""
-          ratio="1 / 1"
-          className="start-screen__bg-picture"
-          fit="cover"
-          position="center top"
-        />
+        <img className="start-screen__bg-img" src={startBg} alt="" decoding="async" />
+        <div className="start-screen__bg-film" />
       </div>
-      <div className="start-screen__gradient" aria-hidden />
-      <div className="start-screen__content">
-        <div className="start-screen__logo">
-          <Picture
-            src={startHeroSrc}
-            alt="Эмблема всероссийской гонки «Авача»"
-            ratio="1 / 1"
-            className="start-screen__logo-picture"
-            fit="cover"
-            position="center 34%"
-          />
-        </div>
+      <div className="start-screen__stack">
+        <img
+          className="start-screen__logo"
+          src={startLogo}
+          alt="Эмблема всероссийской гонки «Авача»"
+          width={240}
+          height={240}
+          decoding="async"
+        />
         <div className="start-screen__form">
           <p className="start-screen__title">
             Гонка на длинные дистанции «Авача» (Камчатский край, г. Петропавловск-Камчатский)
