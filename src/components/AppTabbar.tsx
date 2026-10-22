@@ -76,12 +76,12 @@ export function AppTabbar({
   const routeNavigator = useRouteNavigator()
 
   return (
-    <Tabbar className="app-tabbar" mode="vertical">
+    <Tabbar className="app-tabbar" mode="vertical" plain>
       {tabs.map((tab) => (
         <TabbarItem
           key={tab.id}
           selected={tabSelected(tab, activeView, activePanel, moreMenuOpen)}
-          label={tab.label}
+          aria-label={tab.label}
           onClick={() => {
             if (tab.id === 'more') {
               onOpenMoreMenu()
