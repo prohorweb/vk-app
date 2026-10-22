@@ -638,22 +638,27 @@ body {
 }
 
 .app-tabbar__icon {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 28px;
   height: 28px;
   flex: none;
+}
+
+.app-tabbar__icon svg {
+  display: block;
+  width: 28px;
+  height: 28px;
 }
 
 .app-tabbar .vkuiTabbarItem__icon {
   color: var(--vkui--color_icon_secondary);
 }
 
-.app-tabbar .vkuiTabbarItem__selected .vkuiTabbarItem__icon {
-  color: var(--vkui--color_icon_accent_themed);
-}
-
+.app-tabbar .vkuiTabbarItem__selected .vkuiTabbarItem__icon,
 .app-tabbar .vkuiTabbarItem__selected .vkuiTabbarItem__label {
-  color: var(--vkui--color_text_accent_themed, var(--vkui--color_icon_accent_themed));
+  color: var(--vkui--color_icon_accent);
 }
 
 .more-menu-sheet {

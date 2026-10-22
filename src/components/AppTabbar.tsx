@@ -9,13 +9,7 @@ import {
   VIEW_PARTICIPANTS,
   VIEW_RESULTS,
 } from '../routes.ts'
-import {
-  TabIconBars,
-  TabIconMap,
-  TabIconMore,
-  TabIconPeople,
-  TabIconProgram,
-} from './tabIcons.tsx'
+import { TabbarIcon, type TabbarIconId } from './TabbarIcon.tsx'
 
 type AppTabbarProps = {
   activeView?: string
@@ -25,25 +19,29 @@ type AppTabbarProps = {
   onCloseMoreMenu: () => void
 }
 
-const tabs = [
-  { id: 'map', view: VIEW_MAP, path: PATH.map, label: 'Карта', icon: TabIconMap },
+const tabs: (
+  | { id: 'map' | 'participants' | 'results'; view: string; path: string; label: string; icon: TabbarIconId }
+  | { id: 'program'; view: string; path: string; label: string; icon: TabbarIconId }
+  | { id: 'more'; label: string; icon: TabbarIconId }
+)[] = [
+  { id: 'map', view: VIEW_MAP, path: PATH.map, label: 'Карта', icon: 'map' },
   {
     id: 'participants',
     view: VIEW_PARTICIPANTS,
     path: PATH.participants,
     label: 'Участники',
-    icon: TabIconPeople,
+    icon: 'participants',
   },
-  { id: 'results', view: VIEW_RESULTS, path: PATH.results, label: 'Результаты', icon: TabIconBars },
+  { id: 'results', view: VIEW_RESULTS, path: PATH.results, label: 'Результаты', icon: 'results' },
   {
     id: 'program',
     view: VIEW_MORE,
     path: PATH.program,
     label: 'Программа',
-    icon: TabIconProgram,
+    icon: 'program',
   },
-  { id: 'more', label: 'Ещё', icon: TabIconMore },
-] as const
+  { id: 'more', label: 'Ещё', icon: 'more' },
+]
 
 function tabSelected(
   tab: (typeof tabs)[number],
@@ -79,29 +77,25 @@ export function AppTabbar({
 
   return (
     <Tabbar className="app-tabbar" mode="vertical">
-      {tabs.map((tab) => {
-        const Icon = tab.icon
-
-        return (
-          <TabbarItem
-            key={tab.id}
-            selected={tabSelected(tab, activeView, activePanel, moreMenuOpen)}
-            label={tab.label}
-            onClick={() => {
-              if (tab.id === 'more') {
-                onOpenMoreMenu()
-                return
-              }
-              onCloseMoreMenu()
-              if ('path' in tab) {
-                void routeNavigator.replace(tab.path)
-              }
-            }}
-          >
-            <Icon className="app-tabbar__icon" />
-          </TabbarItem>
-        )
-      })}
+      {tabs.map((tab) => (
+        <TabbarItem
+          key={tab.id}
+          selected={tabSelected(tab, activeView, activePanel, moreMenuOpen)}
+          label={tab.label}
+          onClick={() => {
+            if (tab.id === 'more') {
+              onOpenMoreMenu()
+              return
+            }
+            onCloseMoreMenu()
+            if ('path' in tab) {
+              void routeNavigator.replace(tab.path)
+            }
+          }}
+        >
+          <TabbarIcon id={tab.icon} />
+        </TabbarItem>
+      ))}
     </Tabbar>
   )
 }
