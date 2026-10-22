@@ -283,6 +283,14 @@ body {
   color: #1a1a1a;
 }
 
+.start-screen__consent-text {
+  line-height: 20px;
+}
+
+.start-screen__consent-link {
+  font-size: inherit;
+}
+
 .start-screen__begin.vkuiButton__sizeL {
   flex: none;
   align-self: stretch;

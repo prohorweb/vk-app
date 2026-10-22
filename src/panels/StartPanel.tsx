@@ -1,61 +1,43 @@
-import { useEffect, useState } from 'react'
-import vkBridge from '@vkontakte/vk-bridge'
+import { useEffect, useRef, useState } from 'react'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Button, Checkbox, Panel } from '@vkontakte/vkui'
+import { Button, Checkbox, Link, Panel } from '@vkontakte/vkui'
 import startBg from '../assets/start/bg.jpg'
 import startLogo from '../assets/start/logo.png'
-import { applyStartNotificationConsent } from '../lib/notificationSettings.ts'
-import { isStartSeen, markStartSeen } from '../lib/startGate.ts'
+import { isStartSeen, markStartConsent, markStartSeen } from '../lib/startGate.ts'
 import { PATH } from '../routes.ts'
+
+const POLICY_URL = 'https://vk.com/privacy'
 
 type StartPanelProps = {
   id: string
   onBegin: () => void
 }
 
-type AllowNotificationsResult = {
-  result?: boolean
-}
-
-async function requestPushPermission(): Promise<boolean> {
-  try {
-    const response = (await vkBridge.send(
-      'VKWebAppAllowNotifications' as never,
-    )) as AllowNotificationsResult
-    return response.result === true
-  } catch {
-    return false
-  }
-}
-
 export function StartPanel({ id, onBegin }: StartPanelProps) {
   const routeNavigator = useRouteNavigator()
-  const [pushConsent, setPushConsent] = useState(false)
+  const [consentChecked, setConsentChecked] = useState(false)
   const [pending, setPending] = useState(false)
-  const seen = isStartSeen()
+  const skipStartRedirected = useRef(false)
 
   useEffect(() => {
-    if (seen) {
-      void routeNavigator.replace(PATH.map)
+    if (!isStartSeen() || skipStartRedirected.current) {
+      return
     }
-  }, [routeNavigator, seen])
+    skipStartRedirected.current = true
+    void routeNavigator.replace(PATH.map)
+  }, [routeNavigator])
 
-  if (seen) {
+  if (isStartSeen()) {
     return <Panel id={id} />
   }
 
-  const handleBegin = async () => {
+  const handleBegin = () => {
+    if (!consentChecked || pending) {
+      return
+    }
     setPending(true)
     try {
-      applyStartNotificationConsent(pushConsent)
-
-      if (pushConsent) {
-        const allowed = await requestPushPermission()
-        if (!allowed) {
-          applyStartNotificationConsent(false)
-        }
-      }
-
+      markStartConsent()
       markStartSeen()
       onBegin()
       void routeNavigator.replace(PATH.map)
@@ -86,10 +68,21 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
         </p>
         <Checkbox
           className="start-screen__consent"
-          checked={pushConsent}
-          onChange={(event) => setPushConsent(event.target.checked)}
+          checked={consentChecked}
+          onChange={(event) => setConsentChecked(event.target.checked)}
         >
-          Согласен(а) на получение push-уведомлений
+          <span className="start-screen__consent-text">
+            Принимаю условия{' '}
+            <Link
+              className="start-screen__consent-link"
+              href={POLICY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(event) => event.stopPropagation()}
+            >
+              политики конфиденциальности
+            </Link>
+          </span>
         </Checkbox>
         <Button
           className="start-screen__begin"
@@ -97,9 +90,10 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
           size="l"
           mode="primary"
           loading={pending}
-          onClick={() => void handleBegin()}
+          disabled={!consentChecked || pending}
+          onClick={handleBegin}
         >
-          Начать
+          Продолжить
         </Button>
       </div>
     </Panel>
