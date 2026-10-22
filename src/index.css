@@ -730,6 +730,11 @@ body {
   display: block;
 }
 
+.more-menu-sheet__cell:focus,
+.more-menu-sheet__cell:focus-visible {
+  background: var(--vkui--color_background_modal) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .more-menu-sheet__backdrop,
   .more-menu-sheet__panel {

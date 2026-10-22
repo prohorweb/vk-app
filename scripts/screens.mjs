@@ -79,6 +79,7 @@ async function runActions(page, actions) {
         timeout: 15_000,
       })
       await page.waitForTimeout(280)
+      await page.mouse.move(8, 8)
     } else {
       throw new Error(`Unknown action: ${action}`)
     }

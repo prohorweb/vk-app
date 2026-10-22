@@ -5,7 +5,7 @@ import {
   Icon24LocationMapOutline,
   Icon24SquareStackUpOutline,
   Icon24User,
-  Icon24VolumeOutline,
+  Icon24Volume,
 } from '@vkontakte/icons'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Card, SimpleCell } from '@vkontakte/vkui'
@@ -22,7 +22,7 @@ const items = [
   { path: PATH.about, label: 'О гонке', Icon: Icon24InfoCircleOutline },
   { path: PATH.route, label: 'Маршрут', Icon: Icon24LocationMapOutline },
   { path: PATH.guests, label: 'Гостям', Icon: Icon24SquareStackUpOutline },
-  { path: PATH.news, label: 'Новости', Icon: Icon24VolumeOutline },
+  { path: PATH.news, label: 'Новости', Icon: Icon24Volume },
 ] as const
 
 const SWIPE_CLOSE_THRESHOLD_PX = 56
@@ -45,6 +45,18 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
     }
     setVisible(false)
   }, [open])
+
+  useEffect(() => {
+    if (!visible) {
+      return
+    }
+    const frame = requestAnimationFrame(() => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur()
+      }
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [visible])
 
   useEffect(() => {
     if (!open) {
@@ -159,7 +171,12 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
           <Icon24Cancel />
         </button>
         {items.map(({ path, label, Icon }) => (
-          <SimpleCell key={path} before={<Icon />} onClick={() => openSection(path)}>
+          <SimpleCell
+            key={path}
+            className="more-menu-sheet__cell"
+            before={<Icon />}
+            onClick={() => openSection(path)}
+          >
             {label}
           </SimpleCell>
         ))}
