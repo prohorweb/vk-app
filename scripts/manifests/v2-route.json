@@ -1,0 +1,56 @@
+{
+  "baseUrl": "http://127.0.0.1:5173",
+  "width": 360,
+  "height": 800,
+  "outputDir": "docs/screens/v2-route",
+  "shots": [
+    {
+      "file": "route-all-collapsed-light.png",
+      "route": "/more/route",
+      "appearance": "light",
+      "searchParams": { "routeSheet": "collapsed", "routeMap": "all" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "waitForText": "Весь маршрут"
+    },
+    {
+      "file": "route-all-half-light.png",
+      "route": "/more/route",
+      "appearance": "light",
+      "searchParams": { "routeSheet": "half", "routeMap": "all" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "waitForText": "Профиль высот появится позже"
+    },
+    {
+      "file": "route-all-full-light.png",
+      "route": "/more/route",
+      "appearance": "light",
+      "searchParams": { "routeSheet": "full", "routeMap": "all" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "waitForText": "Схема этапов"
+    },
+    {
+      "file": "route-all-collapsed-dark.png",
+      "route": "/more/route",
+      "appearance": "dark",
+      "searchParams": { "routeSheet": "collapsed", "routeMap": "all" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "waitForText": "Весь маршрут"
+    },
+    {
+      "file": "route-all-half-dark.png",
+      "route": "/more/route",
+      "appearance": "dark",
+      "searchParams": { "routeSheet": "half", "routeMap": "all" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "waitForText": "Профиль высот появится позже"
+    },
+    {
+      "file": "route-all-full-dark.png",
+      "route": "/more/route",
+      "appearance": "dark",
+      "searchParams": { "routeSheet": "full", "routeMap": "all" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "waitForText": "Схема этапов"
+    }
+  ]
+}

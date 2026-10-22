@@ -23,6 +23,8 @@ body {
   --start-form-gap: 24px;
   --start-form-offset: 48px;
   --start-form-top: calc(var(--start-logo-top) + var(--start-logo-size) + var(--start-form-offset));
+  --avacha-route-checkpoint: #f59824;
+  --avacha-route-stage-active: var(--avacha-brand-red);
 }
 
 .app-frame {
@@ -195,6 +197,344 @@ body {
   max-height: 48px;
   border-radius: 12px;
   background: var(--avacha-brand-dark-blue) !important;
+}
+
+.route-screen .vkuiPanel__in {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--vkui--color_background_content);
+}
+
+.route-screen__viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.route-placeholder {
+  position: absolute;
+  inset: 0;
+  background: var(--vkui--color_background_secondary);
+}
+
+.route-placeholder__map {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: unset !important;
+}
+
+.route-placeholder__map .picture__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.04);
+  transform-origin: center center;
+}
+
+.route-placeholder__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(var(--vkui--color_text_primary) 1px, transparent 1px),
+    linear-gradient(90deg, var(--vkui--color_text_primary) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.route-map-controls {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.route-map-controls__info,
+.route-map-controls__cluster {
+  pointer-events: auto;
+}
+
+.route-map-controls__cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-map-controls .vkuiIconButton__host {
+  background: var(--vkui--color_background_contrast);
+  box-shadow: var(--vkui--elevation3);
+}
+
+.route-active-banner {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  right: 56px;
+  left: 56px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--vkui--color_background_accent_themed);
+  color: var(--vkui--color_text_contrast);
+}
+
+.route-active-banner__text {
+  flex: 1;
+  margin: 0;
+  color: inherit;
+}
+
+.route-active-banner__close {
+  display: flex;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.route-sheet {
+  position: absolute;
+  z-index: 4;
+  right: 0;
+  bottom: var(--app-tabbar-total-height);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-start-start-radius: 12px;
+  border-start-end-radius: 12px;
+  background: var(--vkui--color_background_modal);
+  box-shadow: var(--vkui--elevation3);
+  touch-action: none;
+}
+
+.route-sheet__grab {
+  display: flex;
+  flex: none;
+  justify-content: center;
+  padding: 8px 0 4px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.route-sheet__grab-bar {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--vkui--color_separator_primary);
+}
+
+.route-sheet__scroll {
+  flex: 1;
+  min-height: 0;
+  padding: 0 16px 16px;
+  overflow: auto;
+}
+
+.route-sheet__title {
+  margin: 0 0 4px;
+}
+
+.route-sheet__stats,
+.route-sheet__meta,
+.route-sheet__subtitle {
+  margin: 0 0 4px;
+  color: var(--vkui--color_text_secondary);
+}
+
+.route-sheet__section {
+  margin-top: 16px;
+}
+
+.route-sheet__section-title {
+  margin: 0 0 8px;
+}
+
+.route-sheet__placeholder {
+  margin: 12px 0 0;
+  padding: 24px 16px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_secondary);
+  color: var(--vkui--color_text_secondary);
+  text-align: center;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.route-sheet__stages,
+.route-sheet__checkpoints,
+.route-sheet__segments {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.route-sheet__stage-row {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--vkui--color_separator_primary);
+}
+
+.route-sheet__stage-row:last-child {
+  border-bottom: 0;
+}
+
+.route-sheet__stage-num {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--avacha-brand-dark-blue);
+  color: var(--vkui--color_text_contrast);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.route-sheet__stage-body {
+  min-width: 0;
+}
+
+.route-sheet__checkpoints li,
+.route-sheet__segments li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--vkui--color_separator_primary);
+}
+
+.route-filter-sheet {
+  z-index: 50;
+}
+
+.route-filter-sheet__panel {
+  padding: 0 16px 12px;
+}
+
+.route-filter-sheet__head {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  margin-inline: -16px;
+  margin-bottom: 8px;
+  padding: 4px;
+}
+
+.route-filter-sheet__title {
+  flex: 1;
+  margin: 0;
+  padding-inline: 12px 4px;
+  font-size: 21px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.route-filter-sheet__close {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--vkui--color_icon_accent_themed);
+  cursor: pointer;
+}
+
+.route-filter-sheet__options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.route-filter-sheet__legend {
+  margin: 0 0 8px;
+  color: var(--vkui--color_text_secondary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.route-filter-sheet__symbols {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.route-filter-sheet__symbols li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  color: var(--vkui--color_text_primary);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.route-filter-sheet__swatch {
+  width: 20px;
+  height: 4px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.route-action-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
+
+.route-action-menu__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: var(--vkui--color_overlay_primary);
+  pointer-events: auto;
+}
+
+.route-action-menu__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: min(100%, 360px);
+  max-height: min(72vh, 100%);
+  overflow: auto;
+  border-radius: 12px;
+  pointer-events: auto;
+}
+
+.route-action-menu__panel--info {
+  padding: 16px;
+}
+
+.route-action-menu__info-text {
+  margin: 0 0 12px;
+  color: var(--vkui--color_text_secondary);
+  font-size: 13px;
+  line-height: 16px;
 }
 
 .participants-toolbar {

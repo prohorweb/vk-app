@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useActiveVkuiLocation, useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Epic, SplitCol, SplitLayout, View } from '@vkontakte/vkui'
 import { AppTabbar } from './components/AppTabbar.tsx'
-import { InProgressPanel } from './components/InProgressPanel.tsx'
 import { MoreMenuSheet } from './components/MoreMenuSheet.tsx'
 import { isStartSeen } from './lib/startGate.ts'
 import { AboutPanel } from './panels/AboutPanel.tsx'
@@ -14,6 +13,7 @@ import { ParticipantsPanel } from './panels/ParticipantsPanel.tsx'
 import { ProfilePanel } from './panels/ProfilePanel.tsx'
 import { ProgramPanel } from './panels/ProgramPanel.tsx'
 import { ResultsPanel } from './panels/ResultsPanel.tsx'
+import { RoutePanel } from './panels/RoutePanel.tsx'
 import { StartPanel } from './panels/StartPanel.tsx'
 import {
   PANEL_ABOUT,
@@ -124,12 +124,7 @@ export function App() {
             history={activeView === VIEW_MORE ? panelsHistory : []}
             onSwipeBack={swipeBack}
           >
-            <InProgressPanel
-              id={PANEL_ROUTE}
-              title="Маршрут"
-              heroAlt="Иллюстрация маршрута гонки «Авача»"
-              back
-            />
+            <RoutePanel id={PANEL_ROUTE} />
             <ProgramPanel id={PANEL_PROGRAM} />
             <NewsPanel id={PANEL_NEWS} />
             <GuestsPanel id={PANEL_GUESTS} />

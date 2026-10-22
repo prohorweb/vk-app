@@ -47,10 +47,17 @@ function parseArgs(argv) {
   return options
 }
 
-function buildPageUrl(baseUrl, route, appearance) {
+function buildPageUrl(baseUrl, route, appearance, searchParams) {
   const normalizedRoute = route.startsWith('/') ? route : `/${route}`
   const url = new URL(baseUrl)
   url.searchParams.set('appearance', appearance)
+  if (searchParams) {
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (value !== null && value !== undefined) {
+        url.searchParams.set(key, String(value))
+      }
+    }
+  }
   url.hash = normalizedRoute === '/' ? '#/' : `#${normalizedRoute}`
   return url.toString()
 }
@@ -138,7 +145,7 @@ async function captureShot(browser, manifest, shot, outputPath) {
   await applyLocalStorage(context, shot.localStorage)
 
   const page = await context.newPage()
-  const url = buildPageUrl(baseUrl, shot.route ?? '/', appearance)
+  const url = buildPageUrl(baseUrl, shot.route ?? '/', appearance, shot.searchParams)
 
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 })
   await waitForReady(page, shot, 'before')
