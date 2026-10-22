@@ -1,0 +1,24 @@
+{
+  "baseUrl": "http://127.0.0.1:5173",
+  "width": 360,
+  "height": 800,
+  "outputDir": "docs/screens/v2-map",
+  "shots": [
+    {
+      "file": "map-card-light.png",
+      "route": "/map",
+      "appearance": "light",
+      "searchParams": { "mapMarker": "p-1" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "beforeWaitSelector": "[data-testid=\"map-mini-card\"]"
+    },
+    {
+      "file": "map-card-dark.png",
+      "route": "/map",
+      "appearance": "dark",
+      "searchParams": { "mapMarker": "p-1" },
+      "localStorage": { "avacha-vk-app.start-seen": "1" },
+      "beforeWaitSelector": "[data-testid=\"map-mini-card\"]"
+    }
+  ]
+}

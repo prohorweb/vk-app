@@ -12,6 +12,9 @@ type RouteMapControlsProps = {
   onFilter: () => void
   onInfo: () => void
   onMenu: () => void
+  onZoomIn?: () => void
+  onZoomOut?: () => void
+  onLocate?: () => void
   infoActive?: boolean
   menuActive?: boolean
 }
@@ -20,6 +23,9 @@ export function RouteMapControls({
   onFilter,
   onInfo,
   onMenu,
+  onZoomIn,
+  onZoomOut,
+  onLocate,
   infoActive,
   menuActive,
 }: RouteMapControlsProps) {
@@ -38,13 +44,13 @@ export function RouteMapControls({
         <IconButton label="Фильтр этапов на карте" onClick={onFilter}>
           <Icon24Filter />
         </IconButton>
-        <IconButton label="Приблизить">
+        <IconButton label="Приблизить" onClick={onZoomIn}>
           <Icon24Add />
         </IconButton>
-        <IconButton label="Отдалить">
+        <IconButton label="Отдалить" onClick={onZoomOut}>
           <Icon24MinusOutline />
         </IconButton>
-        <IconButton label="Моё местоположение">
+        <IconButton label="Моё местоположение" onClick={onLocate}>
           <Icon24LocationMapOutline />
         </IconButton>
         <IconButton

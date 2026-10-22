@@ -23,9 +23,11 @@ import type {
   DisciplinePublic,
 } from '../types/index.ts'
 import { api, OfflineError, unwrap } from './client.ts'
+import { buildMapPositionsSnapshot, fetchMapPositionsMock } from './mocks/positions.ts'
 import { trackPoints } from './mock.ts'
 
 const TRACK_REFETCH_MS = 2 * 60 * 1000
+const MAP_POSITIONS_REFETCH_MS = 120 * 1000
 
 export const trackMockEnabled = import.meta.env.VITE_USE_MOCK === 'true'
 
@@ -288,6 +290,23 @@ export function useTrackPointsQuery() {
     queryFn: fetchTrackPoints,
     enabled: trackMockEnabled,
     refetchInterval: trackMockEnabled ? TRACK_REFETCH_MS : false,
+  })
+}
+
+export async function fetchMapPositions() {
+  if (!navigator.onLine) {
+    throw new OfflineError()
+  }
+  return fetchMapPositionsMock()
+}
+
+export function useMapPositionsQuery() {
+  return useQuery({
+    queryKey: ['map-positions'],
+    queryFn: fetchMapPositions,
+    refetchInterval: MAP_POSITIONS_REFETCH_MS,
+    initialData: buildMapPositionsSnapshot(),
+    placeholderData: keepPreviousData,
   })
 }
 
