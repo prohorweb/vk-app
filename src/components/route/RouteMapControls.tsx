@@ -10,13 +10,15 @@ import { IconButton } from '@vkontakte/vkui'
 
 type RouteMapControlsProps = {
   onFilter: () => void
-  onInfo: () => void
+  onInfo?: () => void
   onMenu: () => void
   onZoomIn?: () => void
   onZoomOut?: () => void
   onLocate?: () => void
   infoActive?: boolean
   menuActive?: boolean
+  showInfo?: boolean
+  className?: string
 }
 
 export function RouteMapControls({
@@ -28,18 +30,22 @@ export function RouteMapControls({
   onLocate,
   infoActive,
   menuActive,
+  showInfo = true,
+  className,
 }: RouteMapControlsProps) {
   return (
-    <div className="route-map-controls">
-      <IconButton
-        className={['route-map-controls__info', infoActive ? 'route-map-controls__btn--active' : '']
-          .filter(Boolean)
-          .join(' ')}
-        label="Информация о карте"
-        onClick={onInfo}
-      >
-        <Icon24InfoCircleOutline />
-      </IconButton>
+    <div className={['route-map-controls', className].filter(Boolean).join(' ')}>
+      {showInfo && onInfo ? (
+        <IconButton
+          className={['route-map-controls__info', infoActive ? 'route-map-controls__btn--active' : '']
+            .filter(Boolean)
+            .join(' ')}
+          label="Информация о карте"
+          onClick={onInfo}
+        >
+          <Icon24InfoCircleOutline />
+        </IconButton>
+      ) : null}
       <div className="route-map-controls__cluster">
         <IconButton label="Фильтр этапов на карте" onClick={onFilter}>
           <Icon24Filter />

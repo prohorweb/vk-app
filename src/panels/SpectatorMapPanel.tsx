@@ -3,10 +3,11 @@ import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
 import type { SpectatorFilterId } from '../api/mocks/program.ts'
 import { spectatorFilters, spectatorLocations } from '../api/mocks/program.ts'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
-import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
+import { RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { RoutePlaceholder } from '../components/route/RoutePlaceholder.tsx'
 import { SpectatorArrivalSheet } from '../components/spectator/SpectatorArrivalSheet.tsx'
 import { SpectatorLocationCard } from '../components/spectator/SpectatorLocationCard.tsx'
+import { SpectatorLocationMarkerIcon } from '../components/spectator/spectatorLocationMarkerIcon.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 
 type SpectatorMapPanelProps = {
@@ -19,7 +20,6 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
   const headerRef = useRef<HTMLDivElement>(null)
   const [filter, setFilter] = useState<SpectatorFilterId>('all')
   const [menuOpen, setMenuOpen] = useState(false)
-  const [infoOpen, setInfoOpen] = useState(false)
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
 
   const visibleLocations = useMemo(
@@ -34,9 +34,29 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
       <PanelHeader
         getRootRef={headerRef}
         before={<PanelHeaderBack onClick={goBack} />}
+        className="spectator-map-screen__header"
       >
-        {selectedLocation?.title ?? 'Карта зрительских локаций'}
+        {selectedLocation?.title ?? (
+          <span className="spectator-map-screen__header-title">Карта зрительских локаций</span>
+        )}
       </PanelHeader>
+      <div className="spectator-map-screen__filters" role="tablist" aria-label="Фильтр локаций">
+        {spectatorFilters.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={filter === item.id}
+            className={[
+              'spectator-map-screen__filter',
+              filter === item.id ? 'spectator-map-screen__filter--active' : '',
+            ].join(' ')}
+            onClick={() => setFilter(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
       <div ref={viewportRef} className="spectator-map-screen__viewport">
         <RoutePlaceholder mapFilter="all" />
         <div className="spectator-map-screen__markers" aria-hidden>
@@ -46,42 +66,22 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
               type="button"
               className={[
                 'spectator-map-marker',
+                `spectator-map-marker--${location.filter}`,
                 selectedLocationId === location.id ? 'spectator-map-marker--active' : '',
               ].join(' ')}
               style={{ left: `${location.mapX}%`, top: `${location.mapY}%` }}
               aria-label={location.title}
               onClick={() => setSelectedLocationId(location.id)}
-            />
-          ))}
-        </div>
-        <div className="spectator-map-screen__filters" role="tablist">
-          {spectatorFilters.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              aria-selected={filter === item.id}
-              className={[
-                'spectator-map-screen__filter',
-                filter === item.id ? 'spectator-map-screen__filter--active' : '',
-              ].join(' ')}
-              onClick={() => setFilter(item.id)}
             >
-              {item.label}
+              <SpectatorLocationMarkerIcon filter={location.filter} />
             </button>
           ))}
         </div>
         <RouteMapControls
+          className="route-map-controls--spectator"
+          showInfo={false}
           onFilter={() => {}}
-          onInfo={() => {
-            setInfoOpen((open) => !open)
-            setMenuOpen(false)
-          }}
-          onMenu={() => {
-            setMenuOpen((open) => !open)
-            setInfoOpen(false)
-          }}
-          infoActive={infoOpen}
+          onMenu={() => setMenuOpen((open) => !open)}
           menuActive={menuOpen}
         />
         <SpectatorArrivalSheet
@@ -94,7 +94,6 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
         ) : null}
       </div>
       <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-      <RouteMapInfo open={infoOpen} onClose={() => setInfoOpen(false)} />
     </Panel>
   )
 }
