@@ -20,7 +20,6 @@ export const PANEL_MAP_PARTICIPANT = 'panel_map_participant'
 export const PANEL_PARTICIPANTS = 'panel_participants'
 export const PANEL_PARTICIPANT = 'panel_participant'
 export const PANEL_RESULTS = 'panel_results'
-export const PANEL_MORE = 'panel_more'
 export const PANEL_ROUTE = 'panel_route'
 export const PANEL_PROGRAM = 'panel_program'
 export const PANEL_NEWS = 'panel_news'
@@ -33,7 +32,6 @@ export const PATH = {
   map: '/map',
   results: '/results',
   participants: '/participants',
-  more: '/more',
   route: '/more/route',
   program: '/more/program',
   news: '/more/news',
@@ -41,6 +39,14 @@ export const PATH = {
   about: '/more/about',
   profile: '/more/profile',
 } as const
+
+export const MORE_MENU_PANELS = [
+  PANEL_PROFILE,
+  PANEL_ABOUT,
+  PANEL_ROUTE,
+  PANEL_GUESTS,
+  PANEL_NEWS,
+] as const
 
 export const routes = RoutesConfig.create([
   createRoot(ROOT, [
@@ -57,7 +63,6 @@ export const routes = RoutesConfig.create([
     ]),
     createView(VIEW_RESULTS, [createPanel(PANEL_RESULTS, PATH.results)]),
     createView(VIEW_MORE, [
-      createPanel(PANEL_MORE, PATH.more),
       createPanel(PANEL_ROUTE, PATH.route),
       createPanel(PANEL_PROGRAM, PATH.program),
       createPanel(PANEL_NEWS, PATH.news),

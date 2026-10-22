@@ -1,6 +1,6 @@
 import vkBridge from '@vkontakte/vk-bridge'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
+import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { api, unwrap } from '../api/client.ts'
 import { useNewsQuery } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
@@ -42,13 +42,13 @@ async function openNewsPost(id: number): Promise<void> {
 }
 
 export function NewsPanel({ id }: NewsPanelProps) {
-  const routeNavigator = useRouteNavigator()
+  const goBack = useMoreSectionBack()
   const query = useNewsQuery()
   const items = query.data?.items ?? []
 
   return (
     <Panel id={id}>
-      <PanelHeader before={<PanelHeaderBack onClick={() => void routeNavigator.back()} />}>
+      <PanelHeader before={<PanelHeaderBack onClick={goBack} />}>
         Новости
       </PanelHeader>
       <AsyncView

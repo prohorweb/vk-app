@@ -1,54 +1,104 @@
-import {
-  Icon28HomeOutline,
-  Icon28MoreHorizontal,
-  Icon28PlaceOutline,
-  Icon28StatisticsOutline,
-  Icon28UsersOutline,
-} from '@vkontakte/icons'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Tabbar, TabbarItem } from '@vkontakte/vkui'
 import {
+  MORE_MENU_PANELS,
+  PANEL_PROGRAM,
   PATH,
   VIEW_MAP,
   VIEW_MORE,
   VIEW_PARTICIPANTS,
   VIEW_RESULTS,
-  VIEW_START,
 } from '../routes.ts'
+import {
+  TabIconBars,
+  TabIconMap,
+  TabIconMore,
+  TabIconPeople,
+  TabIconProgram,
+} from './tabIcons.tsx'
 
 type AppTabbarProps = {
   activeView?: string
+  activePanel?: string
+  moreMenuOpen?: boolean
+  onOpenMoreMenu: () => void
+  onCloseMoreMenu: () => void
 }
 
 const tabs = [
-  { view: VIEW_START, path: PATH.start, label: 'Старт', icon: Icon28HomeOutline },
-  { view: VIEW_MAP, path: PATH.map, label: 'Карта', icon: Icon28PlaceOutline },
+  { id: 'map', view: VIEW_MAP, path: PATH.map, label: 'Карта', icon: TabIconMap },
   {
+    id: 'participants',
     view: VIEW_PARTICIPANTS,
     path: PATH.participants,
     label: 'Участники',
-    icon: Icon28UsersOutline,
+    icon: TabIconPeople,
   },
-  { view: VIEW_RESULTS, path: PATH.results, label: 'Результаты', icon: Icon28StatisticsOutline },
-  { view: VIEW_MORE, path: PATH.more, label: 'Ещё', icon: Icon28MoreHorizontal },
+  { id: 'results', view: VIEW_RESULTS, path: PATH.results, label: 'Результаты', icon: TabIconBars },
+  {
+    id: 'program',
+    view: VIEW_MORE,
+    path: PATH.program,
+    label: 'Программа',
+    icon: TabIconProgram,
+  },
+  { id: 'more', label: 'Ещё', icon: TabIconMore },
 ] as const
 
-export function AppTabbar({ activeView }: AppTabbarProps) {
+function tabSelected(
+  tab: (typeof tabs)[number],
+  activeView?: string,
+  activePanel?: string,
+  moreMenuOpen?: boolean,
+): boolean {
+  if (moreMenuOpen) {
+    return tab.id === 'more'
+  }
+
+  if (tab.id === 'program') {
+    return activePanel === PANEL_PROGRAM
+  }
+  if (tab.id === 'more') {
+    return (
+      activeView === VIEW_MORE &&
+      activePanel !== undefined &&
+      (MORE_MENU_PANELS as readonly string[]).includes(activePanel)
+    )
+  }
+  return 'view' in tab && activeView === tab.view
+}
+
+export function AppTabbar({
+  activeView,
+  activePanel,
+  moreMenuOpen,
+  onOpenMoreMenu,
+  onCloseMoreMenu,
+}: AppTabbarProps) {
   const routeNavigator = useRouteNavigator()
 
   return (
-    <Tabbar>
+    <Tabbar className="app-tabbar" mode="vertical">
       {tabs.map((tab) => {
         const Icon = tab.icon
 
         return (
           <TabbarItem
-            key={tab.view}
-            selected={activeView === tab.view}
+            key={tab.id}
+            selected={tabSelected(tab, activeView, activePanel, moreMenuOpen)}
             label={tab.label}
-            onClick={() => void routeNavigator.replace(tab.path)}
+            onClick={() => {
+              if (tab.id === 'more') {
+                onOpenMoreMenu()
+                return
+              }
+              onCloseMoreMenu()
+              if ('path' in tab) {
+                void routeNavigator.replace(tab.path)
+              }
+            }}
           >
-            <Icon />
+            <Icon className="app-tabbar__icon" />
           </TabbarItem>
         )
       })}

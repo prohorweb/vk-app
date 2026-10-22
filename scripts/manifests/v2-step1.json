@@ -1,0 +1,68 @@
+{
+  "baseUrl": "http://127.0.0.1:5173",
+  "width": 360,
+  "height": 800,
+  "outputDir": "docs/screens/v2-step1",
+  "shots": [
+    {
+      "file": "start-light.png",
+      "route": "/",
+      "appearance": "light",
+      "localStorage": {
+        "avacha-vk-app.start-seen": null
+      },
+      "waitForRole": ["button", "Начать"]
+    },
+    {
+      "file": "start-dark.png",
+      "route": "/",
+      "appearance": "dark",
+      "localStorage": {
+        "avacha-vk-app.start-seen": null
+      },
+      "waitForRole": ["button", "Начать"]
+    },
+    {
+      "file": "tabbar-light.png",
+      "route": "/map",
+      "appearance": "light",
+      "localStorage": {
+        "avacha-vk-app.start-seen": "1"
+      },
+      "waitForText": "Карта скоро появится",
+      "beforeWaitSelector": ".map-screen__preview .picture__img"
+    },
+    {
+      "file": "tabbar-dark.png",
+      "route": "/map",
+      "appearance": "dark",
+      "localStorage": {
+        "avacha-vk-app.start-seen": "1"
+      },
+      "waitForText": "Карта скоро появится",
+      "beforeWaitSelector": ".map-screen__preview .picture__img"
+    },
+    {
+      "file": "more-menu-light.png",
+      "route": "/map",
+      "appearance": "light",
+      "localStorage": {
+        "avacha-vk-app.start-seen": "1"
+      },
+      "beforeWaitSelector": ".map-screen__preview .picture__img",
+      "actions": ["openMoreMenu"],
+      "waitForSelector": ".more-menu-sheet__panel"
+    },
+    {
+      "file": "more-menu-dark.png",
+      "route": "/map",
+      "appearance": "dark",
+      "localStorage": {
+        "avacha-vk-app.start-seen": "1"
+      },
+      "beforeWaitSelector": ".map-screen__preview .picture__img",
+      "actions": ["openMoreMenu"],
+      "waitForSelector": ".more-menu-sheet__panel"
+    }
+  ]
+}

@@ -3,14 +3,15 @@ import { useActiveVkuiLocation, useRouteNavigator } from '@vkontakte/vk-mini-app
 import { Epic, SplitCol, SplitLayout, View } from '@vkontakte/vkui'
 import { AppTabbar } from './components/AppTabbar.tsx'
 import { InProgressPanel } from './components/InProgressPanel.tsx'
+import { MoreMenuSheet } from './components/MoreMenuSheet.tsx'
 import { isStartSeen } from './lib/startGate.ts'
 import { AboutPanel } from './panels/AboutPanel.tsx'
 import { GuestsPanel } from './panels/GuestsPanel.tsx'
 import { MapPanel } from './panels/MapPanel.tsx'
-import { MorePanel } from './panels/MorePanel.tsx'
 import { NewsPanel } from './panels/NewsPanel.tsx'
 import { ParticipantPanel } from './panels/ParticipantPanel.tsx'
 import { ParticipantsPanel } from './panels/ParticipantsPanel.tsx'
+import { ProfilePanel } from './panels/ProfilePanel.tsx'
 import { ProgramPanel } from './panels/ProgramPanel.tsx'
 import { ResultsPanel } from './panels/ResultsPanel.tsx'
 import { StartPanel } from './panels/StartPanel.tsx'
@@ -19,7 +20,6 @@ import {
   PANEL_GUESTS,
   PANEL_MAP,
   PANEL_MAP_PARTICIPANT,
-  PANEL_MORE,
   PANEL_NEWS,
   PANEL_PARTICIPANT,
   PANEL_PARTICIPANTS,
@@ -52,6 +52,7 @@ export function App() {
   } = useActiveVkuiLocation()
   const routeNavigator = useRouteNavigator()
   const [startSeen, setStartSeen] = useState(isStartSeen)
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false)
   const swipeBack = () => {
     void routeNavigator.back()
   }
@@ -62,7 +63,17 @@ export function App() {
       <SplitCol width="100%" maxWidth="100%" stretchedOnMobile autoSpaced>
         <Epic
           activeStory={activeView}
-          tabbar={showTabbar ? <AppTabbar activeView={activeView} /> : undefined}
+          tabbar={
+            showTabbar ? (
+              <AppTabbar
+                activeView={activeView}
+                activePanel={activePanel}
+                moreMenuOpen={moreMenuOpen}
+                onOpenMoreMenu={() => setMoreMenuOpen(true)}
+                onCloseMoreMenu={() => setMoreMenuOpen(false)}
+              />
+            ) : undefined
+          }
         >
           <View
             id={VIEW_START}
@@ -109,11 +120,10 @@ export function App() {
 
           <View
             id={VIEW_MORE}
-            activePanel={activePanelOf(activeView, VIEW_MORE, activePanel, PANEL_MORE)}
+            activePanel={activePanelOf(activeView, VIEW_MORE, activePanel, PANEL_PROGRAM)}
             history={activeView === VIEW_MORE ? panelsHistory : []}
             onSwipeBack={swipeBack}
           >
-            <MorePanel id={PANEL_MORE} />
             <InProgressPanel
               id={PANEL_ROUTE}
               title="Маршрут"
@@ -124,9 +134,10 @@ export function App() {
             <NewsPanel id={PANEL_NEWS} />
             <GuestsPanel id={PANEL_GUESTS} />
             <AboutPanel id={PANEL_ABOUT} />
-            <InProgressPanel id={PANEL_PROFILE} title="Профиль" heroAlt="Иллюстрация профиля" back />
+            <ProfilePanel id={PANEL_PROFILE} />
           </View>
         </Epic>
+        <MoreMenuSheet open={moreMenuOpen} onClose={() => setMoreMenuOpen(false)} />
       </SplitCol>
     </SplitLayout>
   )

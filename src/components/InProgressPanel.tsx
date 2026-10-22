@@ -1,5 +1,5 @@
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Panel, PanelHeader, PanelHeaderBack, Placeholder } from '@vkontakte/vkui'
+import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { SectionHero } from './SectionHero.tsx'
 
 type InProgressPanelProps = {
@@ -10,13 +10,11 @@ type InProgressPanelProps = {
 }
 
 export function InProgressPanel({ id, title, heroAlt, back = false }: InProgressPanelProps) {
-  const routeNavigator = useRouteNavigator()
+  const goBack = useMoreSectionBack()
 
   return (
     <Panel id={id}>
-      <PanelHeader
-        before={back ? <PanelHeaderBack onClick={() => void routeNavigator.back()} /> : undefined}
-      >
+      <PanelHeader before={back ? <PanelHeaderBack onClick={goBack} /> : undefined}>
         {title}
       </PanelHeader>
       <SectionHero alt={heroAlt} />

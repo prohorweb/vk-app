@@ -11,8 +11,18 @@ type AppConfigProps = {
   children: ReactNode
 }
 
+function appearanceFromSearchParams(): 'light' | 'dark' | undefined {
+  const value = new URLSearchParams(window.location.search).get('appearance')
+  if (value === 'light' || value === 'dark') {
+    return value
+  }
+  return undefined
+}
+
 export function AppConfig({ children }: AppConfigProps) {
-  const appearance = useAppearance() || undefined
+  const bridgeAppearance = useAppearance()
+  const appearance =
+    bridgeAppearance ?? (import.meta.env.DEV ? appearanceFromSearchParams() : undefined) ?? undefined
   const insets = useInsets() || undefined
   const bridgeAdaptivity = useAdaptivity()
   const browserAdaptivity = useBrowserAdaptivity()

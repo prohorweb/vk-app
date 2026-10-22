@@ -5,7 +5,7 @@ import { Button, Panel, PanelHeader, Radio, Search } from '@vkontakte/vkui'
 import { trackerGap } from '../api/gaps.ts'
 import { useDisciplinesQuery, useParticipantsQuery, useStandingsQuery } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
-import { Picture } from '../components/Picture.tsx'
+import { ParticipantAvatar } from '../components/ParticipantAvatar.tsx'
 import { useDebounced } from '../hooks/useDebounced.ts'
 import { formatCount } from '../lib/labels.ts'
 import type { DisciplinePublic, ParticipantListItem } from '../types/index.ts'
@@ -119,30 +119,31 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
       >
         {groups.map((group) => (
           <section key={group.title} className="discipline-group">
-            <div className="discipline-group__head">
-              <div className="discipline-group__titles">
-                <h2 className="discipline-group__title">{group.title}</h2>
-                <p className="discipline-group__count">Всего участников: {group.rows.length}</p>
-              </div>
-              <span className="musher-cols" aria-hidden>
-                <span>позиция</span>
-                <span>болельщики</span>
-              </span>
+            <div className="discipline-group__titles">
+              <h2 className="discipline-group__title">{group.title}</h2>
+              <p className="discipline-group__count">Всего участников: {group.rows.length}</p>
+            </div>
+            <div className="musher-grid musher-grid--head" aria-hidden>
+              <span />
+              <span />
+              <span />
+              <span>позиция</span>
+              <span>болельщики</span>
+              <span />
             </div>
             {group.rows.map((row, index) => (
               <button
                 key={row.id}
                 type="button"
-                className="musher-row"
+                className="musher-row musher-grid"
                 onClick={() => void routeNavigator.push(`/participants/${row.id}`)}
               >
                 <span className="musher-row__rank">{index + 1}</span>
-                <Picture
-                  className="avatar-48 picture--round"
+                <ParticipantAvatar
+                  className="avatar-48"
+                  id={row.id}
+                  name={row.name}
                   src={row.photo_url}
-                  alt={`Фото участника ${row.name}`}
-                  ratio="1 / 1"
-                  fallback={row.name.slice(0, 1)}
                 />
                 <span className="musher-row__main">
                   <span className="musher-row__name">{row.name}</span>

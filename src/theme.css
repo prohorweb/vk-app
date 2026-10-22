@@ -42,6 +42,14 @@
   --vkui--font_title3--font_family--regular: var(--vkui--font_family_base);
 }
 
+/* TODO: согласовать с дизайнерами — акцент табов в тёмной теме */
+.vkui--vkBase--dark,
+.vkui--vkIOS--dark,
+.vkui--vkCom--dark {
+  --vkui--color_icon_accent_themed: #3d8fd1;
+  --vkui--color_text_accent_themed: #3d8fd1;
+}
+
 .vkuiButton__modePrimary.vkuiButton__sizeL {
   height: 44px;
   border-radius: 8px;

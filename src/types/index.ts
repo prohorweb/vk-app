@@ -26,6 +26,7 @@ export type SeasonPublic = components['schemas']['SeasonPublicResponse']
 export type DisciplinePublic = components['schemas']['DisciplinePublicResponse']
 export type StagePublic = components['schemas']['StagePublicResponse']
 export type StageStatus = components['schemas']['StageStatus']
+export type NotificationEventType = components['schemas']['NotificationEventType']
 
 export const participantSorts = ['bib', 'name', 'supporters'] as const
 

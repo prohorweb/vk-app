@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useActiveVkuiLocation, useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Icon24FlagStart, Icon24MasksOutline, Icon24PlaceOutline } from '@vkontakte/icons'
 import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
 import { useActiveSeasonQuery, usePublicStagesQuery, useScheduleQuery } from '../api/queries.ts'
@@ -26,6 +26,8 @@ function kindIcon(kind: ScheduleKind) {
 
 export function ProgramPanel({ id }: ProgramPanelProps) {
   const routeNavigator = useRouteNavigator()
+  const { panelsHistory = [] } = useActiveVkuiLocation()
+  const showBack = panelsHistory.length > 1
   const [stageId, setStageId] = useState<number | 'all'>('all')
   const seasonQuery = useActiveSeasonQuery()
   const stagesQuery = usePublicStagesQuery()
@@ -35,7 +37,11 @@ export function ProgramPanel({ id }: ProgramPanelProps) {
 
   return (
     <Panel id={id}>
-      <PanelHeader before={<PanelHeaderBack onClick={() => void routeNavigator.back()} />}>
+      <PanelHeader
+        before={
+          showBack ? <PanelHeaderBack onClick={() => void routeNavigator.back()} /> : undefined
+        }
+      >
         Программа
       </PanelHeader>
       <SectionHero alt="Иллюстрация программы гонки «Авача»" />

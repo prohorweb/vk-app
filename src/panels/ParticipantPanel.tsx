@@ -31,6 +31,7 @@ import {
   useSupportersRatingQuery,
 } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
+import { ParticipantCover } from '../components/ParticipantAvatar.tsx'
 import { Picture } from '../components/Picture.tsx'
 import {
   formatCount,
@@ -135,12 +136,10 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
       >
         {participant && gap ? (
           <>
-            <Picture
-              className="participant-card__photo"
+            <ParticipantCover
+              id={participant.id}
+              name={participant.name}
               src={participant.photo_url}
-              alt={`Фото участника ${participant.name}`}
-              ratio="16 / 9"
-              fallback={participant.name.slice(0, 1)}
             />
             <section className="dogs-block">
               <Picture

@@ -4,6 +4,7 @@ import { Group, Header, Panel, PanelHeader, SimpleCell, Tabs, TabsItem } from '@
 import { useActiveSeasonQuery, useParticipantsQuery, useProtocolsQuery, usePublicStagesQuery, useStandingsQuery } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
 import { DirectoryStageSelect } from '../components/DirectoryStageSelect.tsx'
+import { ParticipantAvatar } from '../components/ParticipantAvatar.tsx'
 import { Picture } from '../components/Picture.tsx'
 import { formatDuration, publicationLabel } from '../lib/labels.ts'
 import type { StageProtocol, StageProtocolRow, StandingRow } from '../types/index.ts'
@@ -31,11 +32,13 @@ function ResultRow({
   penaltySeconds,
   stopSeconds,
   onOpen,
+  participantId,
 }: {
   position: number | null | undefined
   name: string
   number: number
   photoUrl?: string | null
+  participantId: number
   timeSeconds: number | null | undefined
   penaltySeconds: number
   stopSeconds: number
@@ -46,13 +49,7 @@ function ResultRow({
       before={
         <span className="result-row__before">
           <span className="result-row__position">{position ?? '—'}</span>
-          <Picture
-            className="avatar-32 picture--round"
-            src={photoUrl}
-            alt={`Фото участника ${name}`}
-            ratio="1 / 1"
-            fallback={name.slice(0, 1)}
-          />
+          <ParticipantAvatar className="avatar-32" id={participantId} name={name} src={photoUrl} />
         </span>
       }
       subtitle={`№ ${number}`}

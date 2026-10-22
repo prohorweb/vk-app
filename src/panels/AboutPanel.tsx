@@ -1,17 +1,17 @@
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
 import { SectionHero } from '../components/SectionHero.tsx'
+import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 
 type AboutPanelProps = {
   id: string
 }
 
 export function AboutPanel({ id }: AboutPanelProps) {
-  const routeNavigator = useRouteNavigator()
+  const goBack = useMoreSectionBack()
 
   return (
     <Panel id={id}>
-      <PanelHeader before={<PanelHeaderBack onClick={() => void routeNavigator.back()} />}>
+      <PanelHeader before={<PanelHeaderBack onClick={goBack} />}>
         О гонке
       </PanelHeader>
       <SectionHero alt="Иллюстрация к разделу о гонке «Авача»" />
