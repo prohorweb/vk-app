@@ -248,6 +248,41 @@ body {
   pointer-events: none;
 }
 
+.route-track-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.route-track-overlay__full {
+  stroke: var(--avacha-brand-red);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.route-track-overlay__stage {
+  stroke: var(--avacha-route-stage-active);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.route-track-overlay__marker {
+  fill: var(--avacha-brand-dark-blue);
+}
+
+.route-track-overlay__marker--checkpoint {
+  fill: var(--avacha-route-checkpoint);
+}
+
+.route-map-controls .route-map-controls__btn--active.vkuiIconButton__host {
+  background: var(--vkui--color_background_secondary);
+}
+
 .route-map-controls {
   position: absolute;
   z-index: 2;
@@ -321,6 +356,16 @@ body {
   background: var(--vkui--color_background_modal);
   box-shadow: var(--vkui--elevation3);
   touch-action: none;
+  will-change: transform;
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.route-sheet--dragging {
+  transition: none;
+}
+
+.route-sheet:not(.route-sheet--full) .route-sheet__scroll {
+  overflow: hidden;
 }
 
 .route-sheet__grab {
@@ -365,15 +410,34 @@ body {
   margin: 0 0 8px;
 }
 
-.route-sheet__placeholder {
-  margin: 12px 0 0;
-  padding: 24px 16px;
-  border-radius: 12px;
-  background: var(--vkui--color_background_secondary);
-  color: var(--vkui--color_text_secondary);
-  text-align: center;
-  font-size: 15px;
-  line-height: 20px;
+.elevation-profile {
+  display: block;
+  margin-top: 8px;
+}
+
+.elevation-profile__axis-label {
+  fill: var(--vkui--color_text_secondary);
+  font-size: 11px;
+}
+
+.elevation-profile__fill {
+  fill: var(--vkui--color_background_accent_themed);
+  fill-opacity: 0.22;
+}
+
+.elevation-profile__line {
+  stroke: var(--vkui--color_background_accent_themed);
+  stroke-width: 2;
+}
+
+.elevation-profile__peak-dot {
+  fill: var(--vkui--color_background_accent_themed);
+}
+
+.elevation-profile__stage-label {
+  fill: var(--vkui--color_text_primary);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .route-sheet__stages,
@@ -386,6 +450,7 @@ body {
 
 .route-sheet__stage-row {
   display: flex;
+  align-items: flex-start;
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid var(--vkui--color_separator_primary);
@@ -410,13 +475,66 @@ body {
 }
 
 .route-sheet__stage-body {
+  flex: 1;
   min-width: 0;
 }
 
-.route-sheet__checkpoints li,
-.route-sheet__segments li {
-  padding: 8px 0;
+.route-sheet__stage-route {
+  margin: 0;
+}
+
+.route-sheet__stage-elev {
+  margin: 2px 0 0;
+  color: var(--vkui--color_text_secondary);
+}
+
+.route-sheet__stage-km {
+  flex: none;
+  color: var(--vkui--color_text_secondary);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.route-sheet__checkpoint-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
   border-bottom: 1px solid var(--vkui--color_separator_primary);
+}
+
+.route-sheet__checkpoint-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.route-sheet__checkpoint-km {
+  flex: none;
+  color: var(--vkui--color_text_secondary);
+  font-size: 15px;
+}
+
+.route-sheet__cp-icon {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--avacha-route-checkpoint);
+}
+
+.route-sheet__cp-icon--start,
+.route-sheet__cp-icon--finish {
+  width: 14px;
+  height: 14px;
+  background: var(--avacha-brand-dark-blue);
+}
+
+.route-sheet__cp-icon--finish {
+  border-radius: 2px;
+}
+
+.route-sheet__section--segments .route-sheet__segments {
+  margin-inline: -16px;
 }
 
 .route-filter-sheet {

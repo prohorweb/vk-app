@@ -18,7 +18,7 @@
       "appearance": "light",
       "searchParams": { "routeSheet": "half", "routeMap": "all" },
       "localStorage": { "avacha-vk-app.start-seen": "1" },
-      "waitForText": "Профиль высот появится позже"
+      "waitForText": "Профиль всей трассы"
     },
     {
       "file": "route-all-full-light.png",
@@ -42,7 +42,7 @@
       "appearance": "dark",
       "searchParams": { "routeSheet": "half", "routeMap": "all" },
       "localStorage": { "avacha-vk-app.start-seen": "1" },
-      "waitForText": "Профиль высот появится позже"
+      "waitForText": "Профиль всей трассы"
     },
     {
       "file": "route-all-full-dark.png",

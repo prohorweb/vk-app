@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
 import { RouteActiveBanner } from '../components/route/RouteActiveBanner.tsx'
@@ -16,6 +16,7 @@ type RoutePanelProps = {
 
 export function RoutePanel({ id }: RoutePanelProps) {
   const goBack = useMoreSectionBack()
+  const viewportRef = useRef<HTMLDivElement>(null)
   const initialSnap = useMemo(() => readRouteSheetSnapFromUrl(), [])
   const initialMapFilter = useMemo(() => readRouteMapFilterFromUrl(), [])
 
@@ -30,23 +31,34 @@ export function RoutePanel({ id }: RoutePanelProps) {
   return (
     <Panel id={id} className="route-screen">
       <PanelHeader before={<PanelHeaderBack onClick={goBack} />}>Маршрут</PanelHeader>
-      <div className="route-screen__viewport">
-        <RoutePlaceholder />
+      <div ref={viewportRef} className="route-screen__viewport">
+        <RoutePlaceholder mapFilter={mapFilter} />
         <RouteMapControls
           onFilter={() => setFilterOpen(true)}
-          onInfo={() => setInfoOpen(true)}
-          onMenu={() => setMenuOpen(true)}
+          onInfo={() => {
+            setInfoOpen((open) => !open)
+            setMenuOpen(false)
+          }}
+          onMenu={() => {
+            setMenuOpen((open) => !open)
+            setInfoOpen(false)
+          }}
+          infoActive={infoOpen}
+          menuActive={menuOpen}
         />
         {showStageBanner && typeof mapFilter === 'number' ? (
           <RouteActiveBanner stageNumber={mapFilter} onDismiss={() => setBannerDismissed(true)} />
         ) : null}
-        <RouteSheet mapFilter={mapFilter} initialSnap={initialSnap} />
+        <RouteSheet mapFilter={mapFilter} initialSnap={initialSnap} viewportRef={viewportRef} />
       </div>
       <RouteFilterSheet
         open={filterOpen}
         value={mapFilter}
         onClose={() => setFilterOpen(false)}
-        onChange={(value) => setMapFilter(value)}
+        onChange={(value) => {
+          setMapFilter(value)
+          setBannerDismissed(false)
+        }}
       />
       <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <RouteMapInfo open={infoOpen} onClose={() => setInfoOpen(false)} />

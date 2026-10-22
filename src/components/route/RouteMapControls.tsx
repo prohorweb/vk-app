@@ -12,12 +12,26 @@ type RouteMapControlsProps = {
   onFilter: () => void
   onInfo: () => void
   onMenu: () => void
+  infoActive?: boolean
+  menuActive?: boolean
 }
 
-export function RouteMapControls({ onFilter, onInfo, onMenu }: RouteMapControlsProps) {
+export function RouteMapControls({
+  onFilter,
+  onInfo,
+  onMenu,
+  infoActive,
+  menuActive,
+}: RouteMapControlsProps) {
   return (
     <div className="route-map-controls">
-      <IconButton className="route-map-controls__info" label="Информация о карте" onClick={onInfo}>
+      <IconButton
+        className={['route-map-controls__info', infoActive ? 'route-map-controls__btn--active' : '']
+          .filter(Boolean)
+          .join(' ')}
+        label="Информация о карте"
+        onClick={onInfo}
+      >
         <Icon24InfoCircleOutline />
       </IconButton>
       <div className="route-map-controls__cluster">
@@ -33,7 +47,11 @@ export function RouteMapControls({ onFilter, onInfo, onMenu }: RouteMapControlsP
         <IconButton label="Моё местоположение">
           <Icon24LocationMapOutline />
         </IconButton>
-        <IconButton label="Дополнительно" onClick={onMenu}>
+        <IconButton
+          className={menuActive ? 'route-map-controls__btn--active' : undefined}
+          label="Дополнительно"
+          onClick={onMenu}
+        >
           <Icon24MoreVertical />
         </IconButton>
       </div>
