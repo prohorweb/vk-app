@@ -21,8 +21,7 @@ function appearanceFromSearchParams(): 'light' | 'dark' | undefined {
 
 export function AppConfig({ children }: AppConfigProps) {
   const bridgeAppearance = useAppearance()
-  const appearance =
-    bridgeAppearance ?? (import.meta.env.DEV ? appearanceFromSearchParams() : undefined) ?? undefined
+  const appearance = bridgeAppearance ?? appearanceFromSearchParams() ?? 'light'
   const insets = useInsets() || undefined
   const bridgeAdaptivity = useAdaptivity()
   const browserAdaptivity = useBrowserAdaptivity()
