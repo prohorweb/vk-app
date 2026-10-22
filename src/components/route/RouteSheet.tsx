@@ -55,9 +55,24 @@ type RouteSheetProps = {
   mapFilter: RouteMapFilter
   initialSnap?: RouteSheetSnap | null
   viewportRef: RefObject<HTMLElement | null>
+  headerRef: RefObject<HTMLElement | null>
 }
 
-export function RouteSheet({ mapFilter, initialSnap, viewportRef }: RouteSheetProps) {
+function readTabbarTotalPx(): number {
+  if (typeof document === 'undefined') {
+    return 48
+  }
+  const root = document.documentElement
+  const styles = getComputedStyle(root)
+  const tabbar = Number.parseFloat(styles.getPropertyValue('--app-tabbar-height')) || 48
+  const safeBottom = Number.parseFloat(
+    styles.getPropertyValue('env(safe-area-inset-bottom)') ||
+      styles.getPropertyValue('--env-safe-area-inset-bottom'),
+  )
+  return tabbar + (Number.isFinite(safeBottom) ? safeBottom : 0)
+}
+
+export function RouteSheet({ mapFilter, initialSnap, viewportRef, headerRef }: RouteSheetProps) {
   const [maxH, setMaxH] = useState(480)
   const [snap, setSnap] = useState<RouteSheetSnap>(initialSnap ?? 'collapsed')
   const [visibleH, setVisibleH] = useState(() => Math.round(480 * SNAP_RATIO.collapsed))
@@ -68,16 +83,32 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef }: RouteSheetPr
   const moveHistory = useRef<{ t: number; y: number }[]>([])
 
   useLayoutEffect(() => {
-    const node = viewportRef.current
-    if (!node) {
+    const viewport = viewportRef.current
+    if (!viewport) {
       return
     }
-    const measure = () => setMaxH(node.clientHeight)
+    const measure = () => {
+      const headerBottom = headerRef.current?.getBoundingClientRect().bottom
+      const tabbarTotal = readTabbarTotalPx()
+      const availableFromDom =
+        headerBottom != null
+          ? Math.round(window.innerHeight - headerBottom - tabbarTotal)
+          : viewport.clientHeight
+      const available = Math.max(0, Math.min(viewport.clientHeight, availableFromDom))
+      setMaxH(available)
+    }
     measure()
     const observer = new ResizeObserver(measure)
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [viewportRef])
+    observer.observe(viewport)
+    if (headerRef.current) {
+      observer.observe(headerRef.current)
+    }
+    window.addEventListener('resize', measure)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [viewportRef, headerRef])
 
   const applySnap = useCallback(
     (next: RouteSheetSnap) => {
@@ -148,6 +179,13 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef }: RouteSheetPr
   const showProfile = snap === 'half' || snap === 'full'
   const showDetails = snap === 'full'
 
+  const dragProps = {
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onPointerCancel: onPointerUp,
+  }
+
   return (
     <div
       className={[
@@ -159,13 +197,11 @@ export function RouteSheet({ mapFilter, initialSnap, viewportRef }: RouteSheetPr
         height: maxH,
         transform: `translateY(${offsetY}px)`,
       }}
+      {...(snap !== 'full' ? dragProps : {})}
     >
       <div
         className="route-sheet__grab"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
+        {...(snap === 'full' ? dragProps : {})}
       >
         <span className="route-sheet__grab-bar" aria-hidden />
       </div>

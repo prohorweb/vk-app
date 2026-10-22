@@ -345,7 +345,7 @@ body {
   position: absolute;
   z-index: 4;
   right: 0;
-  bottom: var(--app-tabbar-total-height);
+  bottom: 0;
   left: 0;
   display: flex;
   flex-direction: column;
@@ -355,7 +355,6 @@ body {
   border-start-end-radius: 12px;
   background: var(--vkui--color_background_modal);
   box-shadow: var(--vkui--elevation3);
-  touch-action: none;
   will-change: transform;
   transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -364,8 +363,19 @@ body {
   transition: none;
 }
 
+.route-sheet:not(.route-sheet--full) {
+  touch-action: none;
+}
+
+.route-sheet--full .route-sheet__scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
 .route-sheet:not(.route-sheet--full) .route-sheet__scroll {
   overflow: hidden;
+  touch-action: none;
 }
 
 .route-sheet__grab {
@@ -388,7 +398,6 @@ body {
   flex: 1;
   min-height: 0;
   padding: 0 16px 16px;
-  overflow: auto;
 }
 
 .route-sheet__title {

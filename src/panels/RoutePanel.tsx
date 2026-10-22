@@ -17,6 +17,7 @@ type RoutePanelProps = {
 export function RoutePanel({ id }: RoutePanelProps) {
   const goBack = useMoreSectionBack()
   const viewportRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
   const initialSnap = useMemo(() => readRouteSheetSnapFromUrl(), [])
   const initialMapFilter = useMemo(() => readRouteMapFilterFromUrl(), [])
 
@@ -30,7 +31,12 @@ export function RoutePanel({ id }: RoutePanelProps) {
 
   return (
     <Panel id={id} className="route-screen">
-      <PanelHeader before={<PanelHeaderBack onClick={goBack} />}>Маршрут</PanelHeader>
+      <PanelHeader
+        getRootRef={headerRef}
+        before={<PanelHeaderBack onClick={goBack} />}
+      >
+        Маршрут
+      </PanelHeader>
       <div ref={viewportRef} className="route-screen__viewport">
         <RoutePlaceholder mapFilter={mapFilter} />
         <RouteMapControls
@@ -49,7 +55,12 @@ export function RoutePanel({ id }: RoutePanelProps) {
         {showStageBanner && typeof mapFilter === 'number' ? (
           <RouteActiveBanner stageNumber={mapFilter} onDismiss={() => setBannerDismissed(true)} />
         ) : null}
-        <RouteSheet mapFilter={mapFilter} initialSnap={initialSnap} viewportRef={viewportRef} />
+        <RouteSheet
+          mapFilter={mapFilter}
+          initialSnap={initialSnap}
+          viewportRef={viewportRef}
+          headerRef={headerRef}
+        />
       </div>
       <RouteFilterSheet
         open={filterOpen}
