@@ -73,6 +73,7 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
       ariaLabel="Дополнительное меню"
       sheetClassName="more-menu-sheet"
       panelClassName="more-menu-sheet__panel"
+      hideTabbar
     >
       <button type="button" className="more-menu-sheet__close" aria-label="Закрыть" onClick={requestClose}>
         <Icon24Cancel />

@@ -20,6 +20,7 @@ export function RouteFilterSheet({ open, value, onClose, onChange }: RouteFilter
       sheetClassName="route-filter-sheet"
       panelClassName="route-filter-sheet__panel"
       swipeToClose
+      hideTabbar
     >
       <div className="route-filter-sheet__head">
         <h2 className="route-filter-sheet__title">Этапы на карте</h2>
@@ -35,7 +36,7 @@ export function RouteFilterSheet({ open, value, onClose, onChange }: RouteFilter
             checked={value === option.value}
             onChange={() => {
               onChange(option.value)
-              // TODO: применить фильтр на карте
+              onClose()
             }}
           >
             {option.label}

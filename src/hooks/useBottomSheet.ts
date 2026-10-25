@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 const SWIPE_CLOSE_THRESHOLD_PX = 56
+const EXIT_FALLBACK_MS = 300
 
 type UseBottomSheetOptions = {
   swipeToClose?: boolean
@@ -25,6 +26,9 @@ export function useBottomSheet(open: boolean, onClose: () => void, options: UseB
       return () => cancelAnimationFrame(frame)
     }
     setVisible(false)
+    // transitionend не приходит при prefers-reduced-motion, поэтому подстраховываемся таймером.
+    const timer = window.setTimeout(() => setMounted(false), EXIT_FALLBACK_MS)
+    return () => window.clearTimeout(timer)
   }, [open])
 
   useEffect(() => {

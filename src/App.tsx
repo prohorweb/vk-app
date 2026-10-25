@@ -66,11 +66,11 @@ export function App() {
         <Epic
           activeStory={activeView}
           tabbar={
-            showTabbar && !moreMenuOpen ? (
+            showTabbar ? (
               <AppTabbar
                 activeView={activeView}
                 activePanel={activePanel}
-                moreMenuOpen={false}
+                moreMenuOpen={moreMenuOpen}
                 onOpenMoreMenu={() => setMoreMenuOpen(true)}
                 onCloseMoreMenu={() => setMoreMenuOpen(false)}
               />

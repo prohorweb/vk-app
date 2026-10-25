@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { useLayoutEffect, type ReactNode } from 'react'
 import { Card } from '@vkontakte/vkui'
 import { useBottomSheet } from '../hooks/useBottomSheet.ts'
 
@@ -9,6 +9,7 @@ type BottomSheetProps = {
   sheetClassName: string
   panelClassName: string
   swipeToClose?: boolean
+  hideTabbar?: boolean
   children: ReactNode
 }
 
@@ -19,6 +20,7 @@ export function BottomSheet({
   sheetClassName,
   panelClassName,
   swipeToClose = true,
+  hideTabbar = false,
   children,
 }: BottomSheetProps) {
   const panelDraggingClass = `${panelClassName}--dragging`
@@ -32,6 +34,16 @@ export function BottomSheet({
     onTouchMove,
     onTouchEnd,
   } = useBottomSheet(open, onClose, { swipeToClose, panelDraggingClass })
+
+  useLayoutEffect(() => {
+    if (!open || !hideTabbar) {
+      return
+    }
+    document.documentElement.classList.add('app-hide-tabbar')
+    return () => {
+      document.documentElement.classList.remove('app-hide-tabbar')
+    }
+  }, [open, hideTabbar])
 
   if (!mounted) {
     return null

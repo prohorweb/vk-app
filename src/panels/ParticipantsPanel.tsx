@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { Icon24Cancel, Icon24ChevronRight, Icon24Filter } from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, Radio, Search } from '@vkontakte/vkui'
@@ -89,16 +89,6 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
   const isLoading = participantsQuery.isLoading
   const isError = participantsQuery.isError
 
-  useEffect(() => {
-    if (!filterOpen) {
-      return
-    }
-    document.documentElement.classList.add('app-hide-tabbar')
-    return () => {
-      document.documentElement.classList.remove('app-hide-tabbar')
-    }
-  }, [filterOpen])
-
   return (
     <Panel id={id}>
       <PanelHeader>Участники</PanelHeader>
@@ -183,6 +173,7 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
         ariaLabel="Фильтр"
         sheetClassName="filter-sheet"
         panelClassName="filter-sheet__panel"
+        hideTabbar
       >
         <div className="filter-sheet__head">
           <h2 className="filter-sheet__title">Фильтр</h2>

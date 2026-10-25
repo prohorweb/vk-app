@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 
 export type SheetSnap = 'collapsed' | 'half' | 'full'
 
@@ -93,11 +93,9 @@ export function SnapSheet({
   const [maxH, setMaxH] = useState(480)
   const [collapsedH, setCollapsedH] = useState(160)
   const [snap, setSnap] = useState<SheetSnap>(initialSnap ?? 'collapsed')
-  const [visibleH, setVisibleH] = useState(160)
+  const [dragVisibleH, setDragVisibleH] = useState<number | null>(null)
   const [dragging, setDragging] = useState(false)
-  const visibleRef = useRef(visibleH)
-  visibleRef.current = visibleH
-  const dragRef = useRef<{ startY: number; startVisible: number } | null>(null)
+  const dragRef = useRef<{ startY: number; startVisible: number; lastVisible: number } | null>(null)
   const moveHistory = useRef<{ t: number; y: number }[]>([])
   const grabRef = useRef<HTMLDivElement>(null)
   const peekRef = useRef<HTMLDivElement>(null)
@@ -146,30 +144,18 @@ export function SnapSheet({
     return () => observer.disconnect()
   }, [peekKey, peek])
 
-  const applySnap = useCallback(
-    (next: SheetSnap) => {
-      setSnap(next)
-      setVisibleH(snapHeight(next, maxH, collapsedH))
-    },
-    [maxH, collapsedH],
-  )
+  const applySnap = useCallback((next: SheetSnap) => {
+    setSnap(next)
+    setDragVisibleH(null)
+  }, [])
 
-  useEffect(() => {
-    if (initialSnap) {
-      applySnap(initialSnap)
-    }
-  }, [initialSnap, applySnap])
-
-  useEffect(() => {
-    setVisibleH(snapHeight(snap, maxH, collapsedH))
-  }, [maxH, collapsedH, snap])
-
+  const visibleH = dragVisibleH ?? snapHeight(snap, maxH, collapsedH)
   const minVisible = snapHeight('collapsed', maxH, collapsedH)
   const maxVisible = maxH
   const offsetY = maxH - visibleH
 
   const onPointerDown = (event: React.PointerEvent) => {
-    dragRef.current = { startY: event.clientY, startVisible: visibleH }
+    dragRef.current = { startY: event.clientY, startVisible: visibleH, lastVisible: visibleH }
     moveHistory.current = [{ t: event.timeStamp, y: event.clientY }]
     setDragging(true)
     event.currentTarget.setPointerCapture(event.pointerId)
@@ -182,7 +168,8 @@ export function SnapSheet({
     }
     const delta = drag.startY - event.clientY
     const next = Math.min(maxVisible, Math.max(minVisible, drag.startVisible + delta))
-    setVisibleH(next)
+    drag.lastVisible = next
+    setDragVisibleH(next)
     const history = moveHistory.current
     history.push({ t: event.timeStamp, y: event.clientY })
     if (history.length > 6) {
@@ -191,6 +178,7 @@ export function SnapSheet({
   }
 
   const onPointerUp = (event: React.PointerEvent) => {
+    const drag = dragRef.current
     dragRef.current = null
     setDragging(false)
     event.currentTarget.releasePointerCapture(event.pointerId)
@@ -204,7 +192,7 @@ export function SnapSheet({
         velocity = (last.y - first.y) / dt
       }
     }
-    applySnap(snapFromVelocity(visibleRef.current, velocity, maxH, collapsedH))
+    applySnap(snapFromVelocity(drag?.lastVisible ?? visibleH, velocity, maxH, collapsedH))
   }
 
   const dragProps = {

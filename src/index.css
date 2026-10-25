@@ -17,6 +17,7 @@ body {
 :root {
   --app-tabbar-height: 48px;
   --app-tabbar-total-height: calc(var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
+  --app-sheet-bottom-inset: calc(var(--app-tabbar-total-height) + 8px);
   --start-screen-inline: 16px;
   --start-logo-top: 180px;
   --start-logo-size: 240px;
@@ -672,11 +673,15 @@ body {
 }
 
 .route-filter-sheet {
+  position: fixed;
+  inset: 0;
   z-index: 50;
-}
-
-.route-filter-sheet__panel {
-  padding: 0 16px 12px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 8px 8px var(--app-sheet-bottom-inset);
+  pointer-events: none;
 }
 
 .route-filter-sheet__head {
@@ -755,7 +760,7 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 8px var(--app-sheet-bottom-inset);
   pointer-events: none;
 }
 
@@ -770,6 +775,7 @@ body {
 .route-action-menu__panel {
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
   width: 100%;
   max-width: min(100%, 360px);
   max-height: min(72vh, 100%);
@@ -942,46 +948,55 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 8px var(--app-sheet-bottom-inset);
   pointer-events: none;
 }
 
 .filter-sheet__backdrop,
-.more-menu-sheet__backdrop {
+.more-menu-sheet__backdrop,
+.route-filter-sheet__backdrop {
   opacity: 0;
   transition: opacity 250ms ease-out;
+  pointer-events: none;
 }
 
 .filter-sheet--visible .filter-sheet__backdrop,
-.more-menu-sheet--visible .more-menu-sheet__backdrop {
+.more-menu-sheet--visible .more-menu-sheet__backdrop,
+.route-filter-sheet--visible .route-filter-sheet__backdrop {
   opacity: 1;
+  pointer-events: auto;
 }
 
-.filter-sheet__backdrop {
+.filter-sheet__backdrop,
+.route-filter-sheet__backdrop {
   position: absolute;
   inset: 0;
   border: 0;
   background: var(--vkui--color_overlay_primary);
-  pointer-events: auto;
 }
 
 .filter-sheet__panel,
-.more-menu-sheet__panel {
+.more-menu-sheet__panel,
+.route-filter-sheet__panel {
+  box-sizing: border-box;
   transform: translateY(100%);
   transition: transform 250ms ease-out;
 }
 
 .filter-sheet--visible .filter-sheet__panel,
-.more-menu-sheet--visible .more-menu-sheet__panel {
+.more-menu-sheet--visible .more-menu-sheet__panel,
+.route-filter-sheet--visible .route-filter-sheet__panel {
   transform: translateY(0);
 }
 
 .filter-sheet__panel--dragging,
-.more-menu-sheet__panel--dragging {
+.more-menu-sheet__panel--dragging,
+.route-filter-sheet__panel--dragging {
   transition: none;
 }
 
-.filter-sheet__panel {
+.filter-sheet__panel,
+.route-filter-sheet__panel {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -993,7 +1008,8 @@ body {
   pointer-events: auto;
 }
 
-.filter-sheet__panel.vkuiCard {
+.filter-sheet__panel.vkuiCard,
+.route-filter-sheet__panel.vkuiCard {
   background: var(--vkui--color_background_modal);
   box-shadow: none;
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.3));
@@ -1432,6 +1448,10 @@ body {
   padding-bottom: var(--app-tabbar-total-height);
 }
 
+html.app-hide-tabbar {
+  --app-sheet-bottom-inset: calc(8px + env(safe-area-inset-bottom, 0px));
+}
+
 html.app-hide-tabbar .app-tabbar {
   visibility: hidden;
   pointer-events: none;
@@ -1445,6 +1465,7 @@ html.app-hide-tabbar .app-tabbar {
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  /* Tabbar stays in layout but hidden, and the sheet covers its area. */
   padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
   pointer-events: none;
 }
@@ -1535,8 +1556,10 @@ html.app-hide-tabbar .app-tabbar {
 @media (prefers-reduced-motion: reduce) {
   .filter-sheet__backdrop,
   .more-menu-sheet__backdrop,
+  .route-filter-sheet__backdrop,
   .filter-sheet__panel,
-  .more-menu-sheet__panel {
+  .more-menu-sheet__panel,
+  .route-filter-sheet__panel {
     transition: none;
   }
 }
