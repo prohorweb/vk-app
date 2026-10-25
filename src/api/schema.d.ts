@@ -374,6 +374,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/map/participants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Map Participants */
+        get: operations["map_participants_api_v1_map_participants_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/map/entry/{entry_id}/track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Map Entry Track */
+        get: operations["map_entry_track_api_v1_map_entry__entry_id__track_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/map/checkpoints": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Map Checkpoints */
+        get: operations["map_checkpoints_api_v1_map_checkpoints_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications": {
         parameters: {
             query?: never;
@@ -404,8 +455,6 @@ export interface paths {
         /**
          * Примеры текстов уведомлений
          * @description Примеры — для экрана настроек уведомлений.
-         *
-         *     Формулировки с «данные на HH:MM», без «прямо сейчас».
          */
         get: operations["preview_notifications_api_v1_notifications_preview_get"];
         put?: never;
@@ -491,6 +540,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/stages/{stage_id}/track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Stage Track
+         * @description GeoJSON нитка маршрута этапа.
+         */
+        get: operations["get_stage_track_api_v1_stages__stage_id__track_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stages/{stage_id}/checkpoints": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Stage Checkpoints
+         * @description Список КП этапа (с высотами и километражом).
+         */
+        get: operations["get_stage_checkpoints_api_v1_stages__stage_id__checkpoints_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stages/{stage_id}/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Stage Positions
+         * @description Последние координаты всех участников на этапе.
+         */
+        get: operations["get_stage_positions_api_v1_stages__stage_id__positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stages/{stage_id}/leaders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Stage Leaders
+         * @description Рейтинг участников по судейским отметкам.
+         */
+        get: operations["get_stage_leaders_api_v1_stages__stage_id__leaders_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/auth/login": {
         parameters: {
             query?: never;
@@ -525,6 +654,23 @@ export interface paths {
         get: operations["equipment_health_api_v1_admin_equipment_health_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/devices/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign Device */
+        post: operations["assign_device_api_v1_admin_devices_assign_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -799,6 +945,32 @@ export interface components {
              */
             mandatory_stop_minutes: number;
         };
+        /** DeviceAssignRequest */
+        DeviceAssignRequest: {
+            /** Device Id */
+            device_id: number;
+            /** Participant Id */
+            participant_id: number | null;
+            /** Stage Id */
+            stage_id: number | null;
+        };
+        /** DeviceAssignResponse */
+        DeviceAssignResponse: {
+            /** Id */
+            id: number;
+            /** Iridium Number */
+            iridium_number: string;
+            /** Imei */
+            imei: string;
+            /** Name */
+            name: string;
+            /** Participant Id */
+            participant_id: number | null;
+            /** Stage Id */
+            stage_id: number | null;
+            /** Is Active */
+            is_active: boolean;
+        };
         /** DisciplineCreateRequest */
         DisciplineCreateRequest: {
             /** Season Id */
@@ -986,6 +1158,99 @@ export interface components {
              * @default official
              */
             mode: string;
+        };
+        /** MapCheckpoint */
+        MapCheckpoint: {
+            /** Id */
+            id: number;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            type: components["schemas"]["CheckpointKind"];
+            /** Description */
+            description?: string | null;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Elevation */
+            elevation?: number | null;
+            /** Km */
+            km?: number | null;
+            /** Order Index */
+            order_index: number;
+        };
+        /** MapCheckpointsResponse */
+        MapCheckpointsResponse: {
+            /** Stage Id */
+            stage_id: number;
+            /** Items */
+            items: components["schemas"]["MapCheckpoint"][];
+        };
+        /** MapParticipant */
+        MapParticipant: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: number;
+            /** Name */
+            name: string;
+            /** Discipline Id */
+            discipline_id: number | null;
+            /** Discipline */
+            discipline: string | null;
+            status: components["schemas"]["ParticipantStatus"];
+            /**
+             * Freshness Status
+             * @enum {string}
+             */
+            freshness_status: "fresh" | "delayed" | "stale" | "no_data";
+            position: components["schemas"]["MapPosition"] | null;
+        };
+        /** MapParticipantsResponse */
+        MapParticipantsResponse: {
+            /** Stage Id */
+            stage_id: number;
+            /** Items */
+            items: components["schemas"]["MapParticipant"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /** MapPosition */
+        MapPosition: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            /** Average Speed Kmh */
+            average_speed_kmh?: number | null;
+            /** Km From Start */
+            km_from_start?: number | null;
+        };
+        /** MapTrackResponse */
+        MapTrackResponse: {
+            /** Stage Id */
+            stage_id: number;
+            /** Participant Id */
+            participant_id: number;
+            /** Points */
+            points: components["schemas"]["MapPosition"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
         };
         /**
          * NewsPostListItemResponse
@@ -1189,7 +1454,7 @@ export interface components {
             /** Comment */
             comment?: string | null;
             /** Cancel Reason */
-            cancel_reason: string;
+            cancel_reason?: string | null;
         };
         /** OfficialMarkCreateRequest */
         OfficialMarkCreateRequest: {
@@ -1838,14 +2103,26 @@ export interface operations {
                     "application/json": components["schemas"]["AuthResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Некорректные параметры VK */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Неверная подпись VK */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ошибка валидации данных */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
+                content?: never;
             };
         };
     };
@@ -1867,6 +2144,13 @@ export interface operations {
                     "application/json": components["schemas"]["UserProfile"];
                 };
             };
+            /** @description Требуется авторизация */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     delete_me_api_v1_auth_me_delete: {
@@ -1880,6 +2164,13 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Требуется авторизация */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1908,6 +2199,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserProfile"];
                 };
+            };
+            /** @description Требуется авторизация */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -1972,6 +2270,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FAQItemResponse"];
                 };
+            };
+            /** @description Вопрос не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -2040,6 +2345,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["NewsPostResponse"];
                 };
+            };
+            /** @description Новость не найдена */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -2137,7 +2449,6 @@ export interface operations {
     control_times_api_v1_results_entry__participant_id__control_times_get: {
         parameters: {
             query?: {
-                /** @description Фильтр по этапу */
                 stage_id?: number | null;
             };
             header?: never;
@@ -2427,6 +2738,127 @@ export interface operations {
             };
         };
     };
+    map_participants_api_v1_map_participants_get: {
+        parameters: {
+            query: {
+                stage_id: number;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapParticipantsResponse"];
+                };
+            };
+            /** @description Этап не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    map_entry_track_api_v1_map_entry__entry_id__track_get: {
+        parameters: {
+            query: {
+                stage_id: number;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Participant ID */
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapTrackResponse"];
+                };
+            };
+            /** @description Этап или участник не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    map_checkpoints_api_v1_map_checkpoints_get: {
+        parameters: {
+            query: {
+                stage_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapCheckpointsResponse"];
+                };
+            };
+            /** @description Этап не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_notifications_api_v1_notifications_get: {
         parameters: {
             query?: {
@@ -2447,6 +2879,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["NotificationListResponse"];
                 };
+            };
+            /** @description Требуется авторизация */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -2497,6 +2936,13 @@ export interface operations {
                     "application/json": components["schemas"]["NotificationSettingsResponse"];
                 };
             };
+            /** @description Требуется авторизация */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     update_notification_settings_api_v1_notifications_settings_patch: {
@@ -2520,6 +2966,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["NotificationSettingsResponse"];
                 };
+            };
+            /** @description Требуется авторизация */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -2612,6 +3065,143 @@ export interface operations {
                     "application/json": components["schemas"]["SeasonPublicResponse"];
                 };
             };
+            /** @description Активный сезон не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_stage_track_api_v1_stages__stage_id__track_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_stage_checkpoints_api_v1_stages__stage_id__checkpoints_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_stage_positions_api_v1_stages__stage_id__positions_get: {
+        parameters: {
+            query?: {
+                since?: string | null;
+            };
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_stage_leaders_api_v1_stages__stage_id__leaders_get: {
+        parameters: {
+            query?: {
+                /** @description Код дисциплины */
+                discipline?: string | null;
+                as_of?: string | null;
+            };
+            header?: never;
+            path: {
+                stage_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
     };
     login_admin_api_v1_admin_auth_login_post: {
@@ -2645,6 +3235,20 @@ export interface operations {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
+            /** @description Превышен общий для API и админки лимит входов с одного IP */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Счётчик попыток входа временно недоступен */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     equipment_health_api_v1_admin_equipment_health_get: {
@@ -2663,6 +3267,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EquipmentHealthResponse"];
+                };
+            };
+        };
+    };
+    assign_device_api_v1_admin_devices_assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeviceAssignRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceAssignResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
