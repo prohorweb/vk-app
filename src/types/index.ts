@@ -27,6 +27,12 @@ export type DisciplinePublic = components['schemas']['DisciplinePublicResponse']
 export type StagePublic = components['schemas']['StagePublicResponse']
 export type StageStatus = components['schemas']['StageStatus']
 export type NotificationEventType = components['schemas']['NotificationEventType']
+export type MapParticipant = components['schemas']['MapParticipant']
+export type MapParticipantsResponse = components['schemas']['MapParticipantsResponse']
+export type MapPosition = components['schemas']['MapPosition']
+export type MapFreshnessStatus = MapParticipant['freshness_status']
+export type MapCheckpointItem = components['schemas']['MapCheckpoint']
+export type MapCheckpointsResponse = components['schemas']['MapCheckpointsResponse']
 
 export const participantSorts = ['bib', 'name', 'supporters'] as const
 

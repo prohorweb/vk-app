@@ -1,21 +1,44 @@
 import { useMemo, useRef, useState } from 'react'
 import { Panel, PanelHeader } from '@vkontakte/vkui'
+import { findMapMarker } from '../api/map.ts'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
-import { findMapPositionMarker } from '../api/mocks/positions.ts'
-import { getMapStageCheckpoints, getMapStageTrack } from '../api/mocks/mapStage.ts'
-import { useMapPositionsQuery } from '../api/queries.ts'
+import {
+  usePublicStagesQuery,
+  useStageCheckpointsQuery,
+  useStageMapPositionsQuery,
+  useStageTrackQuery,
+} from '../api/queries.ts'
 import { MapMiniCard } from '../components/map/MapMiniCard.tsx'
 import { MapPositionBanner } from '../components/map/MapPositionBanner.tsx'
 import { RouteFilterSheet } from '../components/route/RouteFilterSheet.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
-import { formatMapPositionBannerTime } from '../lib/formatMapPositionTime.ts'
+import { formatMapPositionTime } from '../lib/formatMapPositionTime.ts'
 import { readMapMarkerFromUrl } from '../lib/mapScreenParams.ts'
 import { MapView } from '../map/MapView.tsx'
-import type { MapViewHandle } from '../map/mapTypes.ts'
+import type { MapPositionsSnapshot, MapViewHandle } from '../map/mapTypes.ts'
 
 type MapPanelProps = {
   id: string
+}
+
+function describePositionsBanner(
+  snapshot: MapPositionsSnapshot | undefined,
+  failed: boolean,
+): string {
+  if (!snapshot) {
+    return failed ? 'Положение недоступно' : 'Положение…'
+  }
+  if (snapshot.updatedAt === null) {
+    return snapshot.source === 'mock' ? 'Демо-данные' : 'Нет отметок'
+  }
+  const time = formatMapPositionTime(snapshot.updatedAt)
+  if (snapshot.source === 'mock') {
+    return `Положение на ${time} · демо-данные`
+  }
+  const stale =
+    snapshot.markers.length > 0 && snapshot.markers.every((marker) => marker.status === 'stale')
+  return stale ? `Положение на ${time} · данные устарели` : `Положение на ${time}`
 }
 
 export function MapPanel({ id }: MapPanelProps) {
@@ -26,30 +49,41 @@ export function MapPanel({ id }: MapPanelProps) {
   const [infoOpen, setInfoOpen] = useState(false)
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() => readMapMarkerFromUrl())
 
-  const positionsQuery = useMapPositionsQuery()
-  const snapshot = positionsQuery.data
+  const stagesQuery = usePublicStagesQuery()
+  const activeStageId = useMemo(() => {
+    const stages = stagesQuery.data ?? []
+    const active = stages.find((stage) => stage.status === 'active')
+    return active?.id ?? stages[0]?.id ?? 1
+  }, [stagesQuery.data])
 
-  const stageId = typeof stageFilter === 'number' ? stageFilter : 1
-  const track = getMapStageTrack(stageId)
-  const checkpoints = getMapStageCheckpoints(stageId)
+  // Публичный API позиций требует stage_id, поэтому «Все этапы» показывает активный этап.
+  const stageId = typeof stageFilter === 'number' ? stageFilter : activeStageId
+  const positionsQuery = useStageMapPositionsQuery(stageId)
+  const trackQuery = useStageTrackQuery(stageId)
+  const checkpointsQuery = useStageCheckpointsQuery(stageId)
+
+  const snapshot = positionsQuery.data
+  const markers = snapshot?.markers
+  const checkpoints = checkpointsQuery.data ?? []
+
   const participantMarkers = useMemo(
     () =>
-      (snapshot?.markers ?? []).map((marker) => ({
+      (markers ?? []).map((marker) => ({
         id: marker.id,
         participantId: marker.participantId,
         lng: marker.lng,
         lat: marker.lat,
         status: marker.status,
       })),
-    [snapshot?.markers],
+    [markers],
   )
 
-  const selectedMarker =
-    snapshot && selectedMarkerId ? findMapPositionMarker(snapshot, selectedMarkerId) : undefined
+  const selectedMarker = useMemo(
+    () => (selectedMarkerId ? findMapMarker(markers ?? [], selectedMarkerId) : undefined),
+    [markers, selectedMarkerId],
+  )
 
-  const bannerLabel = snapshot
-    ? `Положение на ${formatMapPositionBannerTime(snapshot.updatedAt)}`
-    : 'Положение…'
+  const bannerLabel = describePositionsBanner(snapshot, positionsQuery.isError)
 
   return (
     <Panel id={id} className="map-screen">
@@ -57,10 +91,11 @@ export function MapPanel({ id }: MapPanelProps) {
       <div className="map-screen__viewport">
         <MapView
           ref={mapRef}
-          track={track}
+          track={trackQuery.data}
           checkpoints={checkpoints}
           markers={participantMarkers}
           fitBounds
+          fitKey={snapshot?.stageId ?? trackQuery.data?.id}
           onMarkerClick={(markerId) => setSelectedMarkerId(markerId)}
         />
         <MapPositionBanner label={bannerLabel} />

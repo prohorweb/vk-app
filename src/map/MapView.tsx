@@ -158,12 +158,13 @@ function syncData(
 }
 
 export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
-  { track, checkpoints, markers, fitBounds = true, onMarkerClick, className },
+  { track, checkpoints, markers, fitBounds = true, fitKey, onMarkerClick, className },
   ref,
 ) {
   const { colorScheme = 'light' } = useConfigProvider()
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mmrgl.Map | null>(null)
+  const lastFitKeyRef = useRef<string | number | null>(null)
   const onMarkerClickRef = useRef(onMarkerClick)
   onMarkerClickRef.current = onMarkerClick
   const propsRef = useRef({ track, checkpoints, markers, fitBounds })
@@ -294,13 +295,15 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
       return
     }
     syncData(map, track, checkpoints, markers)
-    if (fitBounds) {
-      const bounds = collectBounds(track, checkpoints, markers)
-      if (bounds) {
-        map.fitBounds(bounds, { padding: 48, duration: 400, maxZoom: 14 })
-      }
+    if (!fitBounds || fitKey === undefined || lastFitKeyRef.current === fitKey) {
+      return
     }
-  }, [track, checkpoints, markers, fitBounds])
+    const bounds = collectBounds(track, checkpoints, markers)
+    if (bounds) {
+      lastFitKeyRef.current = fitKey
+      map.fitBounds(bounds, { padding: 48, duration: 400, maxZoom: 14 })
+    }
+  }, [track, checkpoints, markers, fitBounds, fitKey])
 
   if (!mapsEnabled) {
     return (

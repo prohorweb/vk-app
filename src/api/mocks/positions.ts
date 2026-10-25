@@ -1,22 +1,7 @@
-import type { TrackPointStatus } from '../../types/index.ts'
-
-export type MapPositionMarker = {
-  id: string
-  participantId: number
-  bib: number
-  name: string
-  discipline: string
-  lng: number
-  lat: number
-  status: TrackPointStatus
-  recordedAt: string
-}
-
-export type MapPositionsSnapshot = {
-  updatedAt: string
-  stageId: number
-  markers: MapPositionMarker[]
-}
+import type {
+  MapPositionMarker,
+  MapPositionsSnapshot,
+} from '../../map/mapTypes.ts'
 
 const STALE_MS = 45 * 60 * 1000
 
@@ -86,25 +71,13 @@ function withStaleRule(marker: MapPositionMarker, nowMs: number): MapPositionMar
   return marker
 }
 
-export function buildMapPositionsSnapshot(now = new Date()): MapPositionsSnapshot {
+/** Демо-снимок положений: используется только когда API недоступен. */
+export function buildMapPositionsSnapshot(stageId = 1, now = new Date()): MapPositionsSnapshot {
   const nowMs = now.getTime()
   return {
+    stageId,
     updatedAt: now.toISOString(),
-    stageId: 1,
     markers: rawMarkers.map((marker) => withStaleRule(marker, nowMs)),
+    source: 'mock',
   }
-}
-
-export async function fetchMapPositionsMock(): Promise<MapPositionsSnapshot> {
-  await new Promise((resolve) => {
-    window.setTimeout(resolve, 240)
-  })
-  return buildMapPositionsSnapshot()
-}
-
-export function findMapPositionMarker(
-  snapshot: MapPositionsSnapshot,
-  markerId: string,
-): MapPositionMarker | undefined {
-  return snapshot.markers.find((marker) => marker.id === markerId)
 }

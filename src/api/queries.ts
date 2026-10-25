@@ -23,11 +23,12 @@ import type {
   DisciplinePublic,
 } from '../types/index.ts'
 import { api, OfflineError, unwrap } from './client.ts'
-import { buildMapPositionsSnapshot, fetchMapPositionsMock } from './mocks/positions.ts'
+import { fetchStageCheckpoints, fetchStageMapPositions, fetchStageTrack } from './map.ts'
 import { trackPoints } from './mock.ts'
 
 const TRACK_REFETCH_MS = 2 * 60 * 1000
-const MAP_POSITIONS_REFETCH_MS = 120 * 1000
+const MAP_MARKERS_REFETCH_MS = 120 * 1000
+const STAGE_ROUTE_STALE_MS = 5 * 60 * 1000
 
 export const trackMockEnabled = import.meta.env.VITE_USE_MOCK === 'true'
 
@@ -293,20 +294,28 @@ export function useTrackPointsQuery() {
   })
 }
 
-export async function fetchMapPositions() {
-  if (!navigator.onLine) {
-    throw new OfflineError()
-  }
-  return fetchMapPositionsMock()
+export function useStageMapPositionsQuery(stageId: number) {
+  return useQuery({
+    queryKey: ['map', 'positions', stageId],
+    queryFn: () => fetchStageMapPositions(stageId),
+    refetchInterval: MAP_MARKERS_REFETCH_MS,
+    placeholderData: keepPreviousData,
+  })
 }
 
-export function useMapPositionsQuery() {
+export function useStageTrackQuery(stageId: number) {
   return useQuery({
-    queryKey: ['map-positions'],
-    queryFn: fetchMapPositions,
-    refetchInterval: MAP_POSITIONS_REFETCH_MS,
-    initialData: buildMapPositionsSnapshot(),
-    placeholderData: keepPreviousData,
+    queryKey: ['map', 'track', stageId],
+    queryFn: () => fetchStageTrack(stageId),
+    staleTime: STAGE_ROUTE_STALE_MS,
+  })
+}
+
+export function useStageCheckpointsQuery(stageId: number) {
+  return useQuery({
+    queryKey: ['map', 'checkpoints', stageId],
+    queryFn: () => fetchStageCheckpoints(stageId),
+    staleTime: STAGE_ROUTE_STALE_MS,
   })
 }
 

@@ -24,11 +24,39 @@ export type MapParticipantMarker = {
   status: TrackPointStatus
 }
 
+/** Точка участника для карточки на карте: view-модель поверх `MapParticipant` из контракта. */
+export type MapPositionMarker = {
+  id: string
+  participantId: number
+  bib: number
+  name: string
+  discipline: string | null
+  lng: number
+  lat: number
+  status: TrackPointStatus
+  recordedAt: string
+}
+
+export type MapPositionsSource = 'api' | 'mock'
+
+/**
+ * Снимок положений этапа. `updatedAt` — самая свежая отметка трекера,
+ * а не судейское время и не время запроса.
+ */
+export type MapPositionsSnapshot = {
+  stageId: number
+  updatedAt: string | null
+  markers: MapPositionMarker[]
+  source: MapPositionsSource
+}
+
 export type MapViewProps = {
   track?: MapTrack
   checkpoints?: MapCheckpoint[]
   markers?: MapParticipantMarker[]
   fitBounds?: boolean
+  /** Смена ключа пересобирает bounds; обновление данных при том же ключе камеру не трогает. */
+  fitKey?: string | number
   onMarkerClick?: (markerId: string) => void
   className?: string
 }

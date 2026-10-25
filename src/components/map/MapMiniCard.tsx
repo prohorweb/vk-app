@@ -1,17 +1,11 @@
 import { Icon24Cancel } from '@vkontakte/icons'
 import { Subhead, Text, Title } from '@vkontakte/vkui'
-import type { MapPositionMarker } from '../../api/mocks/positions.ts'
+import { formatMapPositionTime } from '../../lib/formatMapPositionTime.ts'
+import type { MapPositionMarker } from '../../map/mapTypes.ts'
 
 type MapMiniCardProps = {
   marker: MapPositionMarker
   onClose: () => void
-}
-
-function formatMarkTime(iso: string): string {
-  return new Intl.DateTimeFormat('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(iso))
 }
 
 export function MapMiniCard({ marker, onClose }: MapMiniCardProps) {
@@ -26,8 +20,12 @@ export function MapMiniCard({ marker, onClose }: MapMiniCardProps) {
             <Icon24Cancel />
           </button>
         </div>
-        <Text className="map-mini-card__discipline">{marker.discipline}</Text>
-        <Subhead className="map-mini-card__time">Отметка {formatMarkTime(marker.recordedAt)}</Subhead>
+        <Text className="map-mini-card__discipline">
+          {marker.discipline ?? 'Дисциплина не указана'}
+        </Text>
+        <Subhead className="map-mini-card__time">
+          Положение на {formatMapPositionTime(marker.recordedAt)}
+        </Subhead>
         {marker.status === 'estimated' ? (
           <Text className="map-mini-card__estimated">расчётное</Text>
         ) : null}
