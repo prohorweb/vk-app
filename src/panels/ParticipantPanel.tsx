@@ -1,29 +1,29 @@
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import vkBridge from '@vkontakte/vk-bridge'
 import { useParams, useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import {
-  Icon24LikeOutline,
+  Icon16Chevron,
+  Icon20MenuOutline,
+  Icon20PinOutline,
+  Icon24Cancel,
+  Icon24ErrorCircleOutline,
+  Icon24FavoriteOutline,
   Icon24ShareOutline,
-  Icon28ArticleOutline,
-  Icon28ClockOutline,
   Icon28CupOutline,
-  Icon28PlaceOutline,
-  Icon28StatisticsOutline,
+  Icon28ErrorCircleOutline,
+  Icon28GraphOutline,
+  Icon28HistoryBackwardOutline,
+  Icon28PawOutline,
+  Icon28WristWatchOutline,
 } from '@vkontakte/icons'
-import {
-  Button,
-  HorizontalScroll,
-  Panel,
-  PanelHeader,
-  PanelHeaderBack,
-  SubnavigationBar,
-  SubnavigationButton,
-} from '@vkontakte/vkui'
+import { Button, Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
 import { trackerGap } from '../api/gaps.ts'
 import {
+  isListedStage,
+  useActiveSeasonQuery,
+  useDisciplinesQuery,
   useFavoriteMutation,
   useParticipantQuery,
-  useProtocolsQuery,
   usePublicStagesQuery,
   useStageProtocolQuery,
   useStandingsQuery,
@@ -32,21 +32,29 @@ import {
 } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
 import { ParticipantCover } from '../components/ParticipantAvatar.tsx'
-import { Picture } from '../components/Picture.tsx'
 import {
+  disciplineCardLabel,
   formatCount,
-  formatDateTime,
+  formatFullDateTime,
   formatRaceClock,
+  formatShortDateTime,
   formatStageStart,
-  participantStatusLabel,
+  participantAccusative,
 } from '../lib/labels.ts'
-import type { ParticipantStatus, StageProtocolRow, StandingRow } from '../types/index.ts'
+import type { StageProtocolRow, StandingRow } from '../types/index.ts'
+import { guessGender } from '../lib/gender.ts'
 
 type ParticipantPanelProps = {
   id: string
 }
 
 type StageSelection = 'all' | number
+
+type StatusTone = 'success' | 'warning' | 'danger'
+
+type NoticeKind = 'subscribed' | 'unsubscribed' | 'favorite-error'
+
+const kmFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 })
 
 function parseParticipantId(value: string | undefined): number | undefined {
   if (!value) {
@@ -59,281 +67,612 @@ function parseParticipantId(value: string | undefined): number | undefined {
   return parsed
 }
 
-function formatGap(leaderSeconds: number | null | undefined, seconds: number | null | undefined): string {
-  if (leaderSeconds == null || seconds == null || seconds <= leaderSeconds) {
+/** Имя и фамилия идут отдельными строками, как в макете. */
+function splitName(name: string) {
+  const [first = '', ...rest] = name.trim().split(/\s+/)
+  return { first, rest: rest.join(' ') }
+}
+
+/** Зелёная звезда из макета: в VKUI нет подходящей контурной звезды 24. */
+function StarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden>
+      <path
+        d="M12 3.4l2.56 5.19 5.73.84-4.15 4.04.98 5.7L12 16.48 6.88 19.17l.98-5.7-4.15-4.04 5.73-.84z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+/** Пунктир из красных точек и синих треугольников, как в макете. */
+function CardDivider() {
+  const patternId = useId()
+
+  return (
+    <svg className="participant-divider" height="6" aria-hidden>
+      <defs>
+        <pattern id={patternId} width="75" height="6" patternUnits="userSpaceOnUse">
+          <circle cx="2.5" cy="3" r="2.5" fill="var(--avacha-brand-red)" />
+          <path d="M21 0 26 6H16Z" fill="var(--avacha-brand-dark-blue)" />
+          <circle cx="40" cy="3" r="2.5" fill="var(--avacha-brand-red)" />
+          <path d="M51 0h10l-5 6Z" fill="var(--avacha-brand-dark-blue)" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="6" fill={`url(#${patternId})`} />
+    </svg>
+  )
+}
+
+function formatLeaderGap(
+  leaderSeconds: number | null | undefined,
+  seconds: number | null | undefined,
+): string {
+  if (leaderSeconds == null || seconds == null) {
     return '—'
   }
   const diff = seconds - leaderSeconds
-  const hours = Math.floor(diff / 3600)
-  const minutes = Math.floor((diff % 3600) / 60)
-  const rest = diff % 60
-  const clock = [minutes, rest].map((part) => String(part).padStart(2, '0')).join(':')
-  return hours > 0 ? `+${String(hours).padStart(2, '0')}:${clock}` : `+${clock}`
+  if (diff <= 0) {
+    return '-'
+  }
+  return `+${formatRaceClock(diff)}`
 }
 
-function statusText(status: ParticipantStatus, outcome: 'dnf' | 'dns' | null): string {
+function statusView(
+  status: string,
+  outcome: 'dnf' | 'dns' | null,
+  raceStarted: boolean,
+): { label: string; tone: StatusTone } {
   if (outcome === 'dnf') {
-    return 'DNF'
+    return { label: 'DNF', tone: 'danger' }
   }
   if (outcome === 'dns') {
-    return 'DNS'
+    return { label: 'DNS', tone: 'danger' }
   }
   if (status === 'active') {
-    return 'На трассе'
+    return { label: 'На трассе', tone: 'success' }
   }
-  return participantStatusLabel(status)
+  if (status === 'finished') {
+    return { label: 'Финишировал', tone: 'success' }
+  }
+  if (status === 'withdrawn') {
+    return { label: 'Снят', tone: 'danger' }
+  }
+  if (status === 'disqualified') {
+    return { label: 'Дисквалифицирован', tone: 'danger' }
+  }
+  return {
+    label: raceStarted ? 'Ожидание старта' : 'Ожидание начала гонки',
+    tone: 'warning',
+  }
 }
 
-async function shareParticipant(name: string): Promise<void> {
-  const link = window.location.href
+/** Текст поста для репоста: место и результат, а до старта — стартовый номер. */
+function buildShareMessage({
+  name,
+  number,
+  seasonYear,
+  standing,
+}: {
+  name: string
+  number: number
+  seasonYear: number | undefined
+  standing: StandingRow | undefined
+}): string {
+  const race = seasonYear ? `«Авача–${seasonYear}»` : '«Авача»'
+  const participantWord = guessGender(name) === 'female' ? 'участницы' : 'участника'
+  const isFinished = standing?.position != null && standing.final_time_seconds != null
+  const summary = isFinished
+    ? `Место - ${standing.position}, результат - ${formatRaceClock(standing.final_time_seconds)}`
+    : `Стартовый номер - #${number}`
+
+  return [
+    `❤️ Болею за ${participantAccusative(name)} - ${participantWord} гонки ${race}!`,
+    '',
+    summary,
+    '',
+    'Пусть каждый километр приближает к победе 🏅, а поддержка болельщиков придаёт сил 💪',
+    '',
+    'Присоединяйся и поддержи своего фаворита!',
+    '',
+    '----',
+    '',
+    'Подписывайтесь на наши новости:',
+    'ВК — vk.ru/avacha.race',
+  ].join('\n')
+}
+
+async function shareParticipant(message: string, link: string): Promise<void> {
+  try {
+    await vkBridge.send('VKWebAppShowWallPostBox', { message })
+    return
+  } catch {
+    // Вне клиента VK или без прав на стену — делимся ссылкой.
+  }
   try {
     await vkBridge.send('VKWebAppShare', { link })
     return
   } catch {
-    // Вне клиента VK делимся средствами браузера.
+    // Дальше — средствами браузера.
   }
   if (navigator.share) {
-    await navigator.share({ title: name, url: link })
+    await navigator.share({ title: 'Авача', text: message, url: link })
     return
   }
-  await navigator.clipboard.writeText(link)
+  await navigator.clipboard.writeText(`${message}\n\n${link}`)
+}
+
+function NoticeCard({
+  tone,
+  icon,
+  title,
+  text,
+  action,
+  onClose,
+}: {
+  tone: 'success' | 'muted' | 'error'
+  icon: ReactNode
+  title: string
+  text?: string
+  action?: ReactNode
+  onClose: () => void
+}) {
+  return (
+    <aside
+      className={`participant-notice participant-notice--${tone}`}
+      role={tone === 'error' ? 'alert' : 'status'}
+    >
+      <span className="participant-notice__icon" aria-hidden>
+        {icon}
+      </span>
+      <div className="participant-notice__content">
+        <p className="participant-notice__title">{title}</p>
+        {text ? <p className="participant-notice__text">{text}</p> : null}
+        {action}
+      </div>
+      <button
+        type="button"
+        className="participant-notice__close"
+        aria-label="Закрыть"
+        onClick={onClose}
+      >
+        <Icon24Cancel />
+      </button>
+    </aside>
+  )
 }
 
 export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const routeNavigator = useRouteNavigator()
   const params = useParams<'participantId'>()
   const participantId = parseParticipantId(params?.participantId)
-  const [stage, setStage] = useState<StageSelection>('all')
+  const [selectedStage, setSelectedStage] = useState<StageSelection | null>(null)
+  const [notice, setNotice] = useState<NoticeKind | null>(null)
+  const [staleDismissedAt, setStaleDismissedAt] = useState<number | null>(null)
+  const [expanded, setExpanded] = useState(false)
+  const [mountedAt] = useState(() => Date.now())
+  const [bioOverflow, setBioOverflow] = useState(false)
+  const bioRef = useRef<HTMLParagraphElement>(null)
+
   const query = useParticipantQuery(participantId)
   const supportersQuery = useSupportersQuery(participantId)
   const ratingQuery = useSupportersRatingQuery()
   const standingsQuery = useStandingsQuery()
   const stagesQuery = usePublicStagesQuery()
-  const protocolsQuery = useProtocolsQuery()
+  const disciplinesQuery = useDisciplinesQuery()
+  const seasonQuery = useActiveSeasonQuery()
+
+  const participant = query.data
+  const stages = (stagesQuery.data ?? []).filter(isListedStage)
+  const activeStageId = stages.find((item) => item.status === 'active')?.id
+  const stage: StageSelection = selectedStage ?? activeStageId ?? 'all'
   const protocolQuery = useStageProtocolQuery(stage === 'all' ? null : stage)
   const favorite = useFavoriteMutation(participantId ?? 0)
-  const participant = query.data
-  const publishedStageIds = new Set((protocolsQuery.data ?? []).map((item) => item.stage_id))
-  const stages = (stagesQuery.data ?? []).filter((item) => publishedStageIds.has(item.id))
-  const supportersCount = supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
+
+  const supportersCount =
+    supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
   const isFavorite = supportersQuery.data?.is_favorite ?? false
-  const delta = ratingQuery.data?.find((entry) => entry.participant_id === participantId)?.delta_24h ?? 0
+  const delta =
+    ratingQuery.data?.find((entry) => entry.participant_id === participantId)?.delta_24h ?? 0
   const gap = participant ? trackerGap(participant.id, participant.dogs_count ?? null) : null
   const standing = standingsQuery.data?.rows.find((row) => row.participant_id === participantId)
   const protocolRow = protocolQuery.data?.rows.find((row) => row.participant_id === participantId)
-  const selectedStage = stages.find((item) => item.id === stage)
+  const stageInfo = typeof stage === 'number' ? stages.find((item) => item.id === stage) : undefined
+  const discipline = disciplinesQuery.data?.find((item) => item.id === participant?.discipline_id)
+
+  const seasonStartsAt = seasonQuery.data?.starts_at
+  const raceStarted = seasonStartsAt
+    ? new Date(seasonStartsAt).getTime() <= mountedAt
+    : stages.some((item) => item.status !== 'planned')
+
+  const stale =
+    Boolean(participant) &&
+    (query.isError || standingsQuery.isError || stagesQuery.isError || protocolQuery.isError)
+  const lastUpdatedAt = Math.max(
+    query.dataUpdatedAt,
+    standingsQuery.dataUpdatedAt,
+    stagesQuery.dataUpdatedAt,
+    protocolQuery.dataUpdatedAt,
+  )
+
+  const bio = participant?.bio
+
+  useEffect(() => {
+    if (!notice) {
+      return
+    }
+    const timer = window.setTimeout(() => setNotice(null), 8000)
+    return () => window.clearTimeout(timer)
+  }, [notice])
+
+  useEffect(() => {
+    const element = bioRef.current
+    if (!element || expanded) {
+      return
+    }
+    const check = () => setBioOverflow(element.scrollHeight > element.clientHeight + 1)
+    check()
+    const observer = new ResizeObserver(check)
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [bio, expanded])
+
+  const shareMessage = participant
+    ? buildShareMessage({
+        name: participant.name,
+        number: participant.number,
+        seasonYear: seasonQuery.data?.year,
+        standing,
+      })
+    : ''
+
+  const share = () => {
+    void shareParticipant(shareMessage, window.location.href).catch(() => undefined)
+  }
+
+  const source: StandingRow | StageProtocolRow | undefined =
+    stage === 'all' ? standing : protocolRow
+  const peers: (StandingRow | StageProtocolRow)[] =
+    stage === 'all' ? (standingsQuery.data?.rows ?? []) : (protocolQuery.data?.rows ?? [])
+  const leader = peers.find((row) => row.position === 1) ?? peers[0]
+  const position = source?.position ?? null
+  const result = source?.final_time_seconds ?? null
+  const penalty = source?.total_penalty_seconds ?? 0
+  const statsLoading = stage !== 'all' && protocolQuery.isLoading
+  const statsReady = Boolean(source) && !statsLoading
+
+  const totalStages = stages.length
+  const finishedStages = standing?.stages_finished ?? 0
+  const stageDistance = stageInfo?.distance_km ?? null
+  const totalDistance = stages.reduce((sum, item) => sum + item.distance_km, 0)
+  const coveredDistance =
+    stage === 'all'
+      ? finishedStages > 0
+        ? stages
+            .slice(0, Math.min(finishedStages, totalStages))
+            .reduce((sum, item) => sum + item.distance_km, 0)
+        : null
+      : result != null
+        ? stageDistance
+        : null
+  const distanceLimit = stage === 'all' ? totalDistance : stageDistance
+  const speed =
+    result != null && coveredDistance != null && result > 0
+      ? coveredDistance / (result / 3600)
+      : null
+  const progress =
+    coveredDistance != null && distanceLimit
+      ? Math.min(100, Math.max(0, (coveredDistance / distanceLimit) * 100))
+      : 0
+
+  const stageNumber = stage === 'all' ? finishedStages : (stageInfo?.number ?? null)
+
+  const emptyHint =
+    stage === 'all'
+      ? seasonStartsAt && !raceStarted
+        ? `Информация появится сразу после старта гонки ${formatStageStart(seasonStartsAt)}`
+        : 'Информация появится позже'
+      : stageInfo?.status === 'planned' && stageInfo.start_time
+        ? `Информация появится сразу после старта этапа ${formatStageStart(stageInfo.start_time)}`
+        : 'Информация появится позже'
+
+  const showToggle = expanded || bioOverflow
+  const showStale = stale && staleDismissedAt !== lastUpdatedAt && notice === null
+  const status = participant
+    ? statusView(participant.status, gap?.outcome ?? null, raceStarted)
+    : null
+  const name = participant ? splitName(participant.name) : null
 
   return (
-    <Panel id={id} className="participant-card">
-      <PanelHeader before={<PanelHeaderBack onClick={() => void routeNavigator.back()} />}>
+    <Panel id={id} className="participant-screen">
+      <PanelHeader
+        delimiter="none"
+        before={
+          <PanelHeaderBack
+            hideLabelOnIOS
+            hideLabelOnVKCom
+            onClick={() => void routeNavigator.back()}
+          />
+        }
+      >
         Назад
       </PanelHeader>
       <AsyncView
         isLoading={query.isLoading}
-        isError={query.isError}
+        isError={query.isError && !participant}
         isEmpty={!query.isLoading && !query.isError && !participant}
         updatedAt={query.dataUpdatedAt}
       >
-        {participant && gap ? (
-          <>
+        {participant && gap && status && name ? (
+          <div className="participant-body">
             <ParticipantCover
               id={participant.id}
               name={participant.name}
               src={participant.photo_url}
             />
-            <section className="dogs-block">
-              <Picture
-                className="dogs-block__photo"
-                alt={`Собаки каюра ${participant.name}`}
-                ratio="1 / 1"
-                fallback="Собаки"
-              />
-              <p>
-                Собаки на старте {gap.dogsAtStart ?? '—'} · на финише {gap.dogsAtFinish ?? '—'}
-              </p>
-            </section>
-            <p className={`participant-card__status ${gap.outcome ? 'is-out' : 'is-racing'}`}>
-              {statusText(participant.status, gap.outcome)}
-            </p>
+            <p className={`participant-card__status is-${status.tone}`}>{status.label}</p>
             <div className="participant-card__hero">
-              <span className="bib-badge">#{participant.number}</span>
-              <div>
-                <div className="participant-card__hero-name">{participant.name}</div>
-                {participant.region ? (
-                  <div className="participant-card__hero-region">{participant.region}</div>
-                ) : null}
-              </div>
+              <span className="participant-card__bib">#{participant.number}</span>
+              <span className="participant-card__hero-name">
+                <span>{name.first}</span>
+                {name.rest ? <span>{name.rest}</span> : null}
+              </span>
             </div>
-            {participant.bio ? (
-              <p className="participant-card__bio">
-                <Icon28ArticleOutline />
-                <span>{participant.bio}</span>
+            <div className="participant-meta">
+              {participant.region ? (
+                <div className="participant-meta__row">
+                  <Icon20PinOutline aria-hidden />
+                  <span>{participant.region}</span>
+                </div>
+              ) : null}
+              {participant.bio ? (
+                <div className="participant-meta__row participant-meta__row--bio">
+                  <Icon20MenuOutline aria-hidden />
+                  <div className="participant-bio">
+                    <p
+                      ref={bioRef}
+                      className={`participant-bio__text${expanded ? '' : ' is-collapsed'}`}
+                    >
+                      {participant.bio}
+                    </p>
+                    {showToggle ? (
+                      <div className="participant-bio__more">
+                        <button
+                          type="button"
+                          className="participant-bio__toggle"
+                          aria-expanded={expanded}
+                          onClick={() => setExpanded((value) => !value)}
+                        >
+                          {expanded ? 'Скрыть' : 'Показать ещё'}
+                          <Icon16Chevron aria-hidden />
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <CardDivider />
+            <section className="participant-section">
+              <h2 className="participant-section__title">Дисциплина</h2>
+              <p className="participant-section__text">
+                {disciplineCardLabel(discipline, participant.discipline)}
               </p>
-            ) : null}
-            <section className="participant-card__section">
-              <h2>Дисциплина</h2>
-              <p>{participant.discipline ?? '—'}</p>
             </section>
-            <section className="participant-card__section">
-              <div className="participant-card__stats-head">
-                <h2>Статистика</h2>
+            <CardDivider />
+            <section className="participant-section">
+              <div className="participant-stats__head">
+                <h2 className="participant-section__title">Статистика</h2>
                 {gap.lastPointAt ? (
-                  <span>обновлено {formatDateTime(gap.lastPointAt)}</span>
+                  <span className="participant-stats__updated">
+                    обновлено {formatShortDateTime(gap.lastPointAt)}
+                  </span>
                 ) : null}
               </div>
-              <HorizontalScroll>
-                <SubnavigationBar>
-                  <SubnavigationButton
-                    selected={stage === 'all'}
-                    onClick={() => setStage('all')}
+              <div className="participant-stages" role="tablist" aria-label="Этапы">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={stage === 'all'}
+                  className={`participant-stage${stage === 'all' ? ' is-selected' : ''}`}
+                  onClick={() => setSelectedStage('all')}
+                >
+                  Все этапы
+                </button>
+                {stages.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={stage === item.id}
+                    className={`participant-stage${stage === item.id ? ' is-selected' : ''}`}
+                    onClick={() => setSelectedStage(item.id)}
                   >
-                    Все этапы
-                  </SubnavigationButton>
-                  {stages.map((item) => (
-                    <SubnavigationButton
-                      key={item.id}
-                      selected={stage === item.id}
-                      onClick={() => setStage(item.id)}
+                    {item.number}
+                  </button>
+                ))}
+              </div>
+              {statsLoading ? (
+                <p className="participant-stats__note">Загрузка статистики</p>
+              ) : statsReady ? (
+                <>
+                  <div className="participant-tiles">
+                    <article className="participant-tile">
+                      <Icon28WristWatchOutline aria-hidden />
+                      <span className="participant-tile__label">результат</span>
+                      <strong className="participant-tile__value">{formatRaceClock(result)}</strong>
+                    </article>
+                    <article className="participant-tile">
+                      <Icon28HistoryBackwardOutline aria-hidden />
+                      <span className="participant-tile__label">отрыв от лидера</span>
+                      <strong className="participant-tile__value">
+                        {formatLeaderGap(leader?.final_time_seconds ?? null, result)}
+                      </strong>
+                    </article>
+                    <article className="participant-tile">
+                      <Icon28CupOutline aria-hidden />
+                      <span className="participant-tile__label">позиция</span>
+                      <strong className="participant-tile__value">
+                        {position != null ? `№ ${position}` : '—'}
+                      </strong>
+                    </article>
+                  </div>
+                  <div className="participant-distance">
+                    <h3>Дистанция</h3>
+                    <div className="participant-distance__rows">
+                      <span className="participant-distance__row">
+                        <span>этап:</span>
+                        <span className="participant-distance__value">
+                          {stageNumber ?? '—'} из {totalStages}
+                        </span>
+                      </span>
+                      <span className="participant-distance__row">
+                        <span>скорость:</span>
+                        <span className="participant-distance__value">
+                          {speed != null ? `${kmFormatter.format(speed)} км/ч` : '—'}
+                        </span>
+                      </span>
+                    </div>
+                    <p className="participant-distance__km">
+                      <span className="participant-distance__covered">
+                        {coveredDistance != null
+                          ? `${kmFormatter.format(coveredDistance)} км`
+                          : '—'}
+                      </span>{' '}
+                      / {distanceLimit != null ? `${kmFormatter.format(distanceLimit)} км` : '—'}
+                    </p>
+                    <div
+                      className="participant-distance__bar"
+                      role="progressbar"
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.round(progress)}
                     >
-                      Этап {item.number}
-                    </SubnavigationButton>
-                  ))}
-                </SubnavigationBar>
-              </HorizontalScroll>
-              <StatsBody
-                mode={stage}
-                outcome={gap.outcome}
-                standing={standing}
-                standings={standingsQuery.data?.rows ?? []}
-                protocolRow={protocolRow}
-                protocolRows={protocolQuery.data?.rows ?? []}
-                protocolMissing={stage !== 'all' && !protocolQuery.isLoading && protocolQuery.data == null}
-                protocolLoading={stage !== 'all' && protocolQuery.isLoading}
-                stageStartsAt={selectedStage?.start_time ?? null}
-                stagesFinished={standing?.stages_finished ?? 0}
-                stageLabel={stage === 'all' ? null : (selectedStage?.number ?? null)}
-              />
+                      <span
+                        className="participant-distance__fill"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="participant-cards">
+                    <div className="participant-mini">
+                      <div className="participant-mini__head">
+                        <Icon28PawOutline aria-hidden />
+                        <span>Собаки</span>
+                      </div>
+                      <p className="participant-mini__row">
+                        старт:{' '}
+                        <span className="participant-mini__value">{gap.dogsAtStart ?? '—'}</span>
+                      </p>
+                      <p className="participant-mini__row">
+                        финиш:{' '}
+                        <span className="participant-mini__value">{gap.dogsAtFinish ?? '—'}</span>
+                      </p>
+                    </div>
+                    <div className="participant-mini">
+                      <div className="participant-mini__head">
+                        <Icon28ErrorCircleOutline aria-hidden />
+                        <span>Штр. вр.</span>
+                      </div>
+                      <p className="participant-mini__value participant-mini__penalty">
+                        {penalty > 0 ? formatRaceClock(penalty) : '-'}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="participant-empty">
+                  <Icon28GraphOutline aria-hidden />
+                  <p className="participant-empty__title">Статистика скоро появится!</p>
+                  <p className="participant-empty__text">{emptyHint}</p>
+                </div>
+              )}
             </section>
-            <p className="participant-card__fans">
-              <Icon24LikeOutline />
-              <span>{formatCount(supportersCount)} болельщиков</span>
-              {delta > 0 ? <span className="participant-card__delta">+{delta}</span> : null}
-            </p>
-            <div className="participant-card__actions">
+            <div className="participant-fans">
+              <Icon24FavoriteOutline aria-hidden />
+              <span className="participant-fans__count">{formatCount(supportersCount)}</span>
+              <span className="participant-fans__label">болельщиков</span>
+              {delta > 0 ? (
+                <span className="participant-fans__delta">+{delta} за сутки</span>
+              ) : null}
+            </div>
+            <div className="participant-actions">
               <Button
                 stretched
                 size="l"
                 mode="primary"
                 loading={favorite.isPending}
-                onClick={() => favorite.mutate(!isFavorite)}
+                onClick={() => {
+                  const next = !isFavorite
+                  favorite.mutate(next, {
+                    onSuccess: () => setNotice(next ? 'subscribed' : 'unsubscribed'),
+                    onError: () => setNotice('favorite-error'),
+                  })
+                }}
               >
                 {isFavorite ? 'Больше не болею' : 'Болею за'}
               </Button>
               <Button
                 size="l"
-                mode="outline"
-                className="share-button"
+                mode="primary"
+                className="participant-actions__share"
                 aria-label="Поделиться"
-                onClick={() => {
-                  void shareParticipant(participant.name).catch(() => undefined)
-                }}
+                onClick={share}
               >
                 <Icon24ShareOutline />
               </Button>
             </div>
-            {favorite.isError ? (
-              <p className="participant-card__error">Не удалось обновить поддержку</p>
-            ) : null}
-          </>
+          </div>
         ) : null}
       </AsyncView>
+      {notice === 'subscribed' ? (
+        <NoticeCard
+          tone="success"
+          icon={<StarIcon />}
+          title="+1 преданный фанат!"
+          text="Поделиться с друзьями!"
+          action={
+            <button type="button" className="participant-notice__link" onClick={share}>
+              поделиться
+            </button>
+          }
+          onClose={() => setNotice(null)}
+        />
+      ) : null}
+      {notice === 'unsubscribed' ? (
+        <NoticeCard
+          tone="muted"
+          icon={<Icon24FavoriteOutline />}
+          title="Вы отписались от каюра."
+          text="Уведомления о его успехах больше не будут приходить."
+          onClose={() => setNotice(null)}
+        />
+      ) : null}
+      {notice === 'favorite-error' ? (
+        <NoticeCard
+          tone="error"
+          icon={<Icon24ErrorCircleOutline />}
+          title="Не удалось обновить подписку"
+          text="Проверьте подключение и попробуйте ещё раз."
+          onClose={() => setNotice(null)}
+        />
+      ) : null}
+      {showStale ? (
+        <NoticeCard
+          tone="error"
+          icon={<Icon24ErrorCircleOutline />}
+          title="Данные не были обновлены"
+          text={
+            lastUpdatedAt > 0
+              ? `Последнее обновление ${formatFullDateTime(lastUpdatedAt)}`
+              : 'Проверьте подключение и попробуйте позже'
+          }
+          onClose={() => setStaleDismissedAt(lastUpdatedAt)}
+        />
+      ) : null}
     </Panel>
-  )
-}
-
-function StatsBody({
-  mode,
-  outcome,
-  standing,
-  standings,
-  protocolRow,
-  protocolRows,
-  protocolMissing,
-  protocolLoading,
-  stageStartsAt,
-  stagesFinished,
-  stageLabel,
-}: {
-  mode: StageSelection
-  outcome: 'dnf' | 'dns' | null
-  standing: StandingRow | undefined
-  standings: StandingRow[]
-  protocolRow: StageProtocolRow | undefined
-  protocolRows: StageProtocolRow[]
-  protocolMissing: boolean
-  protocolLoading: boolean
-  stageStartsAt: string | null
-  stagesFinished: number
-  stageLabel: number | null
-}) {
-  if (protocolLoading) {
-    return <p className="participant-card__note">Загрузка статистики</p>
-  }
-
-  const dropped = outcome !== null
-  const stageUnavailable = mode !== 'all' && (protocolMissing || (!protocolRow && !dropped))
-  const overallUnavailable = mode === 'all' && !standing && !dropped
-  if (stageUnavailable || overallUnavailable) {
-    return (
-      <div className="stats-empty">
-        <Icon28StatisticsOutline />
-        <p>Статистика скоро появится</p>
-        {stageStartsAt ? (
-          <p>
-            Начало этапа
-            <br />
-            {formatStageStart(stageStartsAt)}
-          </p>
-        ) : null}
-      </div>
-    )
-  }
-
-  const source = mode === 'all' ? standing : protocolRow
-  const peers = mode === 'all' ? standings : protocolRows
-  const leader = peers.find((row) => row.position === 1) ?? peers[0]
-  const leaderTime = leader?.final_time_seconds
-  const position = dropped ? null : (source?.position ?? null)
-  const result = dropped ? null : (source?.final_time_seconds ?? null)
-  const penalty = source?.total_penalty_seconds ?? 0
-
-  return (
-    <>
-      <div className="stat-grid">
-        <article>
-          <Icon28CupOutline />
-          <span>позиция</span>
-          <strong>{position ?? '—'}</strong>
-        </article>
-        <article>
-          <Icon28ClockOutline />
-          <span>результат</span>
-          <strong>{formatRaceClock(result)}</strong>
-        </article>
-        <article>
-          <Icon28PlaceOutline />
-          <span>отрыв</span>
-          <strong>{dropped ? '—' : formatGap(leaderTime, result)}</strong>
-        </article>
-      </div>
-      <div className="distance-card">
-        <h3>Дистанция</h3>
-        <ul>
-          <li>этап: {mode === 'all' ? stagesFinished : stageLabel}</li>
-          <li>штраф: {penalty > 0 ? formatRaceClock(penalty) : '—'}</li>
-          <li>скорость: —</li>
-        </ul>
-      </div>
-    </>
   )
 }

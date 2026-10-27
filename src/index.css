@@ -33,6 +33,9 @@ body {
   --avacha-card-divider: var(--vkui--color_separator_primary);
   --avacha-card-band: #f5f5f5;
   --avacha-participants-bg: var(--avacha-secondary-blue);
+  --avacha-participant-bg: var(--vkui--color_background_secondary);
+  --avacha-link: var(--avacha-secondary-blue);
+  --avacha-value: var(--avacha-brand-dark-blue);
 }
 
 /* Карточки в тёмной теме по макету: фон светлее фона экрана, разделители видимее. */
@@ -44,6 +47,10 @@ body {
   --avacha-card-divider: #d7d8d9;
   --avacha-card-band: #232324;
   --avacha-participants-bg: var(--vkui--color_background);
+  --avacha-participant-bg: var(--vkui--color_background);
+  --avacha-link: var(--avacha-secondary-light-blue);
+  --avacha-value: var(--avacha-secondary-blue);
+  --avacha-warning: #e8853e;
 }
 
 .app-frame {
@@ -83,12 +90,6 @@ body {
   background: var(--vkui--color_background_secondary);
   color: var(--vkui--color_text_secondary);
   font-size: 13px;
-}
-
-.participant-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
 .async-view {
@@ -1238,6 +1239,25 @@ body {
   padding-inline: 0;
 }
 
+/* Карточка участника: обложка, статус, плашка с номером, мета, статистика. */
+.participant-screen .vkuiPanel__in {
+  background: var(--avacha-participant-bg);
+}
+
+.participant-body {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 24px;
+}
+
+.participant-body > .participant-card__photo,
+.participant-body > .participant-cover {
+  flex: none;
+  height: 160px;
+}
+
 .participant-card__photo .picture__fallback {
   font-size: 48px;
   font-weight: 500;
@@ -1246,199 +1266,565 @@ body {
 .participant-card__status {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 12px 16px;
-  font-size: 16px;
-  line-height: 20px;
+  gap: 12px;
+  height: 52px;
+  margin: 0;
+  padding: 0 16px;
+  color: var(--avacha-success);
+  font-size: 20px;
+  line-height: 24px;
   font-weight: 500;
 }
 
 .participant-card__status::before {
   content: '';
-  width: 8px;
-  height: 8px;
+  flex: none;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--avacha-success);
+  background: currentColor;
 }
 
-.participant-card__status.is-out::before {
-  background: var(--avacha-brand-red);
+.participant-card__status.is-warning {
+  color: var(--avacha-warning);
+}
+
+.participant-card__status.is-danger {
+  color: var(--avacha-brand-red);
 }
 
 .participant-card__hero {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 0 16px 12px;
-  padding: 12px;
-  border-radius: 8px;
+  gap: 18px;
+  padding: 12px 16px;
+  border-radius: 16px;
   background: var(--avacha-brand-dark-blue);
-  color: #fff;
+  color: var(--vkui--color_text_contrast);
+}
+
+.participant-card__bib {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--avacha-brand-red);
+  color: var(--vkui--color_text_contrast);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
 }
 
 .participant-card__hero-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   font-size: 20px;
   line-height: 24px;
   font-weight: 500;
 }
 
-.participant-card__hero-region {
-  color: var(--avacha-secondary-light-blue);
-  font-size: 13px;
-  line-height: 16px;
+.participant-meta {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 16px;
 }
 
-.participant-card__bio {
+.participant-meta__row {
   display: flex;
-  gap: 8px;
-  margin: 0 16px 16px;
-  color: var(--vkui--color_text_primary);
-  font-size: 15px;
+  align-items: center;
+  gap: 13px;
+  min-height: 32px;
+  color: var(--vkui--color_text_secondary);
+  font-size: 16px;
   line-height: 20px;
 }
 
-.participant-card__bio svg {
+.participant-meta__row svg {
   flex: none;
+  width: 20px;
+  height: 20px;
   color: var(--vkui--color_icon_secondary);
 }
 
-.participant-card__section {
-  margin: 0 16px 16px;
+.participant-meta__row--bio {
+  align-items: flex-start;
+  padding-top: 6px;
 }
 
-.participant-card__section h2,
-.distance-card h3 {
-  margin: 0 0 4px;
+.participant-bio {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 0;
+}
+
+.participant-bio__text {
+  margin: 0;
+  align-self: stretch;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.participant-bio__text.is-collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.participant-bio__more {
+  margin-top: 10px;
+}
+
+.participant-bio__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--avacha-link);
+  font: inherit;
+  font-size: 16px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.participant-bio__toggle svg {
+  transform: rotate(90deg);
+  transition: transform 0.15s ease;
+}
+
+.participant-bio__toggle[aria-expanded='true'] svg {
+  transform: rotate(-90deg);
+}
+
+.participant-divider {
+  display: block;
+  flex: none;
+  width: 100%;
+  height: 6px;
+}
+
+.participant-section {
+  padding: 12px 16px 0;
+}
+
+.participant-section__title {
+  margin: 0;
   font-size: 20px;
   line-height: 24px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.participant-card__section p,
-.distance-card li {
-  margin: 0;
+.participant-section__text {
+  margin: 14px 0 24px;
+  color: var(--vkui--color_text_secondary);
   font-size: 15px;
   line-height: 20px;
 }
 
-.participant-card__dogs,
-.participant-card__stats-head span,
-.participant-card__note,
-.stats-empty p:last-child {
-  color: var(--vkui--color_text_secondary);
-  font-size: 13px;
-  line-height: 16px;
-}
-
-.participant-card__stats-head {
+.participant-stats__head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
+  margin-bottom: 20px;
 }
 
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.stat-grid article {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 12px 4px;
-  border-radius: 12px;
-  background: var(--vkui--color_background_secondary);
-  color: var(--avacha-secondary-blue);
-  text-align: center;
-}
-
-.stat-grid span {
+.participant-stats__updated {
   color: var(--vkui--color_text_secondary);
   font-size: 13px;
   line-height: 16px;
+  white-space: nowrap;
 }
 
-.stat-grid strong {
-  color: var(--avacha-brand-dark-blue);
+.participant-stats__note {
+  margin: 0;
+  color: var(--vkui--color_text_secondary);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.participant-stages {
+  display: flex;
+  gap: 4px;
+  margin: 0 -16px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.participant-stages::-webkit-scrollbar {
+  display: none;
+}
+
+.participant-stage {
+  flex: none;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
+  color: var(--vkui--color_text_primary);
+  font: inherit;
   font-size: 16px;
   line-height: 20px;
-  font-weight: 700;
+  cursor: pointer;
 }
 
-.distance-card {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  background: var(--vkui--color_background_secondary);
+.participant-stage.is-selected {
+  background: var(--vkui--color_background_accent_themed);
+  color: var(--vkui--color_text_contrast);
 }
 
-.distance-card ul {
+.participant-tiles {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px 12px;
-  margin: 8px 0 0;
-  padding: 0;
-  list-style: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 28px;
 }
 
-.distance-card li::before {
-  content: '• ';
-  color: var(--vkui--color_text_secondary);
-}
-
-.stats-empty {
+.participant-tile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 28px 16px;
-  color: var(--vkui--color_icon_secondary);
+  padding: 12px 4px 8px;
+  border-radius: 16px;
+  background: var(--vkui--color_background_content);
   text-align: center;
 }
 
-.stats-empty p {
-  margin: 0;
-  color: var(--vkui--color_text_primary);
+.participant-tile svg {
+  flex: none;
+  color: var(--vkui--color_icon_secondary);
+}
+
+.participant-tile__label {
+  margin-top: 0;
+  color: var(--vkui--color_text_secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.participant-tile__value {
+  margin-top: 4px;
+  color: var(--avacha-value);
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
 }
 
-.participant-card__fans {
+.participant-distance {
+  margin-top: 8px;
+  padding: 12px 12px 14px;
+  border-radius: 16px;
+  background: var(--vkui--color_background_content);
+}
+
+.participant-distance h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.participant-distance__rows {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 24px;
+  row-gap: 6px;
+}
+
+.participant-distance__row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--vkui--color_text_secondary);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.participant-distance__row::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--vkui--color_icon_secondary);
+}
+
+.participant-distance__value {
+  color: var(--avacha-value);
+}
+
+.participant-distance__km {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  color: var(--vkui--color_text_secondary);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.participant-distance__covered {
+  color: var(--avacha-value);
+  font-weight: 500;
+}
+
+.participant-distance__bar {
+  height: 15px;
+  margin-top: 4px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--avacha-secondary-light-blue);
+}
+
+.participant-distance__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--avacha-secondary-blue);
+}
+
+.participant-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.participant-mini {
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--vkui--color_background_content);
+}
+
+.participant-mini__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--vkui--color_text_primary);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.participant-mini__head svg {
+  flex: none;
+}
+
+.participant-mini__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--vkui--color_text_secondary);
+  font-size: 16px;
+  line-height: 18px;
+}
+
+.participant-mini__row::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--vkui--color_icon_secondary);
+}
+
+.participant-mini__value {
+  color: var(--avacha-value);
+}
+
+.participant-mini__penalty {
+  margin: 8px 0 0;
+  color: var(--avacha-value);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.participant-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 16px 48px;
+  text-align: center;
+}
+
+.participant-empty > svg {
+  width: 48px;
+  height: 48px;
+  color: var(--vkui--color_icon_secondary);
+}
+
+.participant-empty__title {
+  margin: 12px 0 0;
+  color: var(--vkui--color_text_primary);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.participant-empty__text {
+  max-width: 280px;
+  margin: 8px 0 0;
+  color: var(--vkui--color_text_secondary);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.participant-fans {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 8px 16px 16px;
+  height: 42px;
+  margin: 8px 16px 0;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: var(--vkui--color_background_content);
+}
+
+.participant-fans svg {
+  flex: none;
+  color: var(--vkui--color_text_primary);
+}
+
+.participant-fans__count {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.participant-fans__label {
   color: var(--vkui--color_text_secondary);
+  font-size: 16px;
+  line-height: 20px;
 }
 
-.participant-card__delta {
+.participant-fans__delta {
   color: var(--avacha-success);
-  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
 }
 
-.participant-card__actions {
+.participant-actions {
   display: flex;
-  gap: 8px;
-  padding: 0 16px 24px;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 0 16px;
 }
 
-.share-button.vkuiButton__sizeL {
+.participant-actions .vkuiButton {
+  flex: 1;
+}
+
+.participant-actions__share.vkuiButton,
+.participant-actions__share.vkuiButton__sizeL {
+  flex: none;
   width: 44px;
   min-width: 44px;
   padding: 0;
-  border-radius: 8px;
 }
 
-.participant-card__error {
-  margin: -8px 16px 16px;
-  color: var(--vkui--color_text_negative);
-  font-size: 13px;
+/* Уведомления поверх карточки: подписка, отписка, ошибка обновления. */
+.participant-notice {
+  position: fixed;
+  inset-inline-start: 50%;
+  bottom: calc(var(--app-tabbar-total-height) + 8px);
+  z-index: 30;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  inline-size: min(calc(100% - 16px), 344px);
+  padding: 12px 12px 12px 14px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
+  box-shadow: var(--vkui--elevation3);
+  transform: translateX(-50%);
+}
+
+.participant-notice__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: var(--avacha-success);
+}
+
+.participant-notice__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.participant-notice__title,
+.participant-notice__text {
+  margin: 0;
+  color: var(--vkui--color_text_primary);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.participant-notice__title {
+  font-weight: 600;
+}
+
+.participant-notice__link {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--avacha-link);
+  font: inherit;
+  font-size: 15px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.participant-notice__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--vkui--color_icon_secondary);
+  cursor: pointer;
+}
+
+.participant-notice--muted .participant-notice__icon {
+  color: var(--vkui--color_icon_secondary);
+}
+
+.participant-notice--error {
+  background: var(--vkui--color_background_negative_tint);
+}
+
+.participant-notice--error .participant-notice__icon {
+  color: var(--vkui--color_icon_negative);
+}
+
+.participant-notice--error .participant-notice__text {
+  color: var(--vkui--color_text_secondary);
 }
 
 .picture {
@@ -1532,14 +1918,13 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 
 .participant-cover svg {
-  width: 56%;
-  height: auto;
-  margin-bottom: -6%;
+  width: auto;
+  height: 128px;
+  margin-bottom: -8px;
 }
 
 .app-frame .app-tabbar {
@@ -1748,26 +2133,6 @@ html.app-hide-tabbar .app-tabbar {
   to {
     background-position: -100% 0;
   }
-}
-
-.dogs-block {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 12px 16px;
-}
-
-.dogs-block__photo {
-  width: 96px;
-  flex: none;
-  border-radius: 12px;
-}
-
-.dogs-block p {
-  margin: 0;
-  color: var(--vkui--color_text_secondary);
-  font-size: 15px;
-  line-height: 20px;
 }
 
 .result-row__before {
@@ -2891,4 +3256,15 @@ html.app-hide-tabbar .app-tabbar {
 
 .is-drag-scrolling * {
   user-select: none;
+}
+
+/* Заголовок карточки — как в макете: подпись идёт сразу за стрелкой. */
+.participant-screen .vkuiPanelHeader__content,
+.participant-screen .vkuiPanelHeader__contentIn {
+  justify-content: flex-start;
+  text-align: start;
+}
+
+.participant-screen .vkuiPanelHeader__contentIn {
+  padding-inline-start: 12px;
 }
