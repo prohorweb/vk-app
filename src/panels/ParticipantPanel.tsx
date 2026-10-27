@@ -5,6 +5,7 @@ import {
   Icon16Chevron,
   Icon20ArticleOutline,
   Icon20ErrorCircleOutline,
+  Icon20Like,
   Icon20LikeOutline,
   Icon20PawOutline,
   Icon20PinOutline,
@@ -245,9 +246,14 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const protocolQuery = useStageProtocolQuery(stage === 'all' ? null : stage)
   const favorite = useFavoriteMutation(participantId ?? 0)
 
-  const supportersCount =
-    supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
-  const isFavorite = supportersQuery.data?.is_favorite ?? false
+  // Лайк живёт в локальном состоянии: если запрос не проходит, счётчик всё равно остаётся +1.
+  const [like, setLike] = useState<{ id: number | undefined; value: boolean } | null>(null)
+  const liked = like && like.id === participantId ? like.value : null
+  const cachedFavorite = supportersQuery.data?.is_favorite ?? false
+  const cachedCount = supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
+  const isFavorite = liked ?? cachedFavorite
+  const likeShift = liked === null || liked === cachedFavorite ? 0 : liked ? 1 : -1
+  const supportersCount = Math.max(0, cachedCount + likeShift)
   const gap = participant ? trackerGap(participant.id, participant.dogs_count ?? null) : null
   const standing = standingsQuery.data?.rows.find((row) => row.participant_id === participantId)
   const protocolRow = protocolQuery.data?.rows.find((row) => row.participant_id === participantId)
@@ -571,8 +577,8 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                 </div>
               )}
             </section>
-            <div className="participant-fans">
-              <Icon20LikeOutline aria-hidden />
+            <div className={`participant-fans${isFavorite ? ' is-liked' : ''}`}>
+              {isFavorite ? <Icon20Like aria-hidden /> : <Icon20LikeOutline aria-hidden />}
               <span className="participant-fans__count">{formatCount(supportersCount)}</span>
             </div>
             <div className="participant-actions">
@@ -580,8 +586,11 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                 stretched
                 size="l"
                 mode="primary"
-                loading={favorite.isPending}
-                onClick={() => favorite.mutate(!isFavorite)}
+                onClick={() => {
+                  const next = !isFavorite
+                  setLike({ id: participantId, value: next })
+                  favorite.mutate(next)
+                }}
               >
                 {isFavorite ? 'Больше не болею' : `Болею за ${favoriteName}`}
               </Button>

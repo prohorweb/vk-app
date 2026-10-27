@@ -1775,6 +1775,10 @@ body {
   color: var(--vkui--color_icon_primary);
 }
 
+.participant-fans.is-liked svg {
+  color: var(--vkui--color_icon_accent);
+}
+
 .participant-fans__count {
   color: var(--vkui--color_text_primary);
   font-size: 13px;
