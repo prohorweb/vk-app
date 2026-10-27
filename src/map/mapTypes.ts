@@ -6,6 +6,8 @@ export type MapTrack = {
   id: string
   coordinates: [number, number][]
   color?: string
+  /** Толщина линии: выбранный этап рисуем жирнее общего маршрута. */
+  width?: number
 }
 
 export type MapCheckpoint = {
@@ -53,6 +55,8 @@ export type MapPositionsSnapshot = {
 
 export type MapViewProps = {
   track?: MapTrack
+  /** Несколько треков сразу: «Все этапы» и подсветка выбранного этапа. */
+  tracks?: MapTrack[]
   checkpoints?: MapCheckpoint[]
   markers?: MapParticipantMarker[]
   fitBounds?: boolean

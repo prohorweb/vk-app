@@ -79,11 +79,15 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
       continue
     }
     map.geoObjects.add(
-      new ymaps.Polyline(toYandexCoords(line.coordinates), {}, {
-        strokeColor: line.color ?? '#e64646',
-        strokeWidth: multipleTracks ? 3 : 4,
-        strokeOpacity: 0.7,
-      }),
+      new ymaps.Polyline(
+        toYandexCoords(line.coordinates),
+        {},
+        {
+          strokeColor: line.color ?? '#e64646',
+          strokeWidth: line.width ?? (multipleTracks ? 3 : 4),
+          strokeOpacity: 0.7,
+        },
+      ),
     )
   }
 
@@ -125,14 +129,44 @@ function fitToData(map: YmapsMap, props: YandexMapViewProps) {
 }
 
 export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(function YandexMapView(
-  { ymaps, track, tracks, checkpoints, markers, fitBounds = true, fitKey, onMarkerClick, className },
+  {
+    ymaps,
+    track,
+    tracks,
+    checkpoints,
+    markers,
+    fitBounds = true,
+    fitKey,
+    onMarkerClick,
+    className,
+  },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<YmapsMap | null>(null)
   const lastFitKeyRef = useRef<string | number | null>(null)
-  const propsRef = useRef<YandexMapViewProps>({ ymaps, track, tracks, checkpoints, markers, fitBounds, fitKey, onMarkerClick, className })
-  propsRef.current = { ymaps, track, tracks, checkpoints, markers, fitBounds, fitKey, onMarkerClick, className }
+  const propsRef = useRef<YandexMapViewProps>({
+    ymaps,
+    track,
+    tracks,
+    checkpoints,
+    markers,
+    fitBounds,
+    fitKey,
+    onMarkerClick,
+    className,
+  })
+  propsRef.current = {
+    ymaps,
+    track,
+    tracks,
+    checkpoints,
+    markers,
+    fitBounds,
+    fitKey,
+    onMarkerClick,
+    className,
+  }
 
   useImperativeHandle(ref, () => ({
     zoomIn: () => {

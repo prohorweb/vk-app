@@ -15,7 +15,9 @@ import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { formatMapPositionTime } from '../lib/formatMapPositionTime.ts'
 import { readMapMarkerFromUrl } from '../lib/mapScreenParams.ts'
+import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
 import { MapView } from '../map/MapView.tsx'
+import { MAP_TRACK_COLOR, ROUTE_INACTIVE_COLOR } from '../map/yandexColors.ts'
 import type { MapPositionsSnapshot, MapViewHandle } from '../map/mapTypes.ts'
 
 type MapPanelProps = {
@@ -47,7 +49,9 @@ export function MapPanel({ id }: MapPanelProps) {
   const [filterOpen, setFilterOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [infoOpen, setInfoOpen] = useState(false)
-  const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() => readMapMarkerFromUrl())
+  const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() =>
+    readMapMarkerFromUrl(),
+  )
 
   const stagesQuery = usePublicStagesQuery()
   const activeStageId = useMemo(() => {
@@ -64,7 +68,29 @@ export function MapPanel({ id }: MapPanelProps) {
 
   const snapshot = positionsQuery.data
   const markers = snapshot?.markers
-  const checkpoints = checkpointsQuery.data ?? []
+  const stageNumber = typeof stageFilter === 'number' ? stageFilter : null
+  const checkpoints = checkpointsQuery.data?.length
+    ? checkpointsQuery.data
+    : stageNumber !== null
+      ? (routeStageCheckpoints[stageNumber] ?? [])
+      : []
+
+  // Весь маршрут остаётся видимым жёлтым, выбранный этап — красным.
+  // Геометрию выбранного этапа берём из API, если он её отдал.
+  const stageTracks = useMemo(
+    () =>
+      routeStageTracks.map((track, index) => {
+        const selected = stageNumber === index + 1
+        return {
+          ...track,
+          coordinates:
+            selected && trackQuery.data ? trackQuery.data.coordinates : track.coordinates,
+          color: selected ? MAP_TRACK_COLOR : ROUTE_INACTIVE_COLOR,
+          width: selected ? 4 : 2,
+        }
+      }),
+    [stageNumber, trackQuery.data],
+  )
 
   const participantMarkers = useMemo(
     () =>
@@ -92,7 +118,7 @@ export function MapPanel({ id }: MapPanelProps) {
       <div className="map-screen__viewport">
         <MapView
           ref={mapRef}
-          track={trackQuery.data}
+          tracks={stageTracks}
           checkpoints={checkpoints}
           markers={participantMarkers}
           fitBounds
