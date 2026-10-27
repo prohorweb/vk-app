@@ -1973,8 +1973,7 @@ body {
 
 .participant-cover svg {
   width: auto;
-  height: 128px;
-  margin-bottom: -8px;
+  height: 100%;
 }
 
 .app-frame .app-tabbar {
