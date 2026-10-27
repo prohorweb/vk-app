@@ -19,6 +19,7 @@ import {
   type ProgramAllDayZone,
 } from '../api/mocks/program.ts'
 import startLogo from '../assets/start/logo.png'
+import { useDragScroll } from '../hooks/useDragScroll.ts'
 import { PATH } from '../routes.ts'
 
 const VISIBLE_EVENTS = 2
@@ -44,6 +45,7 @@ export function ProgramPanel({ id }: ProgramPanelProps) {
   const routeNavigator = useRouteNavigator()
   const [dayId, setDayId] = useState(defaultProgramDayId)
   const [expanded, setExpanded] = useState(false)
+  const daysDragProps = useDragScroll<HTMLDivElement>()
 
   const events = programEventsForDay(dayId)
   const hiddenCount = Math.max(0, events.length - VISIBLE_EVENTS)
@@ -62,7 +64,7 @@ export function ProgramPanel({ id }: ProgramPanelProps) {
           </div>
         </section>
 
-        <div className="program-days" role="tablist" aria-label="Дни программы">
+        <div className="program-days" role="tablist" aria-label="Дни программы" {...daysDragProps}>
           {programDays.map((day) => (
             <button
               key={day.id}

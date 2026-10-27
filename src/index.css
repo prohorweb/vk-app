@@ -3,6 +3,8 @@ body,
 #root {
   height: 100%;
   margin: 0;
+  /* Документ не скроллится: вся вертикальная прокрутка — внутри панелей. */
+  overflow: hidden;
 }
 
 body {
@@ -62,6 +64,18 @@ body {
   display: flex;
   justify-content: center;
   padding: 32px 16px;
+}
+
+/*
+ * Вертикальная прокрутка — всегда внутри панели, документ при этом стоит на месте.
+ * Экраны с собственной раскладкой (карта, старт, маршрут, программа, карта локаций)
+ * переопределяют это более специфичными правилами `.имя-экрана .vkuiPanel__in`.
+ */
+.vkuiPanel__in {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .map-screen .vkuiPanel__in {
@@ -1669,6 +1683,7 @@ html.app-hide-tabbar .app-tabbar {
   gap: 8px;
   padding: 0 16px 16px;
   overflow-x: auto;
+  cursor: grab;
 }
 
 .program-days__chip {
@@ -2193,6 +2208,7 @@ html.app-hide-tabbar .app-tabbar {
   scroll-snap-type: x mandatory;
   scroll-padding-inline: 24px;
   scrollbar-width: none;
+  cursor: grab;
 }
 
 .about-gallery::-webkit-scrollbar {
@@ -2203,4 +2219,20 @@ html.app-hide-tabbar .app-tabbar {
   flex: 0 0 69%;
   scroll-snap-align: start;
   border-radius: 8px;
+}
+
+/*
+ * Drag-панорамирование горизонтальных строк мышью (useDragScroll).
+ * Обязательно в конце файла: при равной специфичности правило должно
+ * перекрывать `scroll-snap-type` конкретной строки, иначе браузер
+ * возвращает контейнер к ближайшей точке привязки и drag «не работает».
+ */
+.is-drag-scrolling {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  user-select: none;
+}
+
+.is-drag-scrolling * {
+  user-select: none;
 }

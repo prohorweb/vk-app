@@ -1,5 +1,6 @@
 import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
 import { Picture } from '../components/Picture.tsx'
+import { useDragScroll } from '../hooks/useDragScroll.ts'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { publicImage } from '../lib/publicImage.ts'
 
@@ -27,8 +28,10 @@ const SECOND_GALLERY: AboutPhoto[] = [
 ]
 
 function PhotoGallery({ label, photos }: { label: string; photos: AboutPhoto[] }) {
+  const dragProps = useDragScroll<HTMLDivElement>()
+
   return (
-    <div className="about-gallery" role="group" aria-label={label}>
+    <div className="about-gallery" role="group" aria-label={label} {...dragProps}>
       {photos.map((photo) => (
         <Picture
           key={photo.file}
