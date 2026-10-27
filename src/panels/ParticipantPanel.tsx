@@ -246,14 +246,16 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const protocolQuery = useStageProtocolQuery(stage === 'all' ? null : stage)
   const favorite = useFavoriteMutation(participantId ?? 0)
 
-  // Лайк живёт в локальном состоянии: если запрос не проходит, счётчик всё равно остаётся +1.
-  const [like, setLike] = useState<{ id: number | undefined; value: boolean } | null>(null)
-  const liked = like && like.id === participantId ? like.value : null
-  const cachedFavorite = supportersQuery.data?.is_favorite ?? false
-  const cachedCount = supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
-  const isFavorite = liked ?? cachedFavorite
-  const likeShift = liked === null || liked === cachedFavorite ? 0 : liked ? 1 : -1
-  const supportersCount = Math.max(0, cachedCount + likeShift)
+  // Лайк считаем локально: счётчик меняется ровно на единицу от показанного значения.
+  const [like, setLike] = useState<{
+    id: number | undefined
+    count: number
+    favorite: boolean
+  } | null>(null)
+  const local = like && like.id === participantId ? like : null
+  const isFavorite = local?.favorite ?? supportersQuery.data?.is_favorite ?? false
+  const supportersCount =
+    local?.count ?? supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
   const gap = participant ? trackerGap(participant.id, participant.dogs_count ?? null) : null
   const standing = standingsQuery.data?.rows.find((row) => row.participant_id === participantId)
   const protocolRow = protocolQuery.data?.rows.find((row) => row.participant_id === participantId)
@@ -587,9 +589,13 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                 size="l"
                 mode="primary"
                 onClick={() => {
-                  const next = !isFavorite
-                  setLike({ id: participantId, value: next })
-                  favorite.mutate(next)
+                  const nextFavorite = !isFavorite
+                  setLike({
+                    id: participantId,
+                    count: Math.max(0, supportersCount + (nextFavorite ? 1 : -1)),
+                    favorite: nextFavorite,
+                  })
+                  favorite.mutate(nextFavorite)
                 }}
               >
                 {isFavorite ? 'Больше не болею' : `Болею за ${favoriteName}`}
