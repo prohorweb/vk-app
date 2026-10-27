@@ -16,6 +16,7 @@
 - [x] P1 — `GET /api/v1/map/participants`: режим «все этапы» и канонические endpoints ([04-map-all-stages-endpoints.md](04-map-all-stages-endpoints.md))
 - [x] P1 — demo seed: `recorded_at` относительно `now`, разные `km_from_start` ([05-demo-seed.md](05-demo-seed.md))
 - [x] P2 — docs: лимиты пагинации, пороги freshness, CORS ([06-docs-limits-cors.md](06-docs-limits-cors.md))
+- [ ] P0 — demo seed: 6 этапов «Авачи» с реальным маршрутом Камчатки ([07-map-route-six-stages.md](07-map-route-six-stages.md))
 
 ## Используемые фронтом endpoints
 

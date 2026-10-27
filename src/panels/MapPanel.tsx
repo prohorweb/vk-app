@@ -43,6 +43,16 @@ function describePositionsBanner(
   return stale ? `Положение на ${time} · данные устарели` : `Положение на ${time}`
 }
 
+/** API может отдать трек другого региона — сверяем начало нитки с маршрутом этапа. */
+function isTrackNearRoute(apiTrack: [number, number][], routeTrack: [number, number][]): boolean {
+  const apiStart = apiTrack[0]
+  const routeStart = routeTrack[0]
+  if (!apiStart || !routeStart) {
+    return false
+  }
+  return Math.abs(apiStart[0] - routeStart[0]) < 0.5 && Math.abs(apiStart[1] - routeStart[1]) < 0.5
+}
+
 export function MapPanel({ id }: MapPanelProps) {
   const mapRef = useRef<MapViewHandle>(null)
   const [stageFilter, setStageFilter] = useState<RouteMapFilter>(1)
@@ -80,10 +90,12 @@ export function MapPanel({ id }: MapPanelProps) {
   const stageTracks = useMemo(() => {
     const tracks = routeStageTracks.map((track, index) => {
       const selected = stageNumber === index + 1
+      const apiTrack = selected ? trackQuery.data?.coordinates : undefined
       return {
         ...track,
         selected,
-        coordinates: selected && trackQuery.data ? trackQuery.data.coordinates : track.coordinates,
+        coordinates:
+          apiTrack && isTrackNearRoute(apiTrack, track.coordinates) ? apiTrack : track.coordinates,
         color: selected ? MAP_TRACK_COLOR : ROUTE_INACTIVE_COLOR,
         width: selected ? 4 : 2,
       }
