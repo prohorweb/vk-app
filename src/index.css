@@ -35,6 +35,21 @@ body {
   margin-inline: auto;
 }
 
+/*
+ * Переходы панелей. На время анимации VKUI делает панели `position: fixed`
+ * и растягивает их на всё окно: экран на мгновение разъезжается шире рамки
+ * приложения. Возвращаем панели в рамку и обрезаем выезд за её край.
+ */
+.app-frame .vkuiView__panels {
+  position: relative;
+  overflow: hidden;
+}
+
+.app-frame .vkuiView__animated .vkuiView__panel,
+.app-frame .vkuiView__swipingBack .vkuiView__panel {
+  position: absolute;
+}
+
 .app-shell {
   display: flex;
   flex-direction: column;
