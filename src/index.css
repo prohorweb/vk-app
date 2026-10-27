@@ -2227,6 +2227,8 @@ html.app-hide-tabbar .app-tabbar {
 
 /* Полосатая лента «Авача»: чередование голубого и красного. */
 .media-stripes {
+  /* `.vkuiPanel__in` — flex-колонка, без этого лента сжимается в 0px. */
+  flex: none;
   height: 4px;
   margin: 0 16px 16px;
   background: repeating-linear-gradient(
