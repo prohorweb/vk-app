@@ -42,7 +42,6 @@ export function AppConfig({ children }: AppConfigProps) {
       colorScheme={appearance}
       platform={vk_platform === 'desktop_web' ? 'vkcom' : undefined}
       isWebView={inClient}
-      hasCustomPanelHeaderAfter
     >
       <AdaptivityProvider {...adaptivity}>
         <AppRoot mode="full" safeAreaInsets={insets} className={inClient ? undefined : 'app-frame'}>

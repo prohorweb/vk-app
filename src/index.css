@@ -2184,20 +2184,456 @@ html.app-hide-tabbar .app-tabbar {
   }
 }
 
-.result-row__before {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* Результаты: чипы этапов на голубой полосе, списки по дисциплинам. */
+.results-screen .vkuiPanel__in {
+  background: var(--avacha-results-bg);
 }
 
-.result-row__position {
+.results-body {
+  padding-bottom: 24px;
+}
+
+.results-download svg {
+  color: var(--avacha-secondary-blue);
+}
+
+.results-download.is-disabled svg {
+  color: var(--avacha-icon-disabled);
+}
+
+.results-download.is-muted svg,
+.results-download.is-done svg {
+  color: var(--avacha-secondary-light-blue);
+}
+
+.results-download[disabled] {
+  cursor: default;
+  opacity: 1;
+}
+
+/* Чипы этапов: 40 px, скругление 12, выбранный — тёмно-синий. */
+.results-stages {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.results-stages::-webkit-scrollbar {
+  display: none;
+}
+
+.results-stage {
+  flex: none;
+  box-sizing: border-box;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
+  color: var(--vkui--color_text_primary);
+  font: inherit;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+}
+
+.results-stage:not(:first-child) {
+  padding: 0;
+}
+
+.results-stage.is-selected {
+  background: var(--avacha-brand-dark-blue);
+  color: var(--vkui--color_text_contrast);
+}
+
+.results-stage[disabled] {
+  background: color-mix(in srgb, var(--avacha-brand-dark-blue) 8%, transparent);
+  color: color-mix(in srgb, var(--avacha-brand-dark-blue) 55%, transparent);
+  cursor: default;
+}
+
+.results-stage[disabled].is-selected {
+  background: var(--avacha-brand-dark-blue);
+  color: var(--vkui--color_text_contrast);
+}
+
+/* Уведомление о ещё не начавшемся этапе. */
+.results-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 16px 8px;
+  padding: 12px 12px 12px 16px;
+  border-radius: 12px;
+  background: var(--avacha-warning-tint);
+  color: var(--vkui--color_text_primary);
+}
+
+.results-warning > svg {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: var(--vkui--color_text_primary);
+}
+
+.results-warning__text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.results-warning__close {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--vkui--color_icon_secondary);
+  cursor: pointer;
+}
+
+/* Списки по дисциплинам: белые карточки на голубой подложке. */
+.results-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.results-card {
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
+}
+
+.results-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  background: none;
+  color: var(--vkui--color_text_primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.results-card__title {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.results-card__chevron {
+  flex: none;
   width: 20px;
+  height: 20px;
+  color: var(--vkui--color_icon_secondary);
+  transition: transform 0.15s ease;
+}
+
+.results-card.is-open .results-card__chevron {
+  transform: rotate(90deg);
+}
+
+.results-card__count {
+  margin: 0;
+  padding: 0 16px 8px;
   color: var(--vkui--color_text_secondary);
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.results-table__head {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--vkui--color_background_secondary);
+  color: var(--vkui--color_text_secondary);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+.results-table__times {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.results-table__times > span:first-child {
+  color: var(--vkui--color_text_primary);
+}
+
+.results-row {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--vkui--color_separator_primary);
+  cursor: pointer;
+}
+
+.results-row:first-of-type {
+  border-top: 0;
+}
+
+.results-row__num {
+  padding-top: 1px;
+  color: var(--vkui--color_text_primary);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+.results-row__main {
+  min-width: 0;
+}
+
+.results-row__name {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: var(--vkui--color_text_primary);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.results-row__bib {
+  display: inline-block;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--avacha-bib-bg);
+  color: var(--avacha-bib-text);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+
+.results-row__region {
+  margin: 2px 0 0;
+  color: var(--vkui--color_text_secondary);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+.results-row__metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.results-metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--vkui--color_text_primary);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+.results-metric svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--vkui--color_icon_secondary);
+}
+
+.results-row__times {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.results-row__result {
+  color: var(--vkui--color_text_primary);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.results-row__total {
+  color: var(--vkui--color_text_secondary);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+.results-row__status {
+  color: var(--vkui--color_text_negative);
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.results-row__status-stage {
+  color: var(--vkui--color_text_secondary);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+/* До старта гонки: карточка со статусом приёма заявок. */
+.results-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 16px;
+  padding: 40px 24px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
   text-align: center;
 }
 
-.results-cover {
-  margin-bottom: 8px;
+.results-empty > svg {
+  width: 56px;
+  height: 56px;
+  color: var(--vkui--color_icon_secondary);
+}
+
+.results-empty__title {
+  margin: 16px 0 0;
+  color: var(--vkui--color_text_primary);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.results-empty__text {
+  max-width: 280px;
+  margin: 8px 0 0;
+  color: var(--vkui--color_text_secondary);
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.results-empty__button {
+  margin-top: 16px;
+}
+
+/* Уведомления: файл скачан, ошибка загрузки, обратный отсчёт. */
+.results-toast {
+  position: fixed;
+  inset-inline-start: 50%;
+  bottom: calc(var(--app-tabbar-total-height) + 8px);
+  z-index: 30;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  inline-size: min(calc(100% - 16px), 344px);
+  padding: 12px 12px 12px 14px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_content);
+  box-shadow: var(--vkui--elevation3);
+  transform: translateX(-50%);
+}
+
+.results-toast--error {
+  background: var(--vkui--color_background_negative_tint);
+}
+
+.results-toast__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: var(--vkui--color_icon_secondary);
+}
+
+.results-toast__icon--error {
+  color: var(--vkui--color_icon_negative);
+}
+
+.results-toast__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.results-toast__title,
+.results-toast__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.results-toast__title {
+  color: var(--vkui--color_text_primary);
+  font-weight: 600;
+}
+
+.results-toast__text {
+  color: var(--vkui--color_text_secondary);
+}
+
+.results-toast__link {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--avacha-link);
+  font: inherit;
+  font-size: 15px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.results-toast__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--vkui--color_icon_secondary);
+  cursor: pointer;
 }
 
 .program-screen .vkuiPanel__in {

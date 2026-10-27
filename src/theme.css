@@ -5,6 +5,11 @@
   --avacha-brand-red: #e7372f;
   --avacha-success: #2a7c35;
   --avacha-warning: #d76a18;
+  --avacha-warning-tint: #fff2d6;
+  --avacha-icon-disabled: #b8c1cc;
+  --avacha-results-bg: var(--avacha-secondary-light-blue);
+  --avacha-bib-bg: var(--avacha-secondary-light-blue);
+  --avacha-bib-text: var(--avacha-brand-dark-blue);
 }
 
 :root,
@@ -64,6 +69,11 @@
   --vkui--color_text_accent: #3d8fd1;
   --vkui--color_icon_accent_themed: #3d8fd1;
   --vkui--color_text_accent_themed: #3d8fd1;
+  --avacha-warning-tint: #33200f;
+  --avacha-icon-disabled: #4f5257;
+  --avacha-results-bg: #1f272b;
+  --avacha-bib-bg: #23455c;
+  --avacha-bib-text: var(--avacha-secondary-light-blue);
 }
 
 .vkuiButton__modePrimary.vkuiButton__sizeL {
