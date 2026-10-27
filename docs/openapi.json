@@ -1969,6 +1969,168 @@
         }
       }
     },
+    "/api/v1/content/viewer-locations": {
+      "get": {
+        "tags": [
+          "v1",
+          "content"
+        ],
+        "summary": "Зрительские локации",
+        "description": "Публичные зрительские локации.\n\nСортировка: по типу (start → finish → viewpoint → festival → other),\nзатем по названию. Кэш 1 час.",
+        "operationId": "list_viewer_locations_api_v1_content_viewer_locations_get",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ViewerLocationKind"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по типу локации",
+              "title": "Kind"
+            },
+            "description": "Фильтр по типу локации"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Размер страницы, 1–100. По умолчанию 50.",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Размер страницы, 1–100. По умолчанию 50."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 0,
+              "description": "Смещение от начала списка, 0–10000.",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Смещение от начала списка, 0–10000."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ViewerLocationPublicResponse"
+                  },
+                  "title": "Response List Viewer Locations Api V1 Content Viewer Locations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pages/": {
+      "get": {
+        "tags": [
+          "v1",
+          "pages"
+        ],
+        "summary": "Список опубликованных страниц",
+        "description": "Используется для меню «Ещё» в VK Mini App.",
+        "operationId": "list_pages_api_v1_pages__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PageListItem"
+                  },
+                  "type": "array",
+                  "title": "Response List Pages Api V1 Pages  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pages/{slug}": {
+      "get": {
+        "tags": [
+          "v1",
+          "pages"
+        ],
+        "summary": "Получить страницу по slug",
+        "operationId": "get_page_api_v1_pages__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50,
+              "description": "Ключ страницы: about / rules / organizers",
+              "title": "Slug"
+            },
+            "description": "Ключ страницы: about / rules / organizers"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Страница не найдена"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/auth/login": {
       "post": {
         "tags": [
@@ -4500,6 +4662,76 @@
         ],
         "title": "OfficialMarkResponse"
       },
+      "PageDetail": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Markdown/HTML с картинками"
+          },
+          "cover_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Url",
+            "description": "URL обложки (1200×675)"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "title",
+          "content"
+        ],
+        "title": "PageDetail",
+        "description": "Полная страница — для отображения контента."
+      },
+      "PageListItem": {
+        "properties": {
+          "slug": {
+            "type": "string",
+            "title": "Slug",
+            "description": "Уникальный ключ: about / rules / organizers"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Заголовок для меню"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slug",
+          "title"
+        ],
+        "title": "PageListItem",
+        "description": "Короткая карточка страницы — для меню «Ещё»."
+      },
       "ParticipantDetail": {
         "properties": {
           "id": {
@@ -6058,6 +6290,154 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "ViewerLocationKind": {
+        "type": "string",
+        "enum": [
+          "start",
+          "finish",
+          "festival",
+          "viewpoint",
+          "other"
+        ],
+        "title": "ViewerLocationKind",
+        "description": "Виды зрительских локаций"
+      },
+      "ViewerLocationPublicResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ViewerLocationKind"
+          },
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "title": "Lon"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "directions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Directions"
+          },
+          "travel_time_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Travel Time Minutes"
+          },
+          "parking_info": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parking Info"
+          },
+          "facilities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facilities"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
+          "first_arrival_planned_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Arrival Planned At"
+          },
+          "safety_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Safety Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "lat",
+          "lon"
+        ],
+        "title": "ViewerLocationPublicResponse",
+        "description": "Публичная зрительская локация для карты."
       }
     },
     "securitySchemes": {

@@ -629,6 +629,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/content/viewer-locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Зрительские локации
+         * @description Публичные зрительские локации.
+         *
+         *     Сортировка: по типу (start → finish → viewpoint → festival → other),
+         *     затем по названию. Кэш 1 час.
+         */
+        get: operations["list_viewer_locations_api_v1_content_viewer_locations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Список опубликованных страниц
+         * @description Используется для меню «Ещё» в VK Mini App.
+         */
+        get: operations["list_pages_api_v1_pages__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pages/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить страницу по slug */
+        get: operations["get_page_api_v1_pages__slug__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/auth/login": {
         parameters: {
             query?: never;
@@ -1541,6 +1601,44 @@ export interface components {
             cancels_mark_id: number | null;
         };
         /**
+         * PageDetail
+         * @description Полная страница — для отображения контента.
+         */
+        PageDetail: {
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /**
+             * Content
+             * @description Markdown/HTML с картинками
+             */
+            content: string;
+            /**
+             * Cover Url
+             * @description URL обложки (1200×675)
+             */
+            cover_url?: string | null;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /**
+         * PageListItem
+         * @description Короткая карточка страницы — для меню «Ещё».
+         */
+        PageListItem: {
+            /**
+             * Slug
+             * @description Уникальный ключ: about / rules / organizers
+             */
+            slug: string;
+            /**
+             * Title
+             * @description Заголовок для меню
+             */
+            title: string;
+        };
+        /**
          * ParticipantDetail
          * @description Полная карточка участника.
          */
@@ -2121,6 +2219,45 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * ViewerLocationKind
+         * @description Виды зрительских локаций
+         * @enum {string}
+         */
+        ViewerLocationKind: "start" | "finish" | "festival" | "viewpoint" | "other";
+        /**
+         * ViewerLocationPublicResponse
+         * @description Публичная зрительская локация для карты.
+         */
+        ViewerLocationPublicResponse: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            kind: components["schemas"]["ViewerLocationKind"];
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Address */
+            address?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Directions */
+            directions?: string | null;
+            /** Travel Time Minutes */
+            travel_time_minutes?: number | null;
+            /** Parking Info */
+            parking_info?: string | null;
+            /** Facilities */
+            facilities?: string[] | null;
+            /** Photo Url */
+            photo_url?: string | null;
+            /** First Arrival Planned At */
+            first_arrival_planned_at?: string | null;
+            /** Safety Notes */
+            safety_notes?: string | null;
         };
     };
     responses: never;
@@ -3281,6 +3418,101 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["LeadersResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_viewer_locations_api_v1_content_viewer_locations_get: {
+        parameters: {
+            query?: {
+                /** @description Фильтр по типу локации */
+                kind?: components["schemas"]["ViewerLocationKind"] | null;
+                /** @description Размер страницы, 1–100. По умолчанию 50. */
+                limit?: number;
+                /** @description Смещение от начала списка, 0–10000. */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ViewerLocationPublicResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pages_api_v1_pages__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageListItem"][];
+                };
+            };
+        };
+    };
+    get_page_api_v1_pages__slug__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Ключ страницы: about / rules / organizers */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageDetail"];
+                };
+            };
+            /** @description Страница не найдена */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
