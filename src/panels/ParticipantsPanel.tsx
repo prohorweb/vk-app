@@ -14,7 +14,7 @@ import { AsyncView } from '../components/AsyncView.tsx'
 import { BottomSheet } from '../components/BottomSheet.tsx'
 import { ParticipantAvatar } from '../components/ParticipantAvatar.tsx'
 import { useDebounced } from '../hooks/useDebounced.ts'
-import { formatCount } from '../lib/labels.ts'
+import { disciplineLabel, formatCount } from '../lib/labels.ts'
 import type { DisciplinePublic, ParticipantListItem } from '../types/index.ts'
 
 type ListSort = 'bib' | 'position' | 'supporters'
@@ -58,7 +58,7 @@ function groupByDiscipline(
   disciplines: DisciplinePublic[],
 ) {
   const order = new Map(disciplines.map((item) => [item.id, item.sort_order]))
-  const names = new Map(disciplines.map((item) => [item.id, item.name]))
+  const names = new Map(disciplines.map((item) => [item.id, disciplineLabel(item)]))
   const groups = new Map<number, { title: string; rows: Row[] }>()
   for (const item of items) {
     const key = item.discipline_id ?? 0
@@ -268,7 +268,7 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
               checked={draftDisciplineId === discipline.id}
               onChange={() => setDraftDisciplineId(discipline.id)}
             >
-              {discipline.name}
+              {disciplineLabel(discipline)}
             </Radio>
           ))}
         </div>

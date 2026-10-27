@@ -1,4 +1,5 @@
 import type {
+  DisciplinePublic,
   NewsSource,
   ParticipantStatus,
   PublicationStatus,
@@ -51,6 +52,20 @@ const publicationLabels: Record<PublicationStatus, string> = {
 
 export function publicationLabel(status: PublicationStatus): string {
   return publicationLabels[status]
+}
+
+/**
+ * Названия дисциплин по макету. Справочник пока отдаёт прежние формулировки,
+ * поэтому подписи живут на слое отображения и снимаются после его обновления.
+ */
+const disciplineLabels: Record<string, string> = {
+  long: 'Лыжи – 2 собаки',
+  middle: 'Нарта – 8 собак',
+  sprint: 'Нарта – более 8 собак',
+}
+
+export function disciplineLabel(discipline: DisciplinePublic): string {
+  return disciplineLabels[discipline.code] ?? discipline.name
 }
 
 export function formatCount(value: number): string {
