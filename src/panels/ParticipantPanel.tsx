@@ -52,8 +52,6 @@ type StageSelection = 'all' | number
 
 type StatusTone = 'success' | 'warning' | 'danger'
 
-type NoticeKind = 'favorite-error'
-
 const kmFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 })
 
 function parseParticipantId(value: string | undefined): number | undefined {
@@ -191,23 +189,18 @@ async function shareParticipant(message: string, link: string): Promise<void> {
 }
 
 function NoticeCard({
-  tone,
   icon,
   title,
   text,
   onClose,
 }: {
-  tone: 'success' | 'muted' | 'error'
   icon: ReactNode
   title: string
   text?: string
   onClose: () => void
 }) {
   return (
-    <aside
-      className={`participant-notice participant-notice--${tone}`}
-      role={tone === 'error' ? 'alert' : 'status'}
-    >
+    <aside className="participant-notice" role="alert">
       <span className="participant-notice__icon" aria-hidden>
         {icon}
       </span>
@@ -232,7 +225,6 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const params = useParams<'participantId'>()
   const participantId = parseParticipantId(params?.participantId)
   const [selectedStage, setSelectedStage] = useState<StageSelection | null>(null)
-  const [notice, setNotice] = useState<NoticeKind | null>(null)
   const [staleDismissedAt, setStaleDismissedAt] = useState<number | null>(null)
   const [expanded, setExpanded] = useState(false)
   const [mountedAt] = useState(() => Date.now())
@@ -278,14 +270,6 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   )
 
   const bio = participant?.bio
-
-  useEffect(() => {
-    if (!notice) {
-      return
-    }
-    const timer = window.setTimeout(() => setNotice(null), 8000)
-    return () => window.clearTimeout(timer)
-  }, [notice])
 
   useEffect(() => {
     const element = bioRef.current
@@ -369,7 +353,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
         : 'Информация появится позже'
 
   const showToggle = expanded || bioOverflow
-  const showStale = stale && staleDismissedAt !== lastUpdatedAt && notice === null
+  const showStale = stale && staleDismissedAt !== lastUpdatedAt
   const status = participant
     ? statusView(participant.status, gap?.outcome ?? null, raceStarted)
     : null
@@ -597,11 +581,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                 size="l"
                 mode="primary"
                 loading={favorite.isPending}
-                onClick={() => {
-                  favorite.mutate(!isFavorite, {
-                    onError: () => setNotice('favorite-error'),
-                  })
-                }}
+                onClick={() => favorite.mutate(!isFavorite)}
               >
                 {isFavorite ? 'Больше не болею' : `Болею за ${favoriteName}`}
               </Button>
@@ -618,18 +598,8 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
           </div>
         ) : null}
       </AsyncView>
-      {notice === 'favorite-error' ? (
-        <NoticeCard
-          tone="error"
-          icon={<Icon24ErrorCircleOutline />}
-          title="Не удалось обновить подписку"
-          text="Проверьте подключение и попробуйте ещё раз."
-          onClose={() => setNotice(null)}
-        />
-      ) : null}
       {showStale ? (
         <NoticeCard
-          tone="error"
           icon={<Icon24ErrorCircleOutline />}
           title="Данные не были обновлены"
           text={

@@ -1806,7 +1806,7 @@ body {
   padding: 0;
 }
 
-/* Уведомления поверх карточки: ошибка подписки и ошибка обновления. */
+/* Уведомление поверх карточки: данные не удалось обновить. */
 .participant-notice {
   position: fixed;
   inset-inline-start: 50%;
@@ -1819,7 +1819,7 @@ body {
   inline-size: min(calc(100% - 16px), 344px);
   padding: 12px 12px 12px 14px;
   border-radius: 12px;
-  background: var(--vkui--color_background_content);
+  background: var(--vkui--color_background_negative_tint);
   box-shadow: var(--vkui--elevation3);
   transform: translateX(-50%);
 }
@@ -1831,7 +1831,7 @@ body {
   flex: none;
   width: 24px;
   height: 24px;
-  color: var(--avacha-success);
+  color: var(--vkui--color_icon_negative);
 }
 
 .participant-notice__content {
@@ -1869,19 +1869,7 @@ body {
   cursor: pointer;
 }
 
-.participant-notice--muted .participant-notice__icon {
-  color: var(--vkui--color_icon_secondary);
-}
-
-.participant-notice--error {
-  background: var(--vkui--color_background_negative_tint);
-}
-
-.participant-notice--error .participant-notice__icon {
-  color: var(--vkui--color_icon_negative);
-}
-
-.participant-notice--error .participant-notice__text {
+.participant-notice__text {
   color: var(--vkui--color_text_secondary);
 }
 

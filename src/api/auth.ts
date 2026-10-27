@@ -48,27 +48,7 @@ async function readUserInfo(): Promise<VKUserInfo | null> {
   }
 }
 
-type AuthListener = () => void
-
 let authTask: Promise<void> | undefined
-let authError: string | null = null
-const authListeners = new Set<AuthListener>()
-
-function publishAuthError(message: string | null): void {
-  authError = message
-  authListeners.forEach((listener) => listener())
-}
-
-export function getAuthError(): string | null {
-  return authError
-}
-
-export function subscribeAuthError(listener: AuthListener): () => void {
-  authListeners.add(listener)
-  return () => {
-    authListeners.delete(listener)
-  }
-}
 
 export function resetAuthTask(): void {
   authTask = undefined
@@ -98,16 +78,10 @@ setUnauthorizedHandler(reloginOnce)
 
 export function signInWithVk(): Promise<void> {
   if (!authTask) {
-    publishAuthError(null)
-    authTask = performSignIn()
-      .then(() => {
-        publishAuthError(null)
-      })
-      .catch((error: unknown) => {
-        authTask = undefined
-        publishAuthError(error instanceof Error ? error.message : 'Не удалось войти')
-        throw error
-      })
+    authTask = performSignIn().catch((error: unknown) => {
+      authTask = undefined
+      throw error
+    })
   }
   return authTask
 }
