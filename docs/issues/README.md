@@ -9,13 +9,15 @@
 
 ## Список
 
-- [ ] [00-umbrella.md](00-umbrella.md) — общий чек-лист (P0)
-- [ ] [01-track-schema.md](01-track-schema.md) — track: схема GeoJSON и 404 (P0)
-- [ ] [02-results-stage-404.md](02-results-stage-404.md) — results/stage: 404 или draft (P0)
-- [ ] [03-active-stage.md](03-active-stage.md) — directory: активный этап (P0)
-- [ ] [04-map-all-stages-endpoints.md](04-map-all-stages-endpoints.md) — map: «все этапы» и канонические endpoints (P1)
-- [ ] [05-demo-seed.md](05-demo-seed.md) — demo seed: актуальные данные трекера (P1)
-- [ ] [06-docs-limits-cors.md](06-docs-limits-cors.md) — docs: лимиты, freshness, CORS (P2)
+Статус на 26.10.2026: все пункты влиты в backend develop (`2d04231`).
+
+- [x] [00-umbrella.md](00-umbrella.md) — общий чек-лист (P0)
+- [x] [01-track-schema.md](01-track-schema.md) — track: схема GeoJSON и 404 (P0)
+- [x] [02-results-stage-404.md](02-results-stage-404.md) — results/stage: 404 или draft (P0)
+- [x] [03-active-stage.md](03-active-stage.md) — directory: активный этап (P0)
+- [x] [04-map-all-stages-endpoints.md](04-map-all-stages-endpoints.md) — map: «все этапы» и канонические endpoints (P1)
+- [x] [05-demo-seed.md](05-demo-seed.md) — demo seed: актуальные данные трекера (P1)
+- [x] [06-docs-limits-cors.md](06-docs-limits-cors.md) — docs: лимиты, freshness, CORS (P2)
 
 ## Как создать issues
 

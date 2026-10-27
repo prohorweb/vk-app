@@ -2,6 +2,8 @@
 
 **Приоритет:** P0
 **Endpoint:** `GET /api/v1/stages/{stage_id}/track`
+**Статус:** закрыто в backend develop (`e7c45d1`, 26.10.2026): ответ типизирован
+`StageTrackResponse`, `404` описан и возвращается при отсутствии маршрута.
 
 ## Сейчас
 
@@ -28,9 +30,9 @@
 
 ## Acceptance criteria
 
-- [ ] `npm run gen:api` даёт типизированные `coordinates: [number, number][]`.
-- [ ] `404` присутствует в контракте для отсутствующего трека.
-- [ ] Фронт убирает рантайм-валидацию `parseStageTrackPayload`.
+- [x] `npm run gen:api` даёт типизированные `coordinates: number[][]`.
+- [x] `404` присутствует в контракте для отсутствующего трека.
+- [x] Фронт убрал парсинг `unknown`: используется `StageTrackResponse`, осталась только проверка длины пар.
 
 ## Контекст
 

@@ -1,30 +1,20 @@
-# docs: описать лимиты, пороги freshness и CORS
+# docs: лимиты, пороги freshness и CORS
 
 **Приоритет:** P2
+**Статус:** закрыто в backend develop (`2d04231`, 26.10.2026)
 
-## Сейчас
+## Итог
 
-- Максимальный `limit` у `/api/v1/map/participants` не описан в OpenAPI:
-  эмпирически `1000` — `200`, `5000` — `422`.
-- Пороги `freshness_status` (`fresh` / `delayed` / `stale`) нигде не зафиксированы.
-- Не описано, что `no_data` приходит с `position: null`.
-- CORS проверен только для localhost.
+- `limit`/`offset` описаны в Swagger с `minimum`/`maximum`. Верхняя граница зависит от
+  настроек организатора (`.env`) и не фиксируется в контракте — фронт не должен
+  рассчитывать на конкретное число, только обрабатывать `422`.
+- Пороги `freshness_status` тоже конфигурируемые: интервал трекера задаётся у этапа,
+  порог `stale` — `TRACKING_STALE_MISSED_INTERVALS` в `.env`. Фиксировать значения
+  в контракте не нужно.
+- `no_data` приходит с `position: null` — покрыто тестом `test_no_data_freshness_means_position_is_null`.
+- CORS для доменов мини-приложения — покрыт тестом `test_cors`.
 
-## Нужно
+## Что осталось на стороне фронта
 
-- Добавить `maximum`/`description` для `limit` и `offset`.
-- Описать семантику `freshness_status` и пороги в `description` схемы.
-- Зафиксировать, что участники без данных приходят с `position: null` (`no_data`).
-- Проверить `allow_origins` и preflight для production-домена VK Mini App
-  (включая iframe-контекст `vk.com` / `vk.ru`).
-
-## Acceptance criteria
-
-- [ ] Лимиты видны в контракте, а не только по `422`.
-- [ ] Фронт и бекенд трактуют статусы freshness одинаково.
-- [ ] Запросы проходят с production-домена мини-приложения, `OPTIONS` возвращает корректные заголовки.
-
-## Контекст
-
-- Фронт: `freshnessToStatus` в `src/api/map.ts`.
-- Проверка 25.10.2026: `limit=1000` → `200`, `limit=5000` → `422`.
+- `freshnessToStatus` в `src/api/map.ts` трактует `no_data` как `stale`; участники без
+  координат отбрасываются до отрисовки — поведение совпадает с контрактом.

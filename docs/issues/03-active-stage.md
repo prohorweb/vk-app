@@ -2,6 +2,8 @@
 
 **Приоритет:** P0
 **Endpoint:** `GET /api/v1/directory/stages?season_id=…`
+**Статус:** закрыто в backend develop (`7baa765`, `de1d6d8`, 26.10.2026): добавлен
+`GET /api/v1/directory/stages/active`, seed проставляет этапу `status: active`.
 
 ## Сейчас
 
@@ -19,9 +21,9 @@
 
 ## Acceptance criteria
 
-- [ ] Карта по умолчанию открывает активный этап без fallback на первый.
-- [ ] `status: active` встречается ровно у одного этапа сезона либо описан endpoint.
-- [ ] `openapi.json` обновлён.
+- [x] Карта по умолчанию открывает активный этап без fallback на первый.
+- [x] `status: active` встречается ровно у одного этапа сезона либо описан endpoint.
+- [x] `openapi.json` обновлён.
 
 ## Контекст
 
