@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Icon24Cancel, Icon24CupOutline, Icon24FavoriteOutline, Icon24Filter } from '@vkontakte/icons'
+import {
+  Icon16MicrophoneOutline,
+  Icon24Cancel,
+  Icon24CupOutline,
+  Icon24FavoriteOutline,
+  Icon24Filter,
+} from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, Radio, Search } from '@vkontakte/vkui'
 import { trackerGap } from '../api/gaps.ts'
 import { useDisciplinesQuery, useParticipantsQuery, useStandingsQuery } from '../api/queries.ts'
@@ -61,13 +67,20 @@ function groupByDiscipline(
       ...item,
       racePosition: gap.outcome ? null : (positions.get(item.id) ?? null),
     }
-    const group = groups.get(key) ?? { title: names.get(key) ?? item.discipline ?? 'Без дисциплины', rows: [] }
+    const group = groups.get(key) ?? {
+      title: names.get(key) ?? item.discipline ?? 'Без дисциплины',
+      rows: [],
+    }
     group.rows.push(row)
     groups.set(key, group)
   }
 
   return [...groups.entries()]
-    .sort(([left], [right]) => (order.get(left) ?? Number.POSITIVE_INFINITY) - (order.get(right) ?? Number.POSITIVE_INFINITY) || left - right)
+    .sort(
+      ([left], [right]) =>
+        (order.get(left) ?? Number.POSITIVE_INFINITY) -
+          (order.get(right) ?? Number.POSITIVE_INFINITY) || left - right,
+    )
     .map(([, group]) => ({
       ...group,
       rows: [...group.rows].sort((left, right) => compareRows(left, right, sort)),
@@ -98,86 +111,117 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
   return (
     <Panel id={id}>
       <PanelHeader>Участники</PanelHeader>
-      <div className="participants-toolbar">
-        <Search
-          value={search}
-          placeholder="Поиск по имени"
-          onChange={(event) => setSearch(event.target.value)}
-        />
-        <Button
-          size="l"
-          mode="primary"
-          className="participants-filter"
-          aria-label="Фильтр"
-          onClick={() => {
-            setDraftSort(sort)
-            setDraftDisciplineId(disciplineId)
-            setFilterOpen(true)
-          }}
-        >
-          <Icon24Filter />
-        </Button>
-      </div>
-      <AsyncView
-        isLoading={isLoading}
-        isError={isError}
-        isEmpty={!isLoading && !isError && groups.length === 0}
-        updatedAt={participantsQuery.dataUpdatedAt}
-      >
-        <div className="participants-list">
-          {groups.map((group) => (
-            <section key={group.title} className="discipline-group">
-              <header className="discipline-group__head">
-                <h2 className="discipline-group__title">{group.title}</h2>
-                <p className="discipline-group__count">Всего участников: {group.rows.length}</p>
-              </header>
-              <ul className="musher-list">
-                {group.rows.map((row, index) => {
-                  const name = splitName(row.name)
-
-                  return (
-                    <li key={row.id} className="musher-item">
-                      <button
-                        type="button"
-                        className="musher-row"
-                        onClick={() => void routeNavigator.push(`/participants/${row.id}`)}
-                      >
-                        <span className="musher-row__rank">{index + 1}</span>
-                        <ParticipantAvatar
-                          className="avatar-36 musher-row__avatar"
-                          id={row.id}
-                          name={row.name}
-                          src={row.photo_url}
-                        />
-                        <span className="musher-row__main">
-                          <span className="musher-row__name">{name.first}</span>
-                          <span className="musher-row__surname">
-                            <span className="musher-row__surname-text">{name.rest}</span>
-                            <span className="bib-badge">#{row.number}</span>
-                          </span>
-                          {row.region ? <span className="musher-row__region">{row.region}</span> : null}
-                        </span>
-                        <span className="musher-row__stats">
-                          <span className="musher-row__stat">
-                            <span className="visually-hidden">Позиция</span>
-                            {row.racePosition ?? '—'}
-                            <Icon24CupOutline className="musher-row__icon" width={16} height={16} />
-                          </span>
-                          <span className="musher-row__stat">
-                            <span className="visually-hidden">Болельщики</span>
-                            {formatCount(row.supporters_count)}
-                            <Icon24FavoriteOutline className="musher-row__icon" width={16} height={16} />
-                          </span>
-                        </span>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            </section>
-          ))}
+      <div className="participants-screen">
+        <div className="participants-toolbar">
+          <div className="participants-search">
+            <Search
+              value={search}
+              placeholder="Поиск"
+              onChange={(event) => setSearch(event.target.value)}
+            />
+            {search ? null : (
+              <Icon16MicrophoneOutline
+                className="participants-search__mic"
+                width={20}
+                height={20}
+              />
+            )}
+          </div>
+          <Button
+            size="l"
+            mode="primary"
+            className="participants-filter"
+            aria-label="Фильтр"
+            onClick={() => {
+              setDraftSort(sort)
+              setDraftDisciplineId(disciplineId)
+              setFilterOpen(true)
+            }}
+          >
+            <Icon24Filter />
+          </Button>
         </div>
-      </AsyncView>
+        <AsyncView
+          isLoading={isLoading}
+          isError={isError}
+          isEmpty={!isLoading && !isError && groups.length === 0}
+          updatedAt={participantsQuery.dataUpdatedAt}
+        >
+          <div className="participants-list">
+            {groups.map((group) => (
+              <section key={group.title} className="discipline-group">
+                <header className="discipline-group__head">
+                  <h2 className="discipline-group__title">{group.title}</h2>
+                </header>
+                <p className="discipline-group__count">Всего участников: {group.rows.length}</p>
+                <div className="discipline-group__columns">
+                  <span className="discipline-group__column">п/п</span>
+                  <span className="discipline-group__column">участник</span>
+                  <span className="discipline-group__columns-stats">
+                    <span className="discipline-group__column">позиция</span>
+                    <span className="discipline-group__column discipline-group__column--secondary">
+                      болельщики
+                    </span>
+                  </span>
+                </div>
+                <ul className="musher-list">
+                  {group.rows.map((row, index) => {
+                    const name = splitName(row.name)
+
+                    return (
+                      <li key={row.id} className="musher-item">
+                        <button
+                          type="button"
+                          className="musher-row"
+                          onClick={() => void routeNavigator.push(`/participants/${row.id}`)}
+                        >
+                          <span className="musher-row__rank">{index + 1}</span>
+                          <ParticipantAvatar
+                            className="avatar-40 musher-row__avatar"
+                            id={row.id}
+                            name={row.name}
+                            src={row.photo_url}
+                          />
+                          <span className="musher-row__main">
+                            <span className="musher-row__name">{name.first}</span>
+                            <span className="musher-row__surname">
+                              <span className="musher-row__surname-text">{name.rest}</span>
+                              <span className="bib-badge">#{row.number}</span>
+                            </span>
+                            {row.region ? (
+                              <span className="musher-row__region">{row.region}</span>
+                            ) : null}
+                          </span>
+                          <span className="musher-row__stats">
+                            <span className="musher-row__stat">
+                              <span className="visually-hidden">Позиция</span>
+                              {row.racePosition ?? '—'}
+                              <Icon24CupOutline
+                                className="musher-row__icon"
+                                width={16}
+                                height={16}
+                              />
+                            </span>
+                            <span className="musher-row__stat">
+                              <span className="visually-hidden">Болельщики</span>
+                              {formatCount(row.supporters_count)}
+                              <Icon24FavoriteOutline
+                                className="musher-row__icon"
+                                width={16}
+                                height={16}
+                              />
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </AsyncView>
+      </div>
       <BottomSheet
         open={filterOpen}
         onClose={() => setFilterOpen(false)}
