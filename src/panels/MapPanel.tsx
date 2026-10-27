@@ -77,20 +77,20 @@ export function MapPanel({ id }: MapPanelProps) {
 
   // Весь маршрут остаётся видимым жёлтым, выбранный этап — красным.
   // Геометрию выбранного этапа берём из API, если он её отдал.
-  const stageTracks = useMemo(
-    () =>
-      routeStageTracks.map((track, index) => {
-        const selected = stageNumber === index + 1
-        return {
-          ...track,
-          coordinates:
-            selected && trackQuery.data ? trackQuery.data.coordinates : track.coordinates,
-          color: selected ? MAP_TRACK_COLOR : ROUTE_INACTIVE_COLOR,
-          width: selected ? 4 : 2,
-        }
-      }),
-    [stageNumber, trackQuery.data],
-  )
+  const stageTracks = useMemo(() => {
+    const tracks = routeStageTracks.map((track, index) => {
+      const selected = stageNumber === index + 1
+      return {
+        ...track,
+        selected,
+        coordinates: selected && trackQuery.data ? trackQuery.data.coordinates : track.coordinates,
+        color: selected ? MAP_TRACK_COLOR : ROUTE_INACTIVE_COLOR,
+        width: selected ? 4 : 2,
+      }
+    })
+    // Выбранный этап рисуем последним, иначе общий маршрут перекрывает его.
+    return tracks.sort((left, right) => Number(left.selected) - Number(right.selected))
+  }, [stageNumber, trackQuery.data])
 
   const participantMarkers = useMemo(
     () =>

@@ -240,8 +240,10 @@ export const routeMapMarkers: RouteMapMarker[] = [
 
 export const routeFilterOptions: { value: RouteMapFilter; label: string }[] = [
   { value: 'all', label: 'Все этапы' },
-  { value: 1, label: 'Этап 1' },
-  { value: 2, label: 'Этап 2' },
+  ...Array.from({ length: 6 }, (_, index) => ({
+    value: (index + 1) as number,
+    label: `Этап ${index + 1}`,
+  })),
 ]
 
 export const routeMapLegend = [
