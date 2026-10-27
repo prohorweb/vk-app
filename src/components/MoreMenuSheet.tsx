@@ -63,7 +63,9 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
     const returnPath = window.location.hash.replace(/^#/, '') || '/'
     setMoreMenuReturn(returnPath)
     requestClose()
-    void routeNavigator.push(path)
+    // replace, а не push: служебная запись history от открытой шторки не должна
+    // оставаться в стеке — иначе возврат из раздела проскакивает через неё.
+    void routeNavigator.replace(path)
   }
 
   return (
