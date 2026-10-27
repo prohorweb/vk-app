@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Icon24Cancel, Icon24ChevronRight, Icon24Filter } from '@vkontakte/icons'
+import { Icon24Cancel, Icon24CupOutline, Icon24FavoriteOutline, Icon24Filter } from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, Radio, Search } from '@vkontakte/vkui'
 import { trackerGap } from '../api/gaps.ts'
 import { useDisciplinesQuery, useParticipantsQuery, useStandingsQuery } from '../api/queries.ts'
@@ -25,6 +25,12 @@ type Row = ParticipantListItem & {
 
 type ParticipantsPanelProps = {
   id: string
+}
+
+/** Имя и фамилия идут отдельными строками, как в макете. */
+function splitName(name: string) {
+  const [first = '', ...rest] = name.trim().split(/\s+/)
+  return { first, rest: rest.join(' ') }
 }
 
 function compareRows(left: Row, right: Row, sort: ListSort): number {
@@ -118,54 +124,59 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
         isEmpty={!isLoading && !isError && groups.length === 0}
         updatedAt={participantsQuery.dataUpdatedAt}
       >
-        {groups.map((group) => (
-          <section key={group.title} className="discipline-group">
-            <div className="discipline-group__titles">
-              <h2 className="discipline-group__title">{group.title}</h2>
-              <p className="discipline-group__count">Всего участников: {group.rows.length}</p>
-            </div>
-            <div className="musher-grid musher-grid--head" aria-hidden>
-              <span />
-              <span />
-              <span />
-              <span>позиция</span>
-              <span>болельщики</span>
-              <span />
-            </div>
-            {group.rows.map((row, index) => (
-              <button
-                key={row.id}
-                type="button"
-                className="musher-row musher-grid"
-                onClick={() => void routeNavigator.push(`/participants/${row.id}`)}
-              >
-                <span className="musher-row__rank">{index + 1}</span>
-                <ParticipantAvatar
-                  className="avatar-48"
-                  id={row.id}
-                  name={row.name}
-                  src={row.photo_url}
-                />
-                <span className="musher-row__main">
-                  <span className="musher-row__name">{row.name}</span>
-                  <span className="musher-row__meta">
-                    <span className="bib-badge">#{row.number}</span>
-                    {row.region ? <span>{row.region}</span> : null}
-                  </span>
-                </span>
-                <span className="musher-row__stat">
-                  <span className="visually-hidden">позиция</span>
-                  {row.racePosition ?? '—'}
-                </span>
-                <span className="musher-row__stat">
-                  <span className="visually-hidden">болельщики</span>
-                  {formatCount(row.supporters_count)}
-                </span>
-                <Icon24ChevronRight className="musher-row__chevron" />
-              </button>
-            ))}
-          </section>
-        ))}
+        <div className="participants-list">
+          {groups.map((group) => (
+            <section key={group.title} className="discipline-group">
+              <header className="discipline-group__head">
+                <h2 className="discipline-group__title">{group.title}</h2>
+                <p className="discipline-group__count">Всего участников: {group.rows.length}</p>
+              </header>
+              <ul className="musher-list">
+                {group.rows.map((row, index) => {
+                  const name = splitName(row.name)
+
+                  return (
+                    <li key={row.id} className="musher-item">
+                      <button
+                        type="button"
+                        className="musher-row"
+                        onClick={() => void routeNavigator.push(`/participants/${row.id}`)}
+                      >
+                        <span className="musher-row__rank">{index + 1}</span>
+                        <ParticipantAvatar
+                          className="avatar-36 musher-row__avatar"
+                          id={row.id}
+                          name={row.name}
+                          src={row.photo_url}
+                        />
+                        <span className="musher-row__main">
+                          <span className="musher-row__name">{name.first}</span>
+                          <span className="musher-row__surname">
+                            <span className="musher-row__surname-text">{name.rest}</span>
+                            <span className="bib-badge">#{row.number}</span>
+                          </span>
+                          {row.region ? <span className="musher-row__region">{row.region}</span> : null}
+                        </span>
+                        <span className="musher-row__stats">
+                          <span className="musher-row__stat">
+                            <span className="visually-hidden">Позиция</span>
+                            {row.racePosition ?? '—'}
+                            <Icon24CupOutline className="musher-row__icon" width={16} height={16} />
+                          </span>
+                          <span className="musher-row__stat">
+                            <span className="visually-hidden">Болельщики</span>
+                            {formatCount(row.supporters_count)}
+                            <Icon24FavoriteOutline className="musher-row__icon" width={16} height={16} />
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
       </AsyncView>
       <BottomSheet
         open={filterOpen}
@@ -176,7 +187,6 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
         hideTabbar
       >
         <div className="filter-sheet__head">
-          <h2 className="filter-sheet__title">Фильтр</h2>
           <button
             type="button"
             className="filter-sheet__close"
@@ -185,9 +195,9 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
           >
             <Icon24Cancel />
           </button>
+          <h2 className="filter-sheet__title">Фильтр</h2>
         </div>
         <div className="filter-sheet__options">
-          <p className="filter-sheet__legend">Сортировка</p>
           {sortOptions.map((option) => (
             <Radio
               key={option.value}
@@ -199,7 +209,7 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
               {option.label}
             </Radio>
           ))}
-          <p className="filter-sheet__legend">Дисциплина</p>
+          <p className="filter-sheet__legend filter-sheet__legend--section">Дисциплина</p>
           <Radio
             name="participant-discipline"
             checked={draftDisciplineId === null}
