@@ -2331,7 +2331,7 @@ html.app-hide-tabbar .app-tabbar {
   color: var(--vkui--color_icon_secondary);
 }
 
-/* Новости: обложка-фотография или брендированный блок. */
+/* Новости: обложка-фотография и текст карточки. */
 .media-news-card,
 .media-video-card {
   position: relative;
@@ -2339,57 +2339,6 @@ html.app-hide-tabbar .app-tabbar {
   overflow: hidden;
   border-radius: 12px;
   background: var(--vkui--color_background_content);
-}
-
-.media-news-card__cover--brand {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  background: var(--vkui--color_background_accent_themed);
-  color: var(--vkui--color_text_contrast);
-}
-
-.media-news-card__brand {
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.media-news-card__tag {
-  align-self: flex-start;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: var(--avacha-brand-red);
-  color: var(--vkui--color_text_contrast);
-  font-size: 12px;
-  line-height: 14px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.media-news-card__cover-title {
-  margin-top: 4px;
-  font-size: 26px;
-  line-height: 30px;
-  font-weight: 700;
-}
-
-.media-news-card__cover--brand::after {
-  content: '';
-  display: block;
-  height: 4px;
-  margin: 8px -16px -16px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--avacha-secondary-light-blue) 0 20px,
-    transparent 20px 32px,
-    var(--avacha-brand-red) 32px 52px,
-    transparent 52px 64px
-  );
 }
 
 /* Фото: чипы дней гонки и карточки галерей. */

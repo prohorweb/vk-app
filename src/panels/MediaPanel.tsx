@@ -8,6 +8,7 @@ import {
   mediaGalleries,
   mediaNewsFallback,
   mediaVideos,
+  newsCoverFallback,
   type MediaGallery,
   type MediaVideo,
 } from '../api/mocks/media.ts'
@@ -82,26 +83,17 @@ function videoCaption(video: MediaVideo): string {
 }
 
 function NewsCard({ item }: { item: NewsPostListItem }) {
-  const hasPhoto = Boolean(item.cover_url)
   return (
     <article className="media-news-card">
-      {hasPhoto ? (
-        <Picture
-          className="media-news-card__cover"
-          src={item.cover_url}
-          alt={`Обложка новости «${item.title}»`}
-          ratio="16 / 9"
-        />
-      ) : (
-        <div className="media-news-card__cover media-news-card__cover--brand">
-          <span className="media-news-card__brand">Авача</span>
-          {item.is_important ? <span className="media-news-card__tag">Важно</span> : null}
-          <span className="media-news-card__cover-title">{item.title}</span>
-        </div>
-      )}
+      <Picture
+        className="media-news-card__cover"
+        src={item.cover_url ?? newsCoverFallback(item.id)}
+        alt={`Обложка новости «${item.title}»`}
+        ratio="16 / 9"
+      />
       <div className="media-card__row">
         <span className="media-card__text">
-          {hasPhoto ? <span className="media-card__title">{item.title}</span> : null}
+          <span className="media-card__title">{item.title}</span>
           {item.lead ? <span className="media-card__lead">{item.lead}</span> : null}
           <span className="media-card__meta">{formatRelativeTime(item.published_at)}</span>
         </span>

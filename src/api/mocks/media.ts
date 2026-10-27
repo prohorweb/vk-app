@@ -59,6 +59,17 @@ const gallerySources: { title: string; photoCount: number; file: string }[] = [
   { title: 'Отдых на базе', photoCount: 18, file: 'about/photo-8.jpg' },
 ]
 
+/** Обложки галерей — источник фото для новостей без `cover_url`. */
+const newsCoverPool = gallerySources.map((source) => publicImage(source.file))
+
+/**
+ * Фото для новости без обложки. Выбор стабильный: зависит от id, поэтому
+ * картинка не меняется между рендерами и перезагрузками.
+ */
+export function newsCoverFallback(id: number): string {
+  return newsCoverPool[Math.abs(id) % newsCoverPool.length]
+}
+
 /** Две галереи на каждый день гонки; подписи и обложки идут по кругу. */
 export const mediaGalleries: MediaGallery[] = mediaDays.flatMap((day, dayIndex) =>
   [0, 1].map((offset) => {
