@@ -31,8 +31,7 @@ export type MapParticipant = components['schemas']['MapParticipant']
 export type MapParticipantsResponse = components['schemas']['MapParticipantsResponse']
 export type MapPosition = components['schemas']['MapPosition']
 export type MapFreshnessStatus = MapParticipant['freshness_status']
-export type MapCheckpointItem = components['schemas']['MapCheckpoint']
-export type MapCheckpointsResponse = components['schemas']['MapCheckpointsResponse']
+export type MapCheckpointItem = components['schemas']['CheckpointPublicResponse']
 
 export const participantSorts = ['bib', 'name', 'supporters'] as const
 

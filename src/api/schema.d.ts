@@ -192,6 +192,9 @@ export interface paths {
         /**
          * Протокол этапа
          * @description Протокол этапа: участники, время, штрафы, обязательные остановки.
+         *
+         *     Если этап существует, но результаты не опубликованы (draft),
+         *     возвращается 200 с publication=draft и пустым rows.
          */
         get: operations["stage_protocol_api_v1_results_stage__stage_id__get"];
         put?: never;
@@ -381,7 +384,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Map Participants */
+        /**
+         * Map Participants
+         * @description Участники на карте.
+         *
+         *     Если stage_id не передан — используется активный этап сезона.
+         */
         get: operations["map_participants_api_v1_map_participants_get"];
         put?: never;
         post?: never;
@@ -400,23 +408,6 @@ export interface paths {
         };
         /** Map Entry Track */
         get: operations["map_entry_track_api_v1_map_entry__entry_id__track_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/map/checkpoints": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Map Checkpoints */
-        get: operations["map_checkpoints_api_v1_map_checkpoints_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -540,6 +531,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/directory/stages/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Active Stage */
+        get: operations["get_active_stage_api_v1_directory_stages_active_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/stages/{stage_id}/track": {
         parameters: {
             query?: never;
@@ -609,6 +617,7 @@ export interface paths {
         };
         /**
          * Get Stage Leaders
+         * @deprecated
          * @description Рейтинг участников по судейским отметкам.
          */
         get: operations["get_stage_leaders_api_v1_stages__stage_id__leaders_get"];
@@ -908,6 +917,32 @@ export interface components {
          */
         CheckpointKind: "start" | "finish" | "checkpoint";
         /**
+         * CheckpointPublicResponse
+         * @description КП этапа с высотами и километражом.
+         */
+        CheckpointPublicResponse: {
+            /** Id */
+            id: number;
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Type */
+            type: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Km */
+            km?: number | null;
+            /** Elevation */
+            elevation?: number | null;
+            /** Order Index */
+            order_index: number;
+            /** Description */
+            description?: string | null;
+        };
+        /**
          * ConsentIn
          * @description Согласие или отзыв согласия на обработку ПДн.
          */
@@ -1133,6 +1168,15 @@ export interface components {
         HTTPValidationError: {
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** LeaderRow */
+        LeaderRow: {
+            /** Participant Id */
+            participant_id: number;
+            /** Bib */
+            bib: number;
+            /** Place */
+            place: number;
+        };
         /**
          * LeaderboardEntry
          * @description Строка таблицы лидеров.
@@ -1159,34 +1203,15 @@ export interface components {
              */
             mode: string;
         };
-        /** MapCheckpoint */
-        MapCheckpoint: {
-            /** Id */
-            id: number;
-            /** Code */
-            code: string;
-            /** Name */
-            name: string;
-            type: components["schemas"]["CheckpointKind"];
-            /** Description */
-            description?: string | null;
-            /** Lat */
-            lat: number;
-            /** Lon */
-            lon: number;
-            /** Elevation */
-            elevation?: number | null;
-            /** Km */
-            km?: number | null;
-            /** Order Index */
-            order_index: number;
-        };
-        /** MapCheckpointsResponse */
-        MapCheckpointsResponse: {
-            /** Stage Id */
-            stage_id: number;
-            /** Items */
-            items: components["schemas"]["MapCheckpoint"][];
+        /** LeadersResponse */
+        LeadersResponse: {
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /** Leaders */
+            leaders: components["schemas"]["LeaderRow"][];
         };
         /** MapParticipant */
         MapParticipant: {
@@ -1196,6 +1221,8 @@ export interface components {
             number: number;
             /** Name */
             name: string;
+            /** Stage Id */
+            stage_id: number;
             /** Discipline Id */
             discipline_id: number | null;
             /** Discipline */
@@ -1592,6 +1619,34 @@ export interface components {
             is_favorite: boolean;
         };
         /**
+         * PositionPublicResponse
+         * @description Последняя подтвержденная точка участника.
+         */
+        PositionPublicResponse: {
+            /** Participant Id */
+            participant_id: number;
+            /** Bib */
+            bib: number;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            /**
+             * Source
+             * @default iridium
+             */
+            source: string;
+            /** Last Cp Id */
+            last_cp_id?: number | null;
+            /** Freshness */
+            freshness?: string | null;
+        };
+        /**
          * PublicationStatus
          * @description Статус публикации результатов этапа/гонки
          * @enum {string}
@@ -1900,6 +1955,23 @@ export interface components {
          * @enum {string}
          */
         StageStatus: "planned" | "active" | "finished";
+        /**
+         * StageTrackResponse
+         * @description GeoJSON LineString с ниткой маршрута этапа.
+         */
+        StageTrackResponse: {
+            /**
+             * Type
+             * @default LineString
+             * @constant
+             */
+            type: "LineString";
+            /**
+             * Coordinates
+             * @description Массив координат [[lon, lat], ...]
+             */
+            coordinates: number[][];
+        };
         /** StageUpdateRequest */
         StageUpdateRequest: {
             /** Season Id */
@@ -2404,6 +2476,13 @@ export interface operations {
                     "application/json": components["schemas"]["StageProtocol"];
                 };
             };
+            /** @description Этап не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -2740,8 +2819,8 @@ export interface operations {
     };
     map_participants_api_v1_map_participants_get: {
         parameters: {
-            query: {
-                stage_id: number;
+            query?: {
+                stage_id?: number | null;
                 limit?: number;
                 offset?: number;
             };
@@ -2760,7 +2839,7 @@ export interface operations {
                     "application/json": components["schemas"]["MapParticipantsResponse"];
                 };
             };
-            /** @description Этап не найден */
+            /** @description Активный сезон или этап не найден */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2804,44 +2883,6 @@ export interface operations {
                 };
             };
             /** @description Этап или участник не найден */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    map_checkpoints_api_v1_map_checkpoints_get: {
-        parameters: {
-            query: {
-                stage_id: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MapCheckpointsResponse"];
-                };
-            };
-            /** @description Этап не найден */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -3005,6 +3046,13 @@ export interface operations {
                     "application/json": components["schemas"]["StagePublicResponse"][];
                 };
             };
+            /** @description Активный сезон не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -3035,6 +3083,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DisciplinePublicResponse"][];
                 };
+            };
+            /** @description Активный сезон не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -3074,6 +3129,33 @@ export interface operations {
             };
         };
     };
+    get_active_stage_api_v1_directory_stages_active_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StagePublicResponse"];
+                };
+            };
+            /** @description Активный этап не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_stage_track_api_v1_stages__stage_id__track_get: {
         parameters: {
             query?: never;
@@ -3091,8 +3173,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["StageTrackResponse"];
                 };
+            };
+            /** @description Этап не найден или маршрут не загружен */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -3122,7 +3211,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["CheckpointPublicResponse"][];
                 };
             };
             /** @description Validation Error */
@@ -3155,7 +3244,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["PositionPublicResponse"][];
                 };
             };
             /** @description Validation Error */
@@ -3190,7 +3279,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["LeadersResponse"];
                 };
             };
             /** @description Validation Error */

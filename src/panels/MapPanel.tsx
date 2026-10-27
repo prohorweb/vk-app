@@ -74,6 +74,7 @@ export function MapPanel({ id }: MapPanelProps) {
         lng: marker.lng,
         lat: marker.lat,
         status: marker.status,
+        bib: marker.bib,
       })),
     [markers],
   )

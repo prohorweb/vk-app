@@ -48,7 +48,7 @@ function toMapCheckpoint(item: MapCheckpointItem): MapCheckpoint {
     id: `checkpoint-${item.id}`,
     lng: item.lon,
     lat: item.lat,
-    kind: item.type,
+    kind: item.type === 'start' || item.type === 'finish' ? item.type : 'checkpoint',
     label: item.code,
   }
 }
@@ -81,19 +81,9 @@ function isLngLatPair(value: unknown): value is [number, number] {
   )
 }
 
-/**
- * `/stages/{id}/track` отдаёт GeoJSON LineString, но в контракте ответ не типизирован,
- * поэтому геометрию проверяем в рантайме.
- */
-function parseStageTrackPayload(payload: unknown): [number, number][] {
-  if (typeof payload !== 'object' || payload === null) {
-    return []
-  }
-  const { type, coordinates } = payload as { type?: unknown; coordinates?: unknown }
-  if (type !== 'LineString' || !Array.isArray(coordinates)) {
-    return []
-  }
-  return coordinates.filter(isLngLatPair)
+/** Контракт типизирован как `LineString`, но длину пар проверяем в рантайме. */
+function parseStageTrack(payload: { coordinates: number[][] }): [number, number][] {
+  return payload.coordinates.filter(isLngLatPair)
 }
 
 export function findMapMarker(
@@ -139,7 +129,7 @@ export async function fetchStageTrack(stageId: number): Promise<MapTrack> {
     })
     return {
       id: `stage-${stageId}`,
-      coordinates: parseStageTrackPayload(unwrap(result)),
+      coordinates: parseStageTrack(unwrap(result)),
       color: DEFAULT_TRACK_COLOR,
     }
   } catch (error) {
@@ -155,10 +145,10 @@ export async function fetchStageCheckpoints(stageId: number): Promise<MapCheckpo
     throw new OfflineError()
   }
   try {
-    const result = await api.GET('/api/v1/map/checkpoints', {
-      params: { query: { stage_id: stageId } },
+    const result = await api.GET('/api/v1/stages/{stage_id}/checkpoints', {
+      params: { path: { stage_id: stageId } },
     })
-    return unwrap(result).items.map(toMapCheckpoint)
+    return unwrap(result).map(toMapCheckpoint)
   } catch (error) {
     if (isClientApiError(error)) {
       throw error

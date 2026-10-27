@@ -22,6 +22,7 @@ export type MapParticipantMarker = {
   lng: number
   lat: number
   status: TrackPointStatus
+  bib?: number
 }
 
 /** Точка участника для карточки на карте: view-модель поверх `MapParticipant` из контракта. */
