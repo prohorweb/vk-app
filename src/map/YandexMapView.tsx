@@ -185,7 +185,6 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
       map.destroy()
       mapRef.current = null
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- карта создаётся один раз
   }, [ymaps])
 
   useEffect(() => {

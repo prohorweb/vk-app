@@ -14,22 +14,23 @@ function loadSdkScript(): Promise<YmapsApi | null> {
 
     const script = document.createElement('script')
     let settled = false
-    let timer: ReturnType<typeof setTimeout> | undefined
 
     const settle = (api: YmapsApi | null) => {
       if (settled) {
         return
       }
       settled = true
-      if (timer) {
-        clearTimeout(timer)
-      }
       script.onload = null
       script.onerror = null
       resolve(api)
     }
 
-    timer = setTimeout(() => {
+    // Таймер не отменяем: `settled` гарантирует единственный resolve,
+    // а повисший на время загрузки таймер безвреден.
+    setTimeout(() => {
+      if (settled) {
+        return
+      }
       script.remove()
       settle(null)
     }, SDK_TIMEOUT_MS)
