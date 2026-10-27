@@ -2479,6 +2479,20 @@ html.app-hide-tabbar .app-tabbar {
   background: var(--vkui--color_background);
 }
 
+/*
+ * Панель VKUI — flex-колонка, поэтому на длинных экранах блоки с overflow: hidden
+ * ужимаются до нуля. `flex: none` держит естественную высоту обложки и разделителя.
+ */
+.guests-hero,
+.ticker-divider,
+.guests-list,
+.packing-tabs,
+.packing-items,
+.guests-accordion,
+.guests-contacts {
+  flex: none;
+}
+
 .guests-hero {
   position: relative;
   margin: 12px 16px;

@@ -30,7 +30,7 @@ function faqIcon(category?: string | null): GuestsIconId {
 }
 
 export function GuestsFaqPanel({ id }: GuestsFaqPanelProps) {
-  const goBack = useMoreSectionBack(PATH.guests)
+  const goBack = useMoreSectionBack(PATH.guests, { consumeMenuReturn: false })
   const query = useFaqQuery()
   const apiItems = query.data?.items ?? []
   // Вопросы из API, а при недоступном API — моки.

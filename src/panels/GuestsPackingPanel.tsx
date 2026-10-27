@@ -10,7 +10,7 @@ type GuestsPackingPanelProps = {
 }
 
 export function GuestsPackingPanel({ id }: GuestsPackingPanelProps) {
-  const goBack = useMoreSectionBack(PATH.guests)
+  const goBack = useMoreSectionBack(PATH.guests, { consumeMenuReturn: false })
   const [tabId, setTabId] = useState<GuestsPackingTab['id']>('clothes')
   const tab = guestsPackingTabs.find((item) => item.id === tabId) ?? guestsPackingTabs[0]
 
@@ -33,7 +33,7 @@ export function GuestsPackingPanel({ id }: GuestsPackingPanelProps) {
           </button>
         ))}
       </div>
-      <GuestsHero src={tab.photo} alt={`Фото для раздела «${tab.label}»`} />
+      <GuestsHero src={tab.photo} alt={tab.photoAlt} />
       <div className="packing-items">
         {tab.items.map((item) => (
           <div key={item.id} className="packing-item">

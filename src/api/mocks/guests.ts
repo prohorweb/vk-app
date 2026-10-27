@@ -42,6 +42,7 @@ export type GuestsPackingTab = {
   id: 'clothes' | 'shoes' | 'gear'
   label: string
   photo: string
+  photoAlt: string
   items: GuestsTip[]
 }
 
@@ -112,7 +113,8 @@ export const guestsPackingTabs: GuestsPackingTab[] = [
   {
     id: 'clothes',
     label: 'Одежда',
-    photo: publicImage('about/photo-4.jpg'),
+    photo: publicImage('guests/clothes.jpg'),
+    photoAlt: 'Комплект зимней одежды: термобельё, флис, пуховик, шапка, варежки',
     items: [
       {
         id: 'layer-1',
@@ -149,7 +151,8 @@ export const guestsPackingTabs: GuestsPackingTab[] = [
   {
     id: 'shoes',
     label: 'Обувь',
-    photo: publicImage('about/photo-1.jpg'),
+    photo: publicImage('guests/shoes.jpg'),
+    photoAlt: 'Зимняя обувь: утеплённые ботинки и треккинговые модели на снегу',
     items: [
       {
         id: 'city',
@@ -174,7 +177,8 @@ export const guestsPackingTabs: GuestsPackingTab[] = [
   {
     id: 'gear',
     label: 'Снаряжение',
-    photo: publicImage('about/photo-2.jpg'),
+    photo: publicImage('guests/gear.jpg'),
+    photoAlt: 'Снаряжение на снегу: пауэрбанк, термос, очки, крем и аптечка',
     items: [
       {
         id: 'powerbank',

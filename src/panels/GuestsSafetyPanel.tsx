@@ -11,7 +11,7 @@ type GuestsSafetyPanelProps = {
 }
 
 export function GuestsSafetyPanel({ id }: GuestsSafetyPanelProps) {
-  const goBack = useMoreSectionBack(PATH.guests)
+  const goBack = useMoreSectionBack(PATH.guests, { consumeMenuReturn: false })
 
   return (
     <Panel id={id} className="guests-screen">

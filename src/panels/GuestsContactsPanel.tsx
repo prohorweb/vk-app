@@ -12,7 +12,7 @@ type GuestsContactsPanelProps = {
 }
 
 export function GuestsContactsPanel({ id }: GuestsContactsPanelProps) {
-  const goBack = useMoreSectionBack(PATH.guests)
+  const goBack = useMoreSectionBack(PATH.guests, { consumeMenuReturn: false })
 
   return (
     <Panel id={id} className="guests-screen">

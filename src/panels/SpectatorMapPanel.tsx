@@ -9,13 +9,14 @@ import { SpectatorArrivalSheet } from '../components/spectator/SpectatorArrivalS
 import { SpectatorLocationCard } from '../components/spectator/SpectatorLocationCard.tsx'
 import { SpectatorLocationMarkerIcon } from '../components/spectator/spectatorLocationMarkerIcon.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
+import { PATH } from '../routes.ts'
 
 type SpectatorMapPanelProps = {
   id: string
 }
 
 export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
-  const goBack = useMoreSectionBack()
+  const goBack = useMoreSectionBack(PATH.program, { consumeMenuReturn: false })
   const viewportRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const [filter, setFilter] = useState<SpectatorFilterId>('all')
