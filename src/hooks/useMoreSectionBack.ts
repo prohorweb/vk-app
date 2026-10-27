@@ -5,9 +5,9 @@ import { PATH } from '../routes.ts'
 /**
  * Возврат из разделов «Ещё». Сначала — на таб, откуда открыли шторку.
  * Если возврат не сохранён (прямой вход по ссылке, перезагрузка), то по истории
- * панелей, иначе в корень раздела: стрелка всегда должна куда-то вести.
+ * панелей, иначе — в `fallbackPath`: стрелка всегда должна куда-то вести.
  */
-export function useMoreSectionBack(): () => void {
+export function useMoreSectionBack(fallbackPath: string = PATH.program): () => void {
   const routeNavigator = useRouteNavigator()
   const { panelsHistory = [] } = useActiveVkuiLocation()
 
@@ -21,6 +21,6 @@ export function useMoreSectionBack(): () => void {
       void routeNavigator.back()
       return
     }
-    void routeNavigator.replace(PATH.program)
+    void routeNavigator.replace(fallbackPath)
   }
 }

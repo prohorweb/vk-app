@@ -5,7 +5,12 @@ import { AppTabbar } from './components/AppTabbar.tsx'
 import { MoreMenuSheet } from './components/MoreMenuSheet.tsx'
 import { isStartSeen } from './lib/startGate.ts'
 import { AboutPanel } from './panels/AboutPanel.tsx'
+import { GuestsContactsPanel } from './panels/GuestsContactsPanel.tsx'
+import { GuestsFaqPanel } from './panels/GuestsFaqPanel.tsx'
+import { GuestsPackingPanel } from './panels/GuestsPackingPanel.tsx'
 import { GuestsPanel } from './panels/GuestsPanel.tsx'
+import { GuestsSafetyPanel } from './panels/GuestsSafetyPanel.tsx'
+import { GuestsTransportPanel } from './panels/GuestsTransportPanel.tsx'
 import { MapPanel } from './panels/MapPanel.tsx'
 import { MediaPanel } from './panels/MediaPanel.tsx'
 import { ParticipantPanel } from './panels/ParticipantPanel.tsx'
@@ -19,6 +24,11 @@ import { StartPanel } from './panels/StartPanel.tsx'
 import {
   PANEL_ABOUT,
   PANEL_GUESTS,
+  PANEL_GUESTS_CONTACTS,
+  PANEL_GUESTS_FAQ,
+  PANEL_GUESTS_PACKING,
+  PANEL_GUESTS_SAFETY,
+  PANEL_GUESTS_TRANSPORT,
   PANEL_MAP,
   PANEL_MAP_PARTICIPANT,
   PANEL_MEDIA,
@@ -140,6 +150,11 @@ export function App() {
             <ProgramPanel id={PANEL_PROGRAM} />
             <SpectatorMapPanel id={PANEL_SPECTATOR_MAP} />
             <GuestsPanel id={PANEL_GUESTS} />
+            <GuestsTransportPanel id={PANEL_GUESTS_TRANSPORT} />
+            <GuestsPackingPanel id={PANEL_GUESTS_PACKING} />
+            <GuestsSafetyPanel id={PANEL_GUESTS_SAFETY} />
+            <GuestsFaqPanel id={PANEL_GUESTS_FAQ} />
+            <GuestsContactsPanel id={PANEL_GUESTS_CONTACTS} />
             <AboutPanel id={PANEL_ABOUT} />
             <ProfilePanel id={PANEL_PROFILE} />
           </View>

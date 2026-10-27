@@ -26,6 +26,11 @@ export const PANEL_PROGRAM = 'panel_program'
 export const PANEL_SPECTATOR_MAP = 'panel_spectator_map'
 export const PANEL_MEDIA = 'panel_media'
 export const PANEL_GUESTS = 'panel_guests'
+export const PANEL_GUESTS_TRANSPORT = 'panel_guests_transport'
+export const PANEL_GUESTS_PACKING = 'panel_guests_packing'
+export const PANEL_GUESTS_SAFETY = 'panel_guests_safety'
+export const PANEL_GUESTS_FAQ = 'panel_guests_faq'
+export const PANEL_GUESTS_CONTACTS = 'panel_guests_contacts'
 export const PANEL_PROFILE = 'panel_profile'
 export const PANEL_ABOUT = 'panel_about'
 
@@ -39,6 +44,11 @@ export const PATH = {
   program: '/more/program',
   spectatorMap: '/more/program/spectator',
   guests: '/more/guests',
+  guestsTransport: '/more/guests/transport',
+  guestsPacking: '/more/guests/packing',
+  guestsSafety: '/more/guests/safety',
+  guestsFaq: '/more/guests/faq',
+  guestsContacts: '/more/guests/contacts',
   about: '/more/about',
   profile: '/more/profile',
 } as const
@@ -48,6 +58,11 @@ export const MORE_MENU_PANELS = [
   PANEL_ABOUT,
   PANEL_ROUTE,
   PANEL_GUESTS,
+  PANEL_GUESTS_TRANSPORT,
+  PANEL_GUESTS_PACKING,
+  PANEL_GUESTS_SAFETY,
+  PANEL_GUESTS_FAQ,
+  PANEL_GUESTS_CONTACTS,
   PANEL_PROGRAM,
 ] as const
 
@@ -71,6 +86,11 @@ export const routes = RoutesConfig.create([
       createPanel(PANEL_PROGRAM, PATH.program),
       createPanel(PANEL_SPECTATOR_MAP, PATH.spectatorMap),
       createPanel(PANEL_GUESTS, PATH.guests),
+      createPanel(PANEL_GUESTS_TRANSPORT, PATH.guestsTransport),
+      createPanel(PANEL_GUESTS_PACKING, PATH.guestsPacking),
+      createPanel(PANEL_GUESTS_SAFETY, PATH.guestsSafety),
+      createPanel(PANEL_GUESTS_FAQ, PATH.guestsFaq),
+      createPanel(PANEL_GUESTS_CONTACTS, PATH.guestsContacts),
       createPanel(PANEL_ABOUT, PATH.about),
       createPanel(PANEL_PROFILE, PATH.profile),
     ]),
