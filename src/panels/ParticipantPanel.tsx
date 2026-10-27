@@ -3,17 +3,18 @@ import vkBridge from '@vkontakte/vk-bridge'
 import { useParams, useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import {
   Icon16Chevron,
-  Icon20MenuOutline,
+  Icon20ArticleOutline,
+  Icon20ErrorCircleOutline,
+  Icon20LikeOutline,
+  Icon20PawOutline,
   Icon20PinOutline,
   Icon24Cancel,
   Icon24ErrorCircleOutline,
   Icon24FavoriteOutline,
   Icon24ShareOutline,
   Icon28CupOutline,
-  Icon28ErrorCircleOutline,
   Icon28GraphOutline,
   Icon28HistoryBackwardOutline,
-  Icon28PawOutline,
   Icon28WristWatchOutline,
 } from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
@@ -417,8 +418,10 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
             <div className="participant-card__hero">
               <span className="participant-card__bib">#{participant.number}</span>
               <span className="participant-card__hero-name">
-                <span>{name.first}</span>
-                {name.rest ? <span>{name.rest}</span> : null}
+                <span className="participant-card__hero-first">{name.first}</span>
+                {name.rest ? (
+                  <span className="participant-card__hero-rest">{name.rest}</span>
+                ) : null}
               </span>
             </div>
             <div className="participant-meta">
@@ -430,28 +433,26 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
               ) : null}
               {participant.bio ? (
                 <div className="participant-meta__row participant-meta__row--bio">
-                  <Icon20MenuOutline aria-hidden />
-                  <div className="participant-bio">
-                    <p
-                      ref={bioRef}
-                      className={`participant-bio__text${expanded ? '' : ' is-collapsed'}`}
-                    >
-                      {participant.bio}
-                    </p>
-                    {showToggle ? (
-                      <div className="participant-bio__more">
-                        <button
-                          type="button"
-                          className="participant-bio__toggle"
-                          aria-expanded={expanded}
-                          onClick={() => setExpanded((value) => !value)}
-                        >
-                          {expanded ? 'Скрыть' : 'Показать ещё'}
-                          <Icon16Chevron aria-hidden />
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
+                  <Icon20ArticleOutline aria-hidden />
+                  <p
+                    ref={bioRef}
+                    className={`participant-bio__text${expanded ? '' : ' is-collapsed'}`}
+                  >
+                    {participant.bio}
+                  </p>
+                </div>
+              ) : null}
+              {participant.bio && showToggle ? (
+                <div className="participant-meta__toggle">
+                  <button
+                    type="button"
+                    className="participant-bio__toggle"
+                    aria-expanded={expanded}
+                    onClick={() => setExpanded((value) => !value)}
+                  >
+                    {expanded ? 'Скрыть' : 'Показать ещё'}
+                    <Icon16Chevron aria-hidden />
+                  </button>
                 </div>
               ) : null}
             </div>
@@ -501,23 +502,29 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                 <>
                   <div className="participant-tiles">
                     <article className="participant-tile">
-                      <Icon28WristWatchOutline aria-hidden />
-                      <span className="participant-tile__label">результат</span>
-                      <strong className="participant-tile__value">{formatRaceClock(result)}</strong>
+                      <span className="participant-tile__indicator">
+                        <Icon28WristWatchOutline aria-hidden />
+                        <span className="participant-tile__label">результат</span>
+                      </span>
+                      <span className="participant-tile__value">{formatRaceClock(result)}</span>
                     </article>
                     <article className="participant-tile">
-                      <Icon28HistoryBackwardOutline aria-hidden />
-                      <span className="participant-tile__label">отрыв от лидера</span>
-                      <strong className="participant-tile__value">
+                      <span className="participant-tile__indicator">
+                        <Icon28HistoryBackwardOutline aria-hidden />
+                        <span className="participant-tile__label">отрыв от лидера</span>
+                      </span>
+                      <span className="participant-tile__value">
                         {formatLeaderGap(leader?.final_time_seconds ?? null, result)}
-                      </strong>
+                      </span>
                     </article>
                     <article className="participant-tile">
-                      <Icon28CupOutline aria-hidden />
-                      <span className="participant-tile__label">позиция</span>
-                      <strong className="participant-tile__value">
+                      <span className="participant-tile__indicator">
+                        <Icon28CupOutline aria-hidden />
+                        <span className="participant-tile__label">позиция</span>
+                      </span>
+                      <span className="participant-tile__value">
                         {position != null ? `№ ${position}` : '—'}
-                      </strong>
+                      </span>
                     </article>
                   </div>
                   <div className="participant-distance">
@@ -560,7 +567,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                   <div className="participant-cards">
                     <div className="participant-mini">
                       <div className="participant-mini__head">
-                        <Icon28PawOutline aria-hidden />
+                        <Icon20PawOutline aria-hidden />
                         <span>Собаки</span>
                       </div>
                       <p className="participant-mini__row">
@@ -574,7 +581,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                     </div>
                     <div className="participant-mini">
                       <div className="participant-mini__head">
-                        <Icon28ErrorCircleOutline aria-hidden />
+                        <Icon20ErrorCircleOutline aria-hidden />
                         <span>Штр. вр.</span>
                       </div>
                       <p className="participant-mini__value participant-mini__penalty">
@@ -592,7 +599,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
               )}
             </section>
             <div className="participant-fans">
-              <Icon24FavoriteOutline aria-hidden />
+              <Icon20LikeOutline aria-hidden />
               <span className="participant-fans__count">{formatCount(supportersCount)}</span>
               <span className="participant-fans__label">болельщиков</span>
               {delta > 0 ? (

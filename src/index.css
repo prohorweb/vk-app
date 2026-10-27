@@ -1263,17 +1263,20 @@ body {
   font-weight: 500;
 }
 
+/* Статус: точка 10 внутри контейнера 16, текст 16/20 medium. */
 .participant-card__status {
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 52px;
+  gap: 4px;
+  box-sizing: border-box;
+  height: 44px;
   margin: 0;
   padding: 0 16px;
   color: var(--avacha-success);
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 16px;
+  line-height: 20px;
   font-weight: 500;
+  letter-spacing: 0.1px;
 }
 
 .participant-card__status::before {
@@ -1281,6 +1284,7 @@ body {
   flex: none;
   width: 10px;
   height: 10px;
+  margin: 0 3px;
   border-radius: 50%;
   background: currentColor;
 }
@@ -1293,12 +1297,15 @@ body {
   color: var(--avacha-brand-red);
 }
 
+/* Плашка с именем: номер 40×44, имя в две строки. */
 .participant-card__hero {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 12px 16px;
-  border-radius: 16px;
+  gap: 10px;
+  box-sizing: border-box;
+  height: 72px;
+  padding: 8px 16px;
+  border-radius: 12px;
   background: var(--avacha-brand-dark-blue);
   color: var(--vkui--color_text_contrast);
 }
@@ -1310,65 +1317,75 @@ body {
   flex: none;
   width: 40px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--avacha-brand-red);
   color: var(--vkui--color_text_contrast);
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 700;
+  font-size: 23px;
+  line-height: 28px;
+  font-weight: 500;
 }
 
 .participant-card__hero-name {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 500;
 }
 
+.participant-card__hero-first {
+  font-size: 21px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.participant-card__hero-rest {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+/* Мета: регион и описание в две строки с «Показать ещё». */
 .participant-meta {
   display: flex;
   flex-direction: column;
-  padding: 8px 16px 16px;
 }
 
 .participant-meta__row {
   display: flex;
-  align-items: center;
-  gap: 13px;
+  align-items: flex-start;
+  gap: 12px;
   min-height: 32px;
+  padding: 0 16px;
   color: var(--vkui--color_text_secondary);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.participant-meta__row > span {
+  padding: 6px 0;
 }
 
 .participant-meta__row svg {
   flex: none;
   width: 20px;
   height: 20px;
+  margin-top: 6px;
   color: var(--vkui--color_icon_secondary);
 }
 
 .participant-meta__row--bio {
-  align-items: flex-start;
-  padding-top: 6px;
-}
-
-.participant-bio {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-end;
-  min-width: 0;
+  min-height: 52px;
 }
 
 .participant-bio__text {
+  flex: 1;
+  min-width: 0;
   margin: 0;
-  align-self: stretch;
+  padding: 6px 0;
   overflow: hidden;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
 }
 
 .participant-bio__text.is-collapsed {
@@ -1377,8 +1394,11 @@ body {
   -webkit-box-orient: vertical;
 }
 
-.participant-bio__more {
-  margin-top: 10px;
+.participant-meta__toggle {
+  display: flex;
+  justify-content: flex-end;
+  height: 20px;
+  padding: 0 16px;
 }
 
 .participant-bio__toggle {
@@ -1391,8 +1411,9 @@ body {
   background: none;
   color: var(--avacha-link);
   font: inherit;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 20px;
+  letter-spacing: 0.2px;
   cursor: pointer;
 }
 
@@ -1410,53 +1431,66 @@ body {
   flex: none;
   width: 100%;
   height: 6px;
+  margin: 7px 0;
 }
 
+/* Заголовки блоков: 20/24 medium, 44 px вместе с отступами. */
 .participant-section {
-  padding: 12px 16px 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .participant-section__title {
   margin: 0;
+  padding: 13px 16px 7px;
   font-size: 20px;
   line-height: 24px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .participant-section__text {
-  margin: 14px 0 24px;
-  color: var(--vkui--color_text_secondary);
+  margin: 0;
+  padding: 6px 16px;
+  color: var(--vkui--color_text_subhead);
   font-size: 15px;
   line-height: 20px;
+  letter-spacing: 0.2px;
 }
 
 .participant-stats__head {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 20px;
+}
+
+.participant-stats__head .participant-section__title {
+  padding-inline-end: 0;
 }
 
 .participant-stats__updated {
+  flex: none;
+  padding: 16px 16px 8px 12px;
   color: var(--vkui--color_text_secondary);
   font-size: 13px;
   line-height: 16px;
+  letter-spacing: 0.2px;
   white-space: nowrap;
 }
 
 .participant-stats__note {
   margin: 0;
+  padding: 16px;
   color: var(--vkui--color_text_secondary);
   font-size: 15px;
   line-height: 20px;
 }
 
+/* Чипы этапов: 44 px, белые с тенью, выбранный — тёмно-синий. */
 .participant-stages {
   display: flex;
-  gap: 4px;
-  margin: 0 -16px;
-  padding: 0 16px;
+  gap: 8px;
+  padding: 12px 16px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -1467,89 +1501,110 @@ body {
 
 .participant-stage {
   flex: none;
-  min-width: 44px;
   height: 44px;
-  padding: 0 16px;
+  padding: 10px 16px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--vkui--color_background_content);
+  box-shadow: var(--vkui--elevation3);
   color: var(--vkui--color_text_primary);
   font: inherit;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 0.2px;
   cursor: pointer;
 }
 
 .participant-stage.is-selected {
   background: var(--vkui--color_background_accent_themed);
+  box-shadow: none;
   color: var(--vkui--color_text_contrast);
 }
 
+/* Плитки 104×89: иконка 28, подпись 10/12, значение 13/16. */
 .participant-tiles {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 28px;
+  margin: 16px 16px 0;
 }
 
 .participant-tile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 4px 8px;
-  border-radius: 16px;
+  gap: 8px;
+  box-sizing: border-box;
+  height: 89px;
+  padding: 12px 0;
+  border-radius: 8px;
   background: var(--vkui--color_background_content);
   text-align: center;
 }
 
-.participant-tile svg {
+.participant-tile__indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.participant-tile__indicator svg {
   flex: none;
+  width: 28px;
+  height: 28px;
   color: var(--vkui--color_icon_secondary);
 }
 
 .participant-tile__label {
-  margin-top: 0;
   color: var(--vkui--color_text_secondary);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 .participant-tile__value {
-  margin-top: 4px;
   color: var(--avacha-value);
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
 }
 
+/* Дистанция: заголовок 20/24, две метрики по 136 px, шкала 16 px. */
 .participant-distance {
-  margin-top: 8px;
-  padding: 12px 12px 14px;
-  border-radius: 16px;
+  box-sizing: border-box;
+  height: 128px;
+  margin: 8px 16px 0;
+  padding: 8px 12px 10px;
+  border-radius: 8px;
   background: var(--vkui--color_background_content);
 }
 
 .participant-distance h3 {
-  margin: 0 0 12px;
+  margin: 0;
+  padding: 4px 0 12px;
   font-size: 20px;
   line-height: 24px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .participant-distance__rows {
   display: flex;
-  flex-wrap: wrap;
-  column-gap: 24px;
-  row-gap: 6px;
+  padding: 4px 0;
 }
 
 .participant-distance__row {
   display: flex;
   align-items: center;
-  gap: 5px;
+  flex: none;
+  gap: 4px;
+  width: 136px;
   color: var(--vkui--color_text_secondary);
-  font-size: 15px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 .participant-distance__row::before {
@@ -1557,6 +1612,7 @@ body {
   flex: none;
   width: 8px;
   height: 8px;
+  margin: 0 3px;
   border-radius: 50%;
   background: var(--vkui--color_icon_secondary);
 }
@@ -1566,23 +1622,25 @@ body {
 }
 
 .participant-distance__km {
-  margin: 6px 0 0;
-  padding-left: 16px;
+  display: flex;
+  gap: 10px;
+  margin: 4px 0 0;
+  padding: 2px 16px;
   color: var(--vkui--color_text_secondary);
-  font-size: 15px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
 }
 
 .participant-distance__covered {
   color: var(--avacha-value);
-  font-weight: 500;
 }
 
 .participant-distance__bar {
-  height: 15px;
-  margin-top: 4px;
+  height: 16px;
+  margin: 2px 0 4px;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 100px;
   background: var(--avacha-secondary-light-blue);
 }
 
@@ -1593,41 +1651,55 @@ body {
   background: var(--avacha-secondary-blue);
 }
 
+/* Собаки и штраф: карточки 160×86, заголовок 15/20 medium, метрики 13/16. */
 .participant-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-top: 8px;
+  margin: 8px 16px 0;
 }
 
 .participant-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  height: 86px;
   padding: 12px;
-  border-radius: 16px;
+  border-radius: 8px;
   background: var(--vkui--color_background_content);
 }
 
 .participant-mini__head {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--vkui--color_text_primary);
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 600;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 .participant-mini__head svg {
   flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--vkui--color_icon_primary);
 }
 
 .participant-mini__row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
   color: var(--vkui--color_text_secondary);
-  font-size: 16px;
-  line-height: 18px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+.participant-mini__row + .participant-mini__row {
+  margin-top: 2px;
 }
 
 .participant-mini__row::before {
@@ -1635,6 +1707,7 @@ body {
   flex: none;
   width: 8px;
   height: 8px;
+  margin: 0 3px;
   border-radius: 50%;
   background: var(--vkui--color_icon_secondary);
 }
@@ -1644,10 +1717,11 @@ body {
 }
 
 .participant-mini__penalty {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--avacha-value);
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
 }
 
 .participant-empty {
@@ -1669,58 +1743,65 @@ body {
   color: var(--vkui--color_text_primary);
   font-size: 20px;
   line-height: 24px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .participant-empty__text {
   max-width: 280px;
   margin: 8px 0 0;
   color: var(--vkui--color_text_secondary);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 20px;
 }
 
+/* Болельщики: 44 px, счётчик и прирост 13/16. */
 .participant-fans {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 42px;
-  margin: 8px 16px 0;
-  padding: 0 16px;
-  border-radius: 16px;
+  box-sizing: border-box;
+  height: 44px;
+  margin: 8px 16px 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
   background: var(--vkui--color_background_content);
 }
 
 .participant-fans svg {
   flex: none;
-  color: var(--vkui--color_text_primary);
+  width: 20px;
+  height: 20px;
+  color: var(--vkui--color_icon_primary);
 }
 
 .participant-fans__count {
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 600;
+  color: var(--vkui--color_text_primary);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+.participant-fans__label,
+.participant-fans__delta {
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.2px;
 }
 
 .participant-fans__label {
   color: var(--vkui--color_text_secondary);
-  font-size: 16px;
-  line-height: 20px;
 }
 
 .participant-fans__delta {
   color: var(--avacha-success);
-  font-size: 16px;
-  line-height: 20px;
 }
 
 .participant-actions {
   display: flex;
   flex-direction: row;
-  gap: 12px;
-  margin-top: 24px;
-  padding: 0 16px;
+  gap: 8px;
+  margin: 12px 16px 0;
 }
 
 .participant-actions .vkuiButton {
