@@ -16,9 +16,28 @@ function readLaunchParams(search: string): Record<string, unknown> {
   return params
 }
 
+/** Вне VK мост не отвечает никогда, поэтому ждём ответ ограниченное время. */
+const BRIDGE_TIMEOUT_MS = 3000
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => reject(new Error('timeout')), ms)
+    promise.then(
+      (value) => {
+        window.clearTimeout(timer)
+        resolve(value)
+      },
+      (error: unknown) => {
+        window.clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
+
 async function readUserInfo(): Promise<VKUserInfo | null> {
   try {
-    const info = await vkBridge.send('VKWebAppGetUserInfo')
+    const info = await withTimeout(vkBridge.send('VKWebAppGetUserInfo'), BRIDGE_TIMEOUT_MS)
     return {
       first_name: info.first_name,
       last_name: info.last_name,
