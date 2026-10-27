@@ -12,6 +12,7 @@ export const VIEW_START = 'view_start'
 export const VIEW_MAP = 'view_map'
 export const VIEW_PARTICIPANTS = 'view_participants'
 export const VIEW_RESULTS = 'view_results'
+export const VIEW_MEDIA = 'view_media'
 export const VIEW_MORE = 'view_more'
 
 export const PANEL_START = 'panel_start'
@@ -23,7 +24,7 @@ export const PANEL_RESULTS = 'panel_results'
 export const PANEL_ROUTE = 'panel_route'
 export const PANEL_PROGRAM = 'panel_program'
 export const PANEL_SPECTATOR_MAP = 'panel_spectator_map'
-export const PANEL_NEWS = 'panel_news'
+export const PANEL_MEDIA = 'panel_media'
 export const PANEL_GUESTS = 'panel_guests'
 export const PANEL_PROFILE = 'panel_profile'
 export const PANEL_ABOUT = 'panel_about'
@@ -33,10 +34,10 @@ export const PATH = {
   map: '/map',
   results: '/results',
   participants: '/participants',
+  media: '/media',
   route: '/more/route',
   program: '/more/program',
   spectatorMap: '/more/program/spectator',
-  news: '/more/news',
   guests: '/more/guests',
   about: '/more/about',
   profile: '/more/profile',
@@ -47,7 +48,7 @@ export const MORE_MENU_PANELS = [
   PANEL_ABOUT,
   PANEL_ROUTE,
   PANEL_GUESTS,
-  PANEL_NEWS,
+  PANEL_PROGRAM,
 ] as const
 
 export const routes = RoutesConfig.create([
@@ -64,11 +65,11 @@ export const routes = RoutesConfig.create([
       ] as const),
     ]),
     createView(VIEW_RESULTS, [createPanel(PANEL_RESULTS, PATH.results)]),
+    createView(VIEW_MEDIA, [createPanel(PANEL_MEDIA, PATH.media)]),
     createView(VIEW_MORE, [
       createPanel(PANEL_ROUTE, PATH.route),
       createPanel(PANEL_PROGRAM, PATH.program),
       createPanel(PANEL_SPECTATOR_MAP, PATH.spectatorMap),
-      createPanel(PANEL_NEWS, PATH.news),
       createPanel(PANEL_GUESTS, PATH.guests),
       createPanel(PANEL_ABOUT, PATH.about),
       createPanel(PANEL_PROFILE, PATH.profile),

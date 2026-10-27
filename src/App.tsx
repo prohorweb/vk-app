@@ -7,7 +7,7 @@ import { isStartSeen } from './lib/startGate.ts'
 import { AboutPanel } from './panels/AboutPanel.tsx'
 import { GuestsPanel } from './panels/GuestsPanel.tsx'
 import { MapPanel } from './panels/MapPanel.tsx'
-import { NewsPanel } from './panels/NewsPanel.tsx'
+import { MediaPanel } from './panels/MediaPanel.tsx'
 import { ParticipantPanel } from './panels/ParticipantPanel.tsx'
 import { ParticipantsPanel } from './panels/ParticipantsPanel.tsx'
 import { ProfilePanel } from './panels/ProfilePanel.tsx'
@@ -21,7 +21,7 @@ import {
   PANEL_GUESTS,
   PANEL_MAP,
   PANEL_MAP_PARTICIPANT,
-  PANEL_NEWS,
+  PANEL_MEDIA,
   PANEL_PARTICIPANT,
   PANEL_PARTICIPANTS,
   PANEL_PROFILE,
@@ -31,6 +31,7 @@ import {
   PANEL_ROUTE,
   PANEL_START,
   VIEW_MAP,
+  VIEW_MEDIA,
   VIEW_MORE,
   VIEW_PARTICIPANTS,
   VIEW_RESULTS,
@@ -121,6 +122,15 @@ export function App() {
           </View>
 
           <View
+            id={VIEW_MEDIA}
+            activePanel={activePanelOf(activeView, VIEW_MEDIA, activePanel, PANEL_MEDIA)}
+            history={activeView === VIEW_MEDIA ? panelsHistory : []}
+            onSwipeBack={swipeBack}
+          >
+            <MediaPanel id={PANEL_MEDIA} />
+          </View>
+
+          <View
             id={VIEW_MORE}
             activePanel={activePanelOf(activeView, VIEW_MORE, activePanel, PANEL_PROGRAM)}
             history={activeView === VIEW_MORE ? panelsHistory : []}
@@ -129,7 +139,6 @@ export function App() {
             <RoutePanel id={PANEL_ROUTE} />
             <ProgramPanel id={PANEL_PROGRAM} />
             <SpectatorMapPanel id={PANEL_SPECTATOR_MAP} />
-            <NewsPanel id={PANEL_NEWS} />
             <GuestsPanel id={PANEL_GUESTS} />
             <AboutPanel id={PANEL_ABOUT} />
             <ProfilePanel id={PANEL_PROFILE} />

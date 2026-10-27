@@ -17,7 +17,7 @@ const items: { path: string; label: string; icon: MoreMenuIconId }[] = [
   { path: PATH.about, label: 'О гонке', icon: 'about' },
   { path: PATH.route, label: 'Маршрут', icon: 'route' },
   { path: PATH.guests, label: 'Гостям', icon: 'guests' },
-  { path: PATH.news, label: 'Новости', icon: 'news' },
+  { path: PATH.program, label: 'Программа', icon: 'program' },
 ]
 
 export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {

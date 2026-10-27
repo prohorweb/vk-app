@@ -57,6 +57,51 @@ export function formatCount(value: number): string {
   return new Intl.NumberFormat('ru-RU').format(value)
 }
 
+/** Сокращённая запись больших чисел: 1240 → «1,2 тыс.». */
+export function formatCompactCount(value: number): string {
+  return new Intl.NumberFormat('ru-RU', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
+}
+
+/** «68 фотографий», «42 фотографии», «1 фотография». */
+export function formatPhotoCount(count: number): string {
+  const modulo10 = count % 10
+  const modulo100 = count % 100
+  if (modulo10 === 1 && modulo100 !== 11) {
+    return `${count} фотография`
+  }
+  if (modulo10 >= 2 && modulo10 <= 4 && (modulo100 < 12 || modulo100 > 14)) {
+    return `${count} фотографии`
+  }
+  return `${count} фотографий`
+}
+
+const relativeTimeUnits: [Intl.RelativeTimeFormatUnit, number][] = [
+  ['year', 365 * 24 * 60 * 60 * 1000],
+  ['month', 30 * 24 * 60 * 60 * 1000],
+  ['day', 24 * 60 * 60 * 1000],
+  ['hour', 60 * 60 * 1000],
+  ['minute', 60 * 1000],
+]
+
+/** «6 месяцев назад», «2 месяца назад», «через 1 час». */
+export function formatRelativeTime(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+  const diffMs = date.getTime() - Date.now()
+  const formatter = new Intl.RelativeTimeFormat('ru', { numeric: 'always' })
+  for (const [unit, unitMs] of relativeTimeUnits) {
+    if (Math.abs(diffMs) >= unitMs) {
+      return formatter.format(Math.round(diffMs / unitMs), unit)
+    }
+  }
+  return formatter.format(0, 'minute')
+}
+
 export function formatRaceClock(totalSeconds: number | null | undefined): string {
   if (totalSeconds == null) {
     return '—'
