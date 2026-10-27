@@ -1,7 +1,7 @@
 import { guessGender, type PersonGender } from '../lib/gender.ts'
 import { Picture } from './Picture.tsx'
 
-type Hairstyle = 'short' | 'bob' | 'long'
+type Hairstyle = 'short' | 'long' | 'bun'
 
 type Palette = {
   background: string
@@ -25,10 +25,10 @@ const PALETTES: Palette[] = [
   { background: '#2F6F4E', skin: '#F3C7A6', hair: '#3A2A20', shirt: '#245C40' },
 ]
 
-/** Причёска привязана к полу: короткая — мужская, каре и длинные — женские. */
+/** Причёска привязана к полу: короткая — мужская, длинные варианты — женские. */
 const HAIRSTYLES: Record<PersonGender, Hairstyle[]> = {
   male: ['short'],
-  female: ['bob', 'long'],
+  female: ['long', 'bun'],
 }
 
 function lookFor(seed: number, gender: PersonGender): Look {
@@ -40,13 +40,10 @@ function lookFor(seed: number, gender: PersonGender): Look {
 }
 
 function hairPath(style: Hairstyle): string {
-  if (style === 'bob') {
-    return 'M20 24.5c.8-7.6 5.4-12.2 12-12.2s11.2 4.6 12 12.2c-1.2-1.4-3.4-2.6-6.2-2.6-1.6 0-2.8.2-3.8.6-1-.4-2.2-.6-3.6-.6-3.2 0-5.6 1.2-6.8 2.6h-3.6z'
+  if (style === 'short') {
+    return 'M20.5 25.8C21.2 18.2 25.8 14 32 14s10.8 4.2 11.5 11.8c-1.2-3.4-4-5.4-7.6-5.4-2.2 0-3.8.4-4.6 1-.8-.6-2.4-1-4.4-1-3.6 0-6.4 2-7.4 5.4h-1z'
   }
-  if (style === 'long') {
-    return 'M18.5 26c.8-8.4 6-13.6 13.5-13.6S44.7 17.6 45.5 26c.4 6 .2 12-.2 16.5-1.6-7-4.2-10-7.4-10-.8 0-1.6.1-2.3.4V28c-.6-2.4-2.2-3.6-4.6-3.6s-4 1.2-4.6 3.6v4.9c-.7-.3-1.5-.4-2.3-.4-3.2 0-5.8 3-7.4 10-.4-4.5-.6-10.5-.2-16.5z'
-  }
-  return 'M20.5 25.8C21.2 18.2 25.8 14 32 14s10.8 4.2 11.5 11.8c-1.2-3.4-4-5.4-7.6-5.4-2.2 0-3.8.4-4.6 1-.8-.6-2.4-1-4.4-1-3.6 0-6.4 2-7.4 5.4h-1z'
+  return 'M18.5 26c.8-8.4 6-13.6 13.5-13.6S44.7 17.6 45.5 26c.4 6 .2 12-.2 16.5-1.6-7-4.2-10-7.4-10-.8 0-1.6.1-2.3.4V28c-.6-2.4-2.2-3.6-4.6-3.6s-4 1.2-4.6 3.6v4.9c-.7-.3-1.5-.4-2.3-.4-3.2 0-5.8 3-7.4 10-.4-4.5-.6-10.5-.2-16.5z'
 }
 
 export function AvatarMark({ seed, name }: { seed: number; name: string }) {
@@ -59,6 +56,7 @@ export function AvatarMark({ seed, name }: { seed: number; name: string }) {
       <rect x="28" y="40" width="8" height="7" rx="3" fill={look.skin} />
       <circle cx="32" cy="28" r="12" fill={look.skin} />
       <path d={hairPath(look.hairstyle)} fill={look.hair} />
+      {look.hairstyle === 'bun' ? <circle cx="32" cy="9.5" r="4.6" fill={look.hair} /> : null}
       <circle cx="27.6" cy="28.4" r="1.25" fill="#2A241C" />
       <circle cx="36.4" cy="28.4" r="1.25" fill="#2A241C" />
     </svg>
