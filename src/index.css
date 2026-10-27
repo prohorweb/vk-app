@@ -1754,7 +1754,7 @@ body {
   line-height: 20px;
 }
 
-/* Болельщики: 44 px, счётчик и прирост 13/16. */
+/* Болельщики: 44 px, простой счётчик лайков 13/16. */
 .participant-fans {
   display: flex;
   align-items: center;
@@ -1782,21 +1782,6 @@ body {
   letter-spacing: 0.2px;
 }
 
-.participant-fans__label,
-.participant-fans__delta {
-  font-size: 13px;
-  line-height: 16px;
-  letter-spacing: 0.2px;
-}
-
-.participant-fans__label {
-  color: var(--vkui--color_text_secondary);
-}
-
-.participant-fans__delta {
-  color: var(--avacha-success);
-}
-
 .participant-actions {
   display: flex;
   flex-direction: row;
@@ -1816,7 +1801,12 @@ body {
   padding: 0;
 }
 
-/* Уведомления поверх карточки: подписка, отписка, ошибка обновления. */
+/* VKUI оставляет контенту горизонтальные отступы 20 px — из-за них иконка уезжает вправо. */
+.participant-actions__share .vkuiButton__content:first-child {
+  padding: 0;
+}
+
+/* Уведомления поверх карточки: ошибка подписки и ошибка обновления. */
 .participant-notice {
   position: fixed;
   inset-inline-start: 50%;
@@ -1861,19 +1851,6 @@ body {
 
 .participant-notice__title {
   font-weight: 600;
-}
-
-.participant-notice__link {
-  align-self: flex-start;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--avacha-link);
-  font: inherit;
-  font-size: 15px;
-  line-height: 20px;
-  cursor: pointer;
 }
 
 .participant-notice__close {

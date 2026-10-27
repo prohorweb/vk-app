@@ -271,6 +271,15 @@ function declineSurname(name: string, gender: PersonGender): string {
   return name
 }
 
+/** Только имя в винительном падеже — для кнопки «Болею за …», без фамилии. */
+export function participantFirstNameAccusative(name: string): string {
+  const given = name.trim().split(/\s+/).filter(Boolean)[0]
+  if (!given) {
+    return name
+  }
+  return declineGivenName(given, guessGender(name))
+}
+
 /**
  * Имя в винительном падеже для поста «Болею за …».
  * Правила простые: в справочнике только имя и фамилия, отчества почти нет.

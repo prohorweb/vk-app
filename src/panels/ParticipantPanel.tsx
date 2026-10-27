@@ -10,7 +10,6 @@ import {
   Icon20PinOutline,
   Icon24Cancel,
   Icon24ErrorCircleOutline,
-  Icon24FavoriteOutline,
   Icon24ShareOutline,
   Icon28CupOutline,
   Icon28GraphOutline,
@@ -29,7 +28,6 @@ import {
   useStageProtocolQuery,
   useStandingsQuery,
   useSupportersQuery,
-  useSupportersRatingQuery,
 } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
 import { ParticipantCover } from '../components/ParticipantAvatar.tsx'
@@ -41,6 +39,7 @@ import {
   formatShortDateTime,
   formatStageStart,
   participantAccusative,
+  participantFirstNameAccusative,
 } from '../lib/labels.ts'
 import type { StageProtocolRow, StandingRow } from '../types/index.ts'
 import { guessGender } from '../lib/gender.ts'
@@ -53,7 +52,7 @@ type StageSelection = 'all' | number
 
 type StatusTone = 'success' | 'warning' | 'danger'
 
-type NoticeKind = 'subscribed' | 'unsubscribed' | 'favorite-error'
+type NoticeKind = 'favorite-error'
 
 const kmFormatter = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 })
 
@@ -72,21 +71,6 @@ function parseParticipantId(value: string | undefined): number | undefined {
 function splitName(name: string) {
   const [first = '', ...rest] = name.trim().split(/\s+/)
   return { first, rest: rest.join(' ') }
-}
-
-/** Зелёная звезда из макета: в VKUI нет подходящей контурной звезды 24. */
-function StarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden>
-      <path
-        d="M12 3.4l2.56 5.19 5.73.84-4.15 4.04.98 5.7L12 16.48 6.88 19.17l.98-5.7-4.15-4.04 5.73-.84z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
 }
 
 /** Пунктир из красных точек и синих треугольников, как в макете. */
@@ -211,14 +195,12 @@ function NoticeCard({
   icon,
   title,
   text,
-  action,
   onClose,
 }: {
   tone: 'success' | 'muted' | 'error'
   icon: ReactNode
   title: string
   text?: string
-  action?: ReactNode
   onClose: () => void
 }) {
   return (
@@ -232,7 +214,6 @@ function NoticeCard({
       <div className="participant-notice__content">
         <p className="participant-notice__title">{title}</p>
         {text ? <p className="participant-notice__text">{text}</p> : null}
-        {action}
       </div>
       <button
         type="button"
@@ -260,7 +241,6 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
 
   const query = useParticipantQuery(participantId)
   const supportersQuery = useSupportersQuery(participantId)
-  const ratingQuery = useSupportersRatingQuery()
   const standingsQuery = useStandingsQuery()
   const stagesQuery = usePublicStagesQuery()
   const disciplinesQuery = useDisciplinesQuery()
@@ -276,8 +256,6 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const supportersCount =
     supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
   const isFavorite = supportersQuery.data?.is_favorite ?? false
-  const delta =
-    ratingQuery.data?.find((entry) => entry.participant_id === participantId)?.delta_24h ?? 0
   const gap = participant ? trackerGap(participant.id, participant.dogs_count ?? null) : null
   const standing = standingsQuery.data?.rows.find((row) => row.participant_id === participantId)
   const protocolRow = protocolQuery.data?.rows.find((row) => row.participant_id === participantId)
@@ -318,7 +296,17 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
     check()
     const observer = new ResizeObserver(check)
     observer.observe(element)
-    return () => observer.disconnect()
+    // Шрифт Onest подгружается асинхронно: до него текст меряется по fallback и «Показать ещё» пропадает.
+    let cancelled = false
+    void document.fonts.ready.then(() => {
+      if (!cancelled) {
+        check()
+      }
+    })
+    return () => {
+      cancelled = true
+      observer.disconnect()
+    }
   }, [bio, expanded])
 
   const shareMessage = participant
@@ -386,6 +374,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
     ? statusView(participant.status, gap?.outcome ?? null, raceStarted)
     : null
   const name = participant ? splitName(participant.name) : null
+  const favoriteName = participant ? participantFirstNameAccusative(participant.name) : ''
 
   return (
     <Panel id={id} className="participant-screen">
@@ -601,10 +590,6 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
             <div className="participant-fans">
               <Icon20LikeOutline aria-hidden />
               <span className="participant-fans__count">{formatCount(supportersCount)}</span>
-              <span className="participant-fans__label">болельщиков</span>
-              {delta > 0 ? (
-                <span className="participant-fans__delta">+{delta} за сутки</span>
-              ) : null}
             </div>
             <div className="participant-actions">
               <Button
@@ -613,14 +598,12 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                 mode="primary"
                 loading={favorite.isPending}
                 onClick={() => {
-                  const next = !isFavorite
-                  favorite.mutate(next, {
-                    onSuccess: () => setNotice(next ? 'subscribed' : 'unsubscribed'),
+                  favorite.mutate(!isFavorite, {
                     onError: () => setNotice('favorite-error'),
                   })
                 }}
               >
-                {isFavorite ? 'Больше не болею' : 'Болею за'}
+                {isFavorite ? 'Больше не болею' : `Болею за ${favoriteName}`}
               </Button>
               <Button
                 size="l"
@@ -635,29 +618,6 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
           </div>
         ) : null}
       </AsyncView>
-      {notice === 'subscribed' ? (
-        <NoticeCard
-          tone="success"
-          icon={<StarIcon />}
-          title="+1 преданный фанат!"
-          text="Поделиться с друзьями!"
-          action={
-            <button type="button" className="participant-notice__link" onClick={share}>
-              поделиться
-            </button>
-          }
-          onClose={() => setNotice(null)}
-        />
-      ) : null}
-      {notice === 'unsubscribed' ? (
-        <NoticeCard
-          tone="muted"
-          icon={<Icon24FavoriteOutline />}
-          title="Вы отписались от каюра."
-          text="Уведомления о его успехах больше не будут приходить."
-          onClose={() => setNotice(null)}
-        />
-      ) : null}
       {notice === 'favorite-error' ? (
         <NoticeCard
           tone="error"
