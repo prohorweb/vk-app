@@ -4,8 +4,8 @@ import { PATH } from '../routes.ts'
 
 const sections = [
   { path: PATH.route, title: 'Маршрут' },
-  { path: PATH.program, title: 'Программа' },
   { path: PATH.media, title: 'Медиа' },
+  { path: PATH.program, title: 'Программа' },
   { path: PATH.guests, title: 'Гостям' },
   { path: PATH.about, title: 'О гонке' },
   { path: PATH.profile, title: 'Профиль' },
