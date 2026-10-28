@@ -230,13 +230,7 @@ export const routeMapLegend = [
   { id: 'checkpoint', label: 'Контрольный пункт', color: 'var(--avacha-route-checkpoint)' },
 ]
 
-export const routeOverflowMenuItems = [
-  'Печать',
-  'Поделиться',
-  'Сообщить об ошибке',
-  'Обратная связь',
-  'Линейка',
-] as const
+export const routeOverflowMenuItems = ['Поделиться', 'Сообщить об ошибке'] as const
 
 export const routeMapAttribution =
   '© VK, OpenStreetMap contributors · Условия использования · Политика конфиденциальности'
