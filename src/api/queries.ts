@@ -331,6 +331,9 @@ export function useSpectatorLocationsQuery() {
     queryKey: ['content', 'viewer-locations'],
     queryFn: fetchSpectatorLocations,
     staleTime: 60 * 60 * 1000,
+    // Данные локаций меняются в админке: при открытии экрана берём свежие,
+    // persisted-кэш остаётся только для офлайна.
+    refetchOnMount: 'always',
   })
 }
 
