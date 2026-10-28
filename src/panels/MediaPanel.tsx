@@ -272,24 +272,23 @@ export function MediaPanel({ id }: MediaPanelProps) {
 
   return (
     <Panel id={id} className="media-screen">
-      <PanelHeader>Медиа</PanelHeader>
+      <PanelHeader>Новости</PanelHeader>
       <div className="media-hero">
         <p className="media-lead">
           Следите за событиями, участниками и жизнью гонки «Авача — 2027»
         </p>
       </div>
       <div className="media-stripes" aria-hidden />
-      <div className="media-tabs" role="tablist" aria-label="Разделы медиа">
+      <div className="media-tabs" role="tablist" aria-label="Разделы новостей">
         {MEDIA_TABS.map((item) => (
           <button
             key={item.id}
             type="button"
             role="tab"
             aria-selected={tab === item.id}
-            className={[
-              'media-tabs__item',
-              tab === item.id ? 'media-tabs__item--active' : '',
-            ].join(' ')}
+            className={['media-tabs__item', tab === item.id ? 'media-tabs__item--active' : ''].join(
+              ' ',
+            )}
             onClick={() => setTab(item.id)}
           >
             {item.label}

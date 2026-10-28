@@ -41,9 +41,9 @@ import {
   PANEL_ROUTE,
   PANEL_START,
   VIEW_MAP,
-  VIEW_MEDIA,
   VIEW_MORE,
   VIEW_PARTICIPANTS,
+  VIEW_PROGRAM,
   VIEW_RESULTS,
   VIEW_START,
 } from './routes.ts'
@@ -132,23 +132,23 @@ export function App() {
           </View>
 
           <View
-            id={VIEW_MEDIA}
-            activePanel={activePanelOf(activeView, VIEW_MEDIA, activePanel, PANEL_MEDIA)}
-            history={activeView === VIEW_MEDIA ? panelsHistory : []}
+            id={VIEW_PROGRAM}
+            activePanel={activePanelOf(activeView, VIEW_PROGRAM, activePanel, PANEL_PROGRAM)}
+            history={activeView === VIEW_PROGRAM ? panelsHistory : []}
             onSwipeBack={swipeBack}
           >
-            <MediaPanel id={PANEL_MEDIA} />
+            <ProgramPanel id={PANEL_PROGRAM} />
+            <SpectatorMapPanel id={PANEL_SPECTATOR_MAP} />
           </View>
 
           <View
             id={VIEW_MORE}
-            activePanel={activePanelOf(activeView, VIEW_MORE, activePanel, PANEL_PROGRAM)}
+            activePanel={activePanelOf(activeView, VIEW_MORE, activePanel, PANEL_ROUTE)}
             history={activeView === VIEW_MORE ? panelsHistory : []}
             onSwipeBack={swipeBack}
           >
             <RoutePanel id={PANEL_ROUTE} />
-            <ProgramPanel id={PANEL_PROGRAM} />
-            <SpectatorMapPanel id={PANEL_SPECTATOR_MAP} />
+            <MediaPanel id={PANEL_MEDIA} />
             <GuestsPanel id={PANEL_GUESTS} />
             <GuestsTransportPanel id={PANEL_GUESTS_TRANSPORT} />
             <GuestsPackingPanel id={PANEL_GUESTS_PACKING} />

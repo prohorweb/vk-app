@@ -17,7 +17,7 @@ const items: { path: string; label: string; icon: MoreMenuIconId }[] = [
   { path: PATH.about, label: 'О гонке', icon: 'about' },
   { path: PATH.route, label: 'Маршрут', icon: 'route' },
   { path: PATH.guests, label: 'Гостям', icon: 'guests' },
-  { path: PATH.program, label: 'Программа', icon: 'program' },
+  { path: PATH.media, label: 'Новости', icon: 'news' },
 ]
 
 export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
@@ -77,7 +77,12 @@ export function MoreMenuSheet({ open, onClose }: MoreMenuSheetProps) {
       panelClassName="more-menu-sheet__panel"
       hideTabbar
     >
-      <button type="button" className="more-menu-sheet__close" aria-label="Закрыть" onClick={requestClose}>
+      <button
+        type="button"
+        className="more-menu-sheet__close"
+        aria-label="Закрыть"
+        onClick={requestClose}
+      >
         <Icon24Cancel />
       </button>
       {items.map(({ path, label, icon }) => (

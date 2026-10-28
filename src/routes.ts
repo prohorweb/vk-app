@@ -12,7 +12,7 @@ export const VIEW_START = 'view_start'
 export const VIEW_MAP = 'view_map'
 export const VIEW_PARTICIPANTS = 'view_participants'
 export const VIEW_RESULTS = 'view_results'
-export const VIEW_MEDIA = 'view_media'
+export const VIEW_PROGRAM = 'view_program'
 export const VIEW_MORE = 'view_more'
 
 export const PANEL_START = 'panel_start'
@@ -63,7 +63,7 @@ export const MORE_MENU_PANELS = [
   PANEL_GUESTS_SAFETY,
   PANEL_GUESTS_FAQ,
   PANEL_GUESTS_CONTACTS,
-  PANEL_PROGRAM,
+  PANEL_MEDIA,
 ] as const
 
 export const routes = RoutesConfig.create([
@@ -80,11 +80,13 @@ export const routes = RoutesConfig.create([
       ] as const),
     ]),
     createView(VIEW_RESULTS, [createPanel(PANEL_RESULTS, PATH.results)]),
-    createView(VIEW_MEDIA, [createPanel(PANEL_MEDIA, PATH.media)]),
-    createView(VIEW_MORE, [
-      createPanel(PANEL_ROUTE, PATH.route),
+    createView(VIEW_PROGRAM, [
       createPanel(PANEL_PROGRAM, PATH.program),
       createPanel(PANEL_SPECTATOR_MAP, PATH.spectatorMap),
+    ]),
+    createView(VIEW_MORE, [
+      createPanel(PANEL_ROUTE, PATH.route),
+      createPanel(PANEL_MEDIA, PATH.media),
       createPanel(PANEL_GUESTS, PATH.guests),
       createPanel(PANEL_GUESTS_TRANSPORT, PATH.guestsTransport),
       createPanel(PANEL_GUESTS_PACKING, PATH.guestsPacking),

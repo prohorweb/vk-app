@@ -4,9 +4,9 @@ import {
   MORE_MENU_PANELS,
   PATH,
   VIEW_MAP,
-  VIEW_MEDIA,
   VIEW_MORE,
   VIEW_PARTICIPANTS,
+  VIEW_PROGRAM,
   VIEW_RESULTS,
 } from '../routes.ts'
 import { TabbarIcon, type TabbarIconId } from './TabbarIcon.tsx'
@@ -21,7 +21,7 @@ type AppTabbarProps = {
 
 const tabs: (
   | {
-      id: 'map' | 'participants' | 'results' | 'media'
+      id: 'map' | 'participants' | 'results' | 'program'
       view: string
       path: string
       label: string
@@ -39,11 +39,11 @@ const tabs: (
   },
   { id: 'results', view: VIEW_RESULTS, path: PATH.results, label: 'Результаты', icon: 'results' },
   {
-    id: 'media',
-    view: VIEW_MEDIA,
-    path: PATH.media,
-    label: 'Медиа',
-    icon: 'media',
+    id: 'program',
+    view: VIEW_PROGRAM,
+    path: PATH.program,
+    label: 'Программа',
+    icon: 'program',
   },
   { id: 'more', label: 'Ещё', icon: 'more' },
 ]

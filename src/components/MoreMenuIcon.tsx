@@ -1,17 +1,17 @@
 import aboutSvg from '../assets/icons/more/about.svg?raw'
 import guestsSvg from '../assets/icons/more/guests.svg?raw'
+import newsSvg from '../assets/icons/more/news.svg?raw'
 import profileSvg from '../assets/icons/more/profile.svg?raw'
-import programSvg from '../assets/icons/more/program.svg?raw'
 import routeSvg from '../assets/icons/more/route.svg?raw'
 
-export type MoreMenuIconId = 'profile' | 'about' | 'route' | 'guests' | 'program'
+export type MoreMenuIconId = 'profile' | 'about' | 'route' | 'guests' | 'news'
 
 const icons: Record<MoreMenuIconId, string> = {
   profile: profileSvg,
   about: aboutSvg,
   route: routeSvg,
   guests: guestsSvg,
-  program: programSvg,
+  news: newsSvg,
 }
 
 type MoreMenuIconProps = {
