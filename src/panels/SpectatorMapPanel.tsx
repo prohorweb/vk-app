@@ -29,13 +29,30 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
 
   const locationsQuery = useSpectatorLocationsQuery()
-  const locations = useMemo(() => locationsQuery.data ?? [], [locationsQuery.data])
+  // Стартовая точка (`other`) в макете зрительской карты не показывается.
+  const locations = useMemo(
+    () => (locationsQuery.data ?? []).filter((location) => location.category !== 'other'),
+    [locationsQuery.data],
+  )
 
   // Чипы фильтруют по категории локации из API; kind остаётся для пина на карте.
   const visibleLocations = useMemo(
     () => locations.filter((location) => matchesSpectatorFilter(location.category, filter)),
     [locations, filter],
   )
+
+  const handleFilterChange = (next: SpectatorLocationFilter) => {
+    setFilter(next)
+    if (next === 'all') {
+      setSelectedLocationId(null)
+      return
+    }
+    // При выборе фильтра приближаемся к локации и сразу открываем её карточку.
+    const nextVisible = locations.filter((location) =>
+      matchesSpectatorFilter(location.category, next),
+    )
+    setSelectedLocationId(nextVisible[0]?.id ?? null)
+  }
 
   const selectedLocation = locations.find((location) => location.id === selectedLocationId)
 
@@ -72,7 +89,7 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
               'spectator-map-screen__filter',
               filter === item.id ? 'spectator-map-screen__filter--active' : '',
             ].join(' ')}
-            onClick={() => setFilter(item.id)}
+            onClick={() => handleFilterChange(item.id)}
           >
             {item.label}
           </button>
