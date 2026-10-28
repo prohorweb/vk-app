@@ -158,6 +158,7 @@ export function MapPanel({ id }: MapPanelProps) {
           markers={participantMarkers}
           fitBounds
           fitTo={stageFilter === 'all' ? 'content' : 'markers'}
+          fitBottomInset={0.25}
           fitKey={`${stageFilter}:${snapshot?.stageId ?? trackQuery.data?.id ?? ''}`}
           onMarkerClick={(markerId) => setSelectedMarkerId(markerId)}
         />

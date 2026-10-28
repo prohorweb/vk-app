@@ -29,6 +29,8 @@ type YandexMapViewProps = {
   fitKey?: string | number
   /** Рамка камеры: всё содержимое или только маркеры участников. */
   fitTo?: 'content' | 'markers'
+  /** Нижний отступ рамки (доля высоты карты) — под шторку снизу. */
+  fitBottomInset?: number
   onMarkerClick?: (markerId: string) => void
   onPlacemarkClick?: (placemarkId: string) => void
   className?: string
@@ -154,7 +156,7 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
   }
 }
 
-function fitToData(map: YmapsMap, props: YandexMapViewProps) {
+function fitToData(map: YmapsMap, props: YandexMapViewProps, height: number) {
   const markers = props.markers ?? []
   const bounds =
     props.fitTo === 'markers' && markers.length > 0
@@ -169,7 +171,11 @@ function fitToData(map: YmapsMap, props: YandexMapViewProps) {
     map.panTo([south, west], { duration: 300 })
     return
   }
-  map.setBounds(bounds, { checkZoomRange: true, zoomMargin: FIT_PADDING, duration: 400 })
+  // Нижний отступ под шторку: `zoomMargin` — [top, right, bottom, left].
+  const inset = Math.max(0, Math.min(0.6, props.fitBottomInset ?? 0)) * height
+  const zoomMargin: number | number[] =
+    inset > 0 ? [FIT_PADDING, FIT_PADDING, FIT_PADDING + inset, FIT_PADDING] : FIT_PADDING
+  map.setBounds(bounds, { checkZoomRange: true, zoomMargin, duration: 400 })
 }
 
 export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(function YandexMapView(
@@ -183,6 +189,7 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     fitBounds = true,
     fitKey,
     fitTo = 'content',
+    fitBottomInset = 0,
     onMarkerClick,
     onPlacemarkClick,
     className,
@@ -202,6 +209,7 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     fitBounds,
     fitKey,
     fitTo,
+    fitBottomInset,
     onMarkerClick,
     onPlacemarkClick,
     className,
@@ -216,6 +224,7 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     fitBounds,
     fitKey,
     fitTo,
+    fitBottomInset,
     onMarkerClick,
     onPlacemarkClick,
     className,
@@ -238,7 +247,7 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
       const props = propsRef.current
       const map = mapRef.current
       if (map) {
-        fitToData(map, props)
+        fitToData(map, props, containerRef.current?.clientHeight ?? 0)
       }
     },
     flyToUserLocation: () => {
@@ -265,7 +274,7 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     const props = propsRef.current
     drawContent(map, props, ymaps)
     if (props.fitBounds) {
-      fitToData(map, props)
+      fitToData(map, props, container.clientHeight)
     }
 
     return () => {
@@ -284,8 +293,19 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
       return
     }
     lastFitKeyRef.current = fitKey
-    fitToData(map, propsRef.current)
-  }, [ymaps, track, tracks, checkpoints, markers, placemarks, fitBounds, fitKey, fitTo])
+    fitToData(map, propsRef.current, containerRef.current?.clientHeight ?? 0)
+  }, [
+    ymaps,
+    track,
+    tracks,
+    checkpoints,
+    markers,
+    placemarks,
+    fitBounds,
+    fitKey,
+    fitTo,
+    fitBottomInset,
+  ])
 
   return (
     <div

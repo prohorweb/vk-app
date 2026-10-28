@@ -79,6 +79,8 @@ export type MapViewProps = {
   fitKey?: string | number
   /** Что брать за рамку камеры: всё содержимое или только участников. */
   fitTo?: 'content' | 'markers'
+  /** Нижний отступ рамки (доля высоты карты) — компенсация шторки снизу. */
+  fitBottomInset?: number
   onMarkerClick?: (markerId: string) => void
   onPlacemarkClick?: (placemarkId: string) => void
   className?: string

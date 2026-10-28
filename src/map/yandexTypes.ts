@@ -30,7 +30,8 @@ export interface YmapsPolyline extends YmapsGeoObject {
 
 export type YmapsSetBoundsOptions = {
   checkZoomRange?: boolean
-  zoomMargin?: number
+  /** Число — со всех сторон; массив из четырёх — [top, right, bottom, left]. */
+  zoomMargin?: number | number[]
   duration?: number
 }
 
