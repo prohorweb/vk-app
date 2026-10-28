@@ -16,6 +16,7 @@ import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx
 import { formatMapPositionTime } from '../lib/formatMapPositionTime.ts'
 import { readMapMarkerFromUrl } from '../lib/mapScreenParams.ts'
 import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
+import { allRouteCheckpoints } from '../map/routeCheckpoints.ts'
 import { MapView } from '../map/MapView.tsx'
 import { MAP_TRACK_COLOR, ROUTE_INACTIVE_COLOR } from '../map/yandexColors.ts'
 import type { MapPositionsSnapshot, MapViewHandle } from '../map/mapTypes.ts'
@@ -55,7 +56,7 @@ function isTrackNearRoute(apiTrack: [number, number][], routeTrack: [number, num
 
 export function MapPanel({ id }: MapPanelProps) {
   const mapRef = useRef<MapViewHandle>(null)
-  const [stageFilter, setStageFilter] = useState<RouteMapFilter>(1)
+  const [stageFilter, setStageFilter] = useState<RouteMapFilter>('all')
   const [filterOpen, setFilterOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [infoOpen, setInfoOpen] = useState(false)
@@ -79,25 +80,32 @@ export function MapPanel({ id }: MapPanelProps) {
   const snapshot = positionsQuery.data
   const markers = snapshot?.markers
   const stageNumber = typeof stageFilter === 'number' ? stageFilter : null
-  const checkpoints = checkpointsQuery.data?.length
-    ? checkpointsQuery.data
-    : stageNumber !== null
-      ? (routeStageCheckpoints[stageNumber] ?? [])
-      : []
+  // «Все этапы» показывает КП всего маршрута, как на экране «Маршрут».
+  const checkpoints = useMemo(() => {
+    if (stageNumber === null) {
+      return allRouteCheckpoints()
+    }
+    const apiCheckpoints = checkpointsQuery.data
+    if (apiCheckpoints?.length) {
+      return apiCheckpoints
+    }
+    return routeStageCheckpoints[stageNumber] ?? []
+  }, [stageNumber, checkpointsQuery.data])
 
-  // Весь маршрут остаётся видимым жёлтым, выбранный этап — красным.
+  // «Все этапы» — весь маршрут красным, выбранный этап толще, остальные жёлтые.
   // Геометрию выбранного этапа берём из API, если он её отдал.
   const stageTracks = useMemo(() => {
     const tracks = routeStageTracks.map((track, index) => {
       const selected = stageNumber === index + 1
+      const all = stageNumber === null
       const apiTrack = selected ? trackQuery.data?.coordinates : undefined
       return {
         ...track,
         selected,
         coordinates:
           apiTrack && isTrackNearRoute(apiTrack, track.coordinates) ? apiTrack : track.coordinates,
-        color: selected ? MAP_TRACK_COLOR : ROUTE_INACTIVE_COLOR,
-        width: selected ? 4 : 2,
+        color: all || selected ? MAP_TRACK_COLOR : ROUTE_INACTIVE_COLOR,
+        width: all ? 3 : selected ? 4 : 2,
       }
     })
     // Выбранный этап рисуем последним, иначе общий маршрут перекрывает его.

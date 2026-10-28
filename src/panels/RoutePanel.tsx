@@ -9,30 +9,13 @@ import { RouteSheet } from '../components/route/RouteSheet.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { readRouteMapFilterFromUrl, readRouteSheetSnapFromUrl } from '../lib/routeScreenParams.ts'
 import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
-import type { MapCheckpoint, MapViewHandle } from '../map/mapTypes.ts'
+import type { MapViewHandle } from '../map/mapTypes.ts'
 import { MapView } from '../map/MapView.tsx'
+import { allRouteCheckpoints } from '../map/routeCheckpoints.ts'
 import { MAP_TRACK_COLOR, ROUTE_INACTIVE_COLOR } from '../map/yandexColors.ts'
 
 type RoutePanelProps = {
   id: string
-}
-
-/** КП на карте: для «Все этапы» точки на стыках совпадают, дубли убираем. */
-function checkpointsFor(filter: RouteMapFilter): MapCheckpoint[] {
-  if (filter !== 'all') {
-    return routeStageCheckpoints[filter] ?? []
-  }
-  const seen = new Set<string>()
-  return Object.values(routeStageCheckpoints)
-    .flat()
-    .filter((checkpoint) => {
-      const key = `${checkpoint.lat.toFixed(4)}:${checkpoint.lng.toFixed(4)}`
-      if (seen.has(key)) {
-        return false
-      }
-      seen.add(key)
-      return true
-    })
 }
 
 export function RoutePanel({ id }: RoutePanelProps) {
@@ -68,7 +51,10 @@ export function RoutePanel({ id }: RoutePanelProps) {
     return tracks.sort((left, right) => Number(left.selected) - Number(right.selected))
   }, [mapFilter])
 
-  const checkpoints = useMemo(() => checkpointsFor(mapFilter), [mapFilter])
+  const checkpoints = useMemo(
+    () => (mapFilter === 'all' ? allRouteCheckpoints() : (routeStageCheckpoints[mapFilter] ?? [])),
+    [mapFilter],
+  )
 
   return (
     <Panel id={id} className="route-screen">
