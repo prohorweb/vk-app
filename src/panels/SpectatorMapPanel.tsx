@@ -1,14 +1,17 @@
 import { useMemo, useRef, useState } from 'react'
 import { Panel, PanelHeader, PanelHeaderBack, Subhead } from '@vkontakte/vkui'
 import { useSpectatorLocationsQuery } from '../api/queries.ts'
-import { spectatorLocationFilters, type SpectatorLocationFilter } from '../api/viewerLocations.ts'
+import {
+  matchesSpectatorFilter,
+  spectatorLocationFilters,
+  type SpectatorLocationFilter,
+} from '../api/viewerLocations.ts'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { SpectatorArrivalSheet } from '../components/spectator/SpectatorArrivalSheet.tsx'
 import { SpectatorLocationCard } from '../components/spectator/SpectatorLocationCard.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import type { MapPlacemark, MapViewHandle } from '../map/mapTypes.ts'
-import { PLACEMARK_COLOR_BY_KIND } from '../map/yandexColors.ts'
 import { MapView } from '../map/MapView.tsx'
 import { PATH } from '../routes.ts'
 
@@ -28,14 +31,9 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
   const locationsQuery = useSpectatorLocationsQuery()
   const locations = useMemo(() => locationsQuery.data ?? [], [locationsQuery.data])
 
-  // Показываем только те типы площадок, которые реально пришли из справочника.
-  const filters = useMemo(() => {
-    const kinds = new Set(locations.map((location) => location.kind))
-    return spectatorLocationFilters.filter((item) => item.id === 'all' || kinds.has(item.id))
-  }, [locations])
-
+  // Чипы всегда как в макете: категории зон появятся вместе с issue 08.
   const visibleLocations = useMemo(
-    () => locations.filter((location) => filter === 'all' || location.kind === filter),
+    () => locations.filter((location) => matchesSpectatorFilter(location.kind, filter)),
     [locations, filter],
   )
 
@@ -61,12 +59,10 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
         before={<PanelHeaderBack onClick={goBack} />}
         className="spectator-map-screen__header"
       >
-        <span className="spectator-map-screen__header-title">
-          {selectedLocation?.name ?? 'Карта зрительских локаций'}
-        </span>
+        <span className="spectator-map-screen__header-title">Карта зрительских локаций</span>
       </PanelHeader>
       <div className="spectator-map-screen__filters" role="tablist" aria-label="Фильтр локаций">
-        {filters.map((item) => (
+        {spectatorLocationFilters.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -78,13 +74,6 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
             ].join(' ')}
             onClick={() => setFilter(item.id)}
           >
-            {item.id === 'all' ? null : (
-              <span
-                className="spectator-map-screen__filter-dot"
-                aria-hidden
-                style={{ background: PLACEMARK_COLOR_BY_KIND[item.id] }}
-              />
-            )}
             {item.label}
           </button>
         ))}

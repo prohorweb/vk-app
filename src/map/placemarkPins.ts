@@ -7,9 +7,12 @@ import type { MapPlacemarkKind } from './mapTypes.ts'
  */
 export type PlacemarkGlyph = 'fire' | 'microphone' | 'landscape' | 'camera' | 'smiley' | 'apple'
 
-/** Размер картинки метки и её привязка: кончик хвоста капли должен стоять на точке. */
-export const PLACEMARK_PIN_SIZE: readonly [number, number] = [24, 27]
-export const PLACEMARK_PIN_OFFSET: readonly [number, number] = [-12, -25]
+/**
+ * Размер картинки метки и её привязка: кончик хвоста капли должен стоять на точке.
+ * Картинка — вектор, поэтому 32×36 держит пропорции SVG 24×27 без потерь.
+ */
+export const PLACEMARK_PIN_SIZE: readonly [number, number] = [32, 36]
+export const PLACEMARK_PIN_OFFSET: readonly [number, number] = [-16, -33]
 
 /** Цвета глифов из макета. `smiley` — резерв под детскую зону, в контракте её пока нет. */
 export const PLACEMARK_GLYPH_COLOR: Record<PlacemarkGlyph, string> = {
