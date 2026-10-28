@@ -608,8 +608,8 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 4px;
-  border-radius: 12px;
+  padding: 2px;
+  border-radius: 10px;
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--vkui--elevation3);
 }
@@ -621,9 +621,9 @@ body {
 }
 
 .route-map-controls .vkuiIconButton__host {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: var(--avacha-map-control-size);
+  height: var(--avacha-map-control-size);
+  border-radius: 10px;
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--vkui--elevation3);
 }
@@ -639,9 +639,26 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--vkui--elevation3);
+}
+
+/* «Дополнительно» у нижнего края карты, над свёрнутой шторкой. */
+.route-map-controls__menu.vkuiIconButton__host {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  bottom: var(--avacha-map-menu-bottom);
+  width: var(--avacha-map-control-size);
+  height: var(--avacha-map-control-size);
+  border-radius: 10px;
+  background: var(--vkui--color_background_contrast);
+  box-shadow: var(--vkui--elevation3);
+}
+
+.route-map-controls__menu.route-map-controls__btn--active.vkuiIconButton__host {
+  background: var(--vkui--color_background_secondary);
 }
 
 .route-map-controls__zoom .vkuiIconButton__host {
@@ -673,7 +690,7 @@ body {
 .map-choice {
   position: absolute;
   z-index: 12;
-  top: 76px;
+  top: 60px;
   right: 60px;
   box-sizing: border-box;
   width: min(276px, calc(100% - 76px));

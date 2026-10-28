@@ -7,6 +7,10 @@
   --avacha-warning: #d76a18;
   --avacha-warning-tint: #fff2d6;
   --avacha-icon-disabled: #b8c1cc;
+  /* Кнопки управления картой: размер из макета «Карта». */
+  --avacha-map-control-size: 36px;
+  /* Отступ нижней кнопки «Дополнительно» от низа карты: над свёрнутой шторкой. */
+  --avacha-map-menu-bottom: 159px;
   --avacha-rank-first: #f59824;
   --avacha-rank-second: #a7b0ba;
   --avacha-rank-third: #b0794b;

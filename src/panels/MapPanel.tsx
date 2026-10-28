@@ -182,6 +182,7 @@ export function MapPanel({ id }: MapPanelProps) {
           }}
           infoActive={infoOpen}
           menuActive={menuOpen}
+          menuPlacement="bottom"
           onZoomIn={() => mapRef.current?.zoomIn()}
           onZoomOut={() => mapRef.current?.zoomOut()}
           onLocate={() => mapRef.current?.flyToUserLocation()}
