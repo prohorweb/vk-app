@@ -77,6 +77,8 @@ export type MapViewProps = {
   fitBounds?: boolean
   /** Смена ключа пересобирает bounds; обновление данных при том же ключе камеру не трогает. */
   fitKey?: string | number
+  /** Что брать за рамку камеры: всё содержимое или только участников. */
+  fitTo?: 'content' | 'markers'
   onMarkerClick?: (markerId: string) => void
   onPlacemarkClick?: (placemarkId: string) => void
   className?: string
