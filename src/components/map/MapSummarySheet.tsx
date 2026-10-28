@@ -225,6 +225,13 @@ export function MapSummarySheet({
   const updatedLabel = updatedAt > 0 ? formatShortDateTime(updatedAt) : null
   const firstSeconds = topEntries[0]?.seconds ?? null
 
+  const topHead = updatedLabel ? (
+    <div className="map-summary__top-head">
+      <p className="map-summary__top-title">Топ-3</p>
+      <p className="map-summary__top-updated">обновлено {updatedLabel}</p>
+    </div>
+  ) : null
+
   const peek = (
     <>
       <div className="map-summary__peek-head">
@@ -259,20 +266,8 @@ export function MapSummarySheet({
         if (snap === 'collapsed') {
           return null
         }
-        if (!raceStarted) {
-          if (raceSoon) {
-            return (
-              <EmptyState
-                icon={<Icon56CupOutline aria-hidden />}
-                title="Гонка скоро начнётся!"
-                text={
-                  season?.starts_at
-                    ? `Информация появится сразу после старта гонки ${formatShortDateTime(season.starts_at)}`
-                    : 'Информация появится сразу после старта гонки'
-                }
-              />
-            )
-          }
+        // «Приём заявок» — единственное состояние без строки «Топ-3»: результатов ещё нет вовсе.
+        if (!raceStarted && !raceSoon) {
           return (
             <EmptyState
               icon={<Icon56WriteOutline aria-hidden />}
@@ -291,40 +286,57 @@ export function MapSummarySheet({
             />
           )
         }
+        if (!raceStarted) {
+          return (
+            <>
+              {topHead}
+              <EmptyState
+                icon={<Icon56CupOutline aria-hidden />}
+                title="Гонка скоро начнётся!"
+                text={
+                  season?.starts_at
+                    ? `Информация появится сразу после старта гонки ${formatShortDateTime(season.starts_at)}`
+                    : 'Информация появится сразу после старта гонки'
+                }
+              />
+            </>
+          )
+        }
         if (stageNotStarted) {
           return (
-            <EmptyState
-              icon={<Icon56CupOutline aria-hidden />}
-              title="Этап скоро начнётся!"
-              text={
-                stage?.start_time
-                  ? `Информация появится сразу после старта этапа ${formatShortDateTime(stage.start_time)}`
-                  : 'Информация появится сразу после старта этапа'
-              }
-            />
+            <>
+              {topHead}
+              <EmptyState
+                icon={<Icon56CupOutline aria-hidden />}
+                title="Этап скоро начнётся!"
+                text={
+                  stage?.start_time
+                    ? `Информация появится сразу после старта этапа ${formatShortDateTime(stage.start_time)}`
+                    : 'Информация появится сразу после старта этапа'
+                }
+              />
+            </>
           )
         }
         if (!hasResults) {
           return (
-            <EmptyState
-              icon={<Icon56CupOutline aria-hidden />}
-              title="Результатов пока нет"
-              text={
-                isAll
-                  ? 'Информация появится после финиша гонки'
-                  : 'Информация появится после финиша этапа'
-              }
-            />
+            <>
+              {topHead}
+              <EmptyState
+                icon={<Icon56CupOutline aria-hidden />}
+                title="Результатов пока нет"
+                text={
+                  isAll
+                    ? 'Информация появится после финиша гонки'
+                    : 'Информация появится после финиша этапа'
+                }
+              />
+            </>
           )
         }
         return (
           <>
-            <div className="map-summary__top-head">
-              <p className="map-summary__top-title">Топ-3</p>
-              {updatedLabel ? (
-                <p className="map-summary__top-updated">обновлено {updatedLabel}</p>
-              ) : null}
-            </div>
+            {topHead}
             <ul className="map-summary__top-list">
               {topEntries.map((row, index) => {
                 const name = splitName(row.name)

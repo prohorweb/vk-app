@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import vkBridge from '@vkontakte/vk-bridge'
 import { useParams, useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import {
@@ -9,7 +9,6 @@ import {
   Icon20LikeOutline,
   Icon20PawOutline,
   Icon20PinOutline,
-  Icon24Cancel,
   Icon24ErrorCircleOutline,
   Icon24ShareOutline,
   Icon28CupOutline,
@@ -31,6 +30,7 @@ import {
   useSupportersQuery,
 } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
+import { NoticeCard } from '../components/NoticeCard.tsx'
 import { ParticipantCover } from '../components/ParticipantAvatar.tsx'
 import {
   disciplineCardLabel,
@@ -187,38 +187,6 @@ async function shareParticipant(message: string, link: string): Promise<void> {
     return
   }
   await navigator.clipboard.writeText(`${message}\n\n${link}`)
-}
-
-function NoticeCard({
-  icon,
-  title,
-  text,
-  onClose,
-}: {
-  icon: ReactNode
-  title: string
-  text?: string
-  onClose: () => void
-}) {
-  return (
-    <aside className="participant-notice" role="alert">
-      <span className="participant-notice__icon" aria-hidden>
-        {icon}
-      </span>
-      <div className="participant-notice__content">
-        <p className="participant-notice__title">{title}</p>
-        {text ? <p className="participant-notice__text">{text}</p> : null}
-      </div>
-      <button
-        type="button"
-        className="participant-notice__close"
-        aria-label="Закрыть"
-        onClick={onClose}
-      >
-        <Icon24Cancel />
-      </button>
-    </aside>
-  )
 }
 
 export function ParticipantPanel({ id }: ParticipantPanelProps) {

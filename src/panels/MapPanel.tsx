@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import { Icon24ErrorCircleOutline } from '@vkontakte/icons'
 import { Panel, PanelHeader } from '@vkontakte/vkui'
 import { findMapMarker } from '../api/map.ts'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
@@ -14,9 +15,12 @@ import { MapDisciplineSheet } from '../components/map/MapDisciplineSheet.tsx'
 import { MapMiniCard } from '../components/map/MapMiniCard.tsx'
 import { MapPositionBanner } from '../components/map/MapPositionBanner.tsx'
 import { MapSummarySheet } from '../components/map/MapSummarySheet.tsx'
+import { NoticeCard } from '../components/NoticeCard.tsx'
 import { RouteFilterSheet } from '../components/route/RouteFilterSheet.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
+import { useOnline } from '../hooks/useOnline.ts'
+import { formatFullDateTime } from '../lib/labels.ts'
 import { formatMapPositionTime } from '../lib/formatMapPositionTime.ts'
 import { readMapMarkerFromUrl } from '../lib/mapScreenParams.ts'
 import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
@@ -71,6 +75,8 @@ export function MapPanel({ id }: MapPanelProps) {
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() =>
     readMapMarkerFromUrl(),
   )
+  const [staleDismissedAt, setStaleDismissedAt] = useState<number | null>(null)
+  const online = useOnline()
 
   const stagesQuery = usePublicStagesQuery()
   const disciplinesQuery = useDisciplinesQuery()
@@ -147,6 +153,24 @@ export function MapPanel({ id }: MapPanelProps) {
 
   const bannerLabel = describePositionsBanner(snapshot, positionsQuery.isError)
 
+  const stale =
+    !online ||
+    stagesQuery.isError ||
+    disciplinesQuery.isError ||
+    participantsQuery.isError ||
+    positionsQuery.isError ||
+    trackQuery.isError ||
+    checkpointsQuery.isError
+  const lastUpdatedAt = Math.max(
+    stagesQuery.dataUpdatedAt,
+    disciplinesQuery.dataUpdatedAt,
+    participantsQuery.dataUpdatedAt,
+    positionsQuery.dataUpdatedAt,
+    trackQuery.dataUpdatedAt,
+    checkpointsQuery.dataUpdatedAt,
+  )
+  const showStale = stale && lastUpdatedAt > 0 && staleDismissedAt !== lastUpdatedAt
+
   return (
     <Panel id={id} className="map-screen">
       <PanelHeader getRootRef={headerRef}>Карта</PanelHeader>
@@ -211,6 +235,14 @@ export function MapPanel({ id }: MapPanelProps) {
       />
       <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <RouteMapInfo open={infoOpen} onClose={() => setInfoOpen(false)} />
+      {showStale ? (
+        <NoticeCard
+          icon={<Icon24ErrorCircleOutline />}
+          title="Данные не были обновлены"
+          text={`Последнее обновление ${formatFullDateTime(lastUpdatedAt)}`}
+          onClose={() => setStaleDismissedAt(lastUpdatedAt)}
+        />
+      ) : null}
     </Panel>
   )
 }

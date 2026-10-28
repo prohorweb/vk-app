@@ -1977,7 +1977,7 @@ body {
 }
 
 /* Уведомление поверх карточки: данные не удалось обновить. */
-.participant-notice {
+.notice-card {
   position: fixed;
   inset-inline-start: 50%;
   bottom: calc(var(--app-tabbar-total-height) + 8px);
@@ -1994,7 +1994,7 @@ body {
   transform: translateX(-50%);
 }
 
-.participant-notice__icon {
+.notice-card__icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2004,26 +2004,26 @@ body {
   color: var(--vkui--color_icon_negative);
 }
 
-.participant-notice__content {
+.notice-card__content {
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
 }
 
-.participant-notice__title,
-.participant-notice__text {
+.notice-card__title,
+.notice-card__text {
   margin: 0;
   color: var(--vkui--color_text_primary);
   font-size: 16px;
   line-height: 20px;
 }
 
-.participant-notice__title {
+.notice-card__title {
   font-weight: 600;
 }
 
-.participant-notice__close {
+.notice-card__close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2039,7 +2039,7 @@ body {
   cursor: pointer;
 }
 
-.participant-notice__text {
+.notice-card__text {
   color: var(--vkui--color_text_secondary);
 }
 
