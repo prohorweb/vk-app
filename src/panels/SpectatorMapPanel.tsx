@@ -11,6 +11,7 @@ import { RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { SpectatorArrivalSheet } from '../components/spectator/SpectatorArrivalSheet.tsx'
 import { SpectatorLocationCard } from '../components/spectator/SpectatorLocationCard.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
+import { placemarkGlyphFor } from '../map/placemarkPins.ts'
 import type { MapPlacemark, MapViewHandle } from '../map/mapTypes.ts'
 import { MapView } from '../map/MapView.tsx'
 import { PATH } from '../routes.ts'
@@ -55,7 +56,7 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
         id: location.id,
         lng: location.lng,
         lat: location.lat,
-        category: location.category,
+        glyph: placemarkGlyphFor(location.name, location.category),
         label: location.name,
         selected: location.id === selectedLocationId,
       })),
@@ -93,6 +94,7 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
           ref={mapRef}
           placemarks={placemarks}
           fitBounds
+          fitBottomInset={0.35}
           fitKey={`${filter}:${locations.length}`}
           onPlacemarkClick={setSelectedLocationId}
         />
