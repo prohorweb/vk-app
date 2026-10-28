@@ -185,7 +185,6 @@ export function MapPanel({ id }: MapPanelProps) {
           menuPlacement="bottom"
           onZoomIn={() => mapRef.current?.zoomIn()}
           onZoomOut={() => mapRef.current?.zoomOut()}
-          onLocate={() => mapRef.current?.flyToUserLocation()}
         />
         {selectedMarker ? (
           <MapMiniCard marker={selectedMarker} onClose={() => setSelectedMarkerId(null)} />

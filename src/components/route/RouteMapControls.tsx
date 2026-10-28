@@ -117,9 +117,11 @@ export function RouteMapControls({
                 <Icon24MinusOutline />
               </IconButton>
             </div>
-            <IconButton label="Моё местоположение" onClick={onLocate}>
-              <Icon24LocationMapOutline />
-            </IconButton>
+            {onLocate ? (
+              <IconButton label="Моё местоположение" onClick={onLocate}>
+                <Icon24LocationMapOutline />
+              </IconButton>
+            ) : null}
             {menuPlacement === 'stack' ? menuButton : null}
           </div>
         </div>
