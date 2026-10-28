@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 type PictureProps = {
   src?: string | null
@@ -25,7 +25,10 @@ function PictureFrame({
   children,
 }: Pick<PictureProps, 'alt' | 'ratio' | 'fallback' | 'className'> & { children?: ReactNode }) {
   return (
-    <div className={['picture', className].filter(Boolean).join(' ')} style={{ aspectRatio: ratio }}>
+    <div
+      className={['picture', className].filter(Boolean).join(' ')}
+      style={{ aspectRatio: ratio }}
+    >
       {children ?? (
         <div className="picture__fallback" role="img" aria-label={alt}>
           {fallback}
@@ -45,6 +48,17 @@ function LoadingPicture({
   position = 'center',
 }: PictureProps & { src: string }) {
   const [phase, setPhase] = useState<'loading' | 'ready' | 'error'>('loading')
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  // Картинка из кеша успевает загрузиться до подписки на `onLoad`, и без этой
+  // проверки она навсегда остаётся прозрачной.
+  useEffect(() => {
+    const img = imgRef.current
+    if (!img || !img.complete) {
+      return
+    }
+    setPhase(img.naturalWidth > 0 ? 'ready' : 'error')
+  }, [src])
 
   return (
     <PictureFrame alt={alt} ratio={ratio} fallback={fallback} className={className}>
@@ -55,6 +69,7 @@ function LoadingPicture({
         </div>
       ) : (
         <img
+          ref={imgRef}
           className="picture__img"
           src={src}
           alt={alt}

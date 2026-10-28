@@ -55,7 +55,13 @@ function loadSdkScript(): Promise<YmapsApi | null> {
 
 /** Загружает SDK один раз; ошибка не кешируется — после сбоя можно ретраить. */
 export function loadYmapsSdk(): Promise<YmapsApi | null> {
-  sdkPromise ??= loadSdkScript()
+  sdkPromise ??= loadSdkScript().then((api) => {
+    if (!api) {
+      // Не кешируем неудачу: следующий запрос снова попробует загрузить SDK.
+      sdkPromise = null
+    }
+    return api
+  })
   return sdkPromise
 }
 
