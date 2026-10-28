@@ -7,10 +7,17 @@
   --avacha-warning: #d76a18;
   --avacha-warning-tint: #fff2d6;
   --avacha-icon-disabled: #b8c1cc;
-  /* Кнопки управления картой: размер из макета «Карта». */
+  /* Кнопки управления картой: размер и радиус из макета «Карта». */
   --avacha-map-control-size: 36px;
-  /* Отступ нижней кнопки «Дополнительно» от низа карты: над свёрнутой шторкой. */
-  --avacha-map-menu-bottom: 159px;
+  --avacha-map-control-radius: 8px;
+  /* Тень кнопок из Figma («Button Map VK Avacha»): Dark/Elevation 1. */
+  --avacha-map-control-shadow: 0 0 2px rgba(0, 0, 0, 0.1), 0 2px 2px rgba(0, 0, 0, 0.2);
+  /* Высота карточки зума из макета: 36×77. */
+  --avacha-map-zoom-height: 77px;
+  /* Зазор между тулбаром и зумом: в макете зум на 273 px при верхе карты 80 px. */
+  --avacha-map-controls-gap: 141px;
+  /* Отступ нижней кнопки «Дополнительно» от низа карты: ~32 px над свёрнутой шторкой. */
+  --avacha-map-menu-bottom: 192px;
   --avacha-rank-first: #f59824;
   --avacha-rank-second: #a7b0ba;
   --avacha-rank-third: #b0794b;

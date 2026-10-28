@@ -62,7 +62,15 @@ export function RouteMapControls({
 
   return (
     <>
-      <div className={['route-map-controls', className].filter(Boolean).join(' ')}>
+      <div
+        className={[
+          'route-map-controls',
+          menuPlacement === 'bottom' ? 'route-map-controls--map' : '',
+          className,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {showInfo && onInfo ? (
           <IconButton
             className={[

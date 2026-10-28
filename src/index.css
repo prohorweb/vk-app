@@ -582,9 +582,9 @@ body {
 .route-map-controls {
   position: absolute;
   z-index: 2;
-  top: 12px;
-  right: 12px;
-  left: 12px;
+  top: 16px;
+  right: 16px;
+  left: 16px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -603,15 +603,21 @@ body {
   gap: 8px;
 }
 
+/* На главной карте зум и геолокация опущены под тулбар, как в макете «Карта». */
+.route-map-controls--map .route-map-controls__side {
+  gap: var(--avacha-map-controls-gap);
+}
+
 /* Кнопки фильтров стоят в одну горизонтальную строку в белой карточке, как в макете. */
 .route-map-controls__group {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 2px;
-  border-radius: 10px;
+  overflow: hidden;
+  padding: 0;
+  border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
-  box-shadow: var(--vkui--elevation3);
+  box-shadow: var(--avacha-map-control-shadow);
 }
 
 .route-map-controls__cluster {
@@ -623,13 +629,13 @@ body {
 .route-map-controls .vkuiIconButton__host {
   width: var(--avacha-map-control-size);
   height: var(--avacha-map-control-size);
-  border-radius: 10px;
+  border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
-  box-shadow: var(--vkui--elevation3);
+  box-shadow: var(--avacha-map-control-shadow);
 }
 
 .route-map-controls__group .vkuiIconButton__host {
-  border-radius: 8px;
+  border-radius: var(--avacha-map-control-radius);
   background: transparent;
   box-shadow: none;
 }
@@ -638,23 +644,24 @@ body {
 .route-map-controls__zoom {
   display: flex;
   flex-direction: column;
+  height: var(--avacha-map-zoom-height);
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
-  box-shadow: var(--vkui--elevation3);
+  box-shadow: var(--avacha-map-control-shadow);
 }
 
 /* «Дополнительно» у нижнего края карты, над свёрнутой шторкой. */
 .route-map-controls__menu.vkuiIconButton__host {
   position: absolute;
   z-index: 3;
-  right: 12px;
+  right: 16px;
   bottom: var(--avacha-map-menu-bottom);
   width: var(--avacha-map-control-size);
   height: var(--avacha-map-control-size);
-  border-radius: 10px;
+  border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
-  box-shadow: var(--vkui--elevation3);
+  box-shadow: var(--avacha-map-control-shadow);
 }
 
 .route-map-controls__menu.route-map-controls__btn--active.vkuiIconButton__host {
@@ -662,6 +669,7 @@ body {
 }
 
 .route-map-controls__zoom .vkuiIconButton__host {
+  height: calc(var(--avacha-map-zoom-height) / 2);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
