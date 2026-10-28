@@ -10,8 +10,8 @@ export type PlacemarkGlyph = 'mic' | 'compass' | 'smile' | 'cup'
  * Размер картинки метки и её привязка: кончик хвоста капли должен стоять на точке.
  * Картинка — вектор, поэтому 32×36 держит пропорции SVG 24×27 без потерь.
  */
-export const PLACEMARK_PIN_SIZE: readonly [number, number] = [32, 36]
-export const PLACEMARK_PIN_OFFSET: readonly [number, number] = [-16, -33]
+export const PLACEMARK_PIN_SIZE: readonly [number, number] = [40, 45]
+export const PLACEMARK_PIN_OFFSET: readonly [number, number] = [-20, -42]
 
 /** Цвета глифов из макета; цвет кружка метки совпадает с цветом глифа. */
 export const PLACEMARK_GLYPH_COLOR: Record<PlacemarkGlyph, string> = {
@@ -63,10 +63,10 @@ const GLYPHS: Record<PlacemarkGlyph, GlyphShape> = {
 const PIN_BODY =
   'M19.9973 10.03C19.9973 14.519 17.0574 18.3191 13.0036 19.5989C12.0552 19.8983 11.0326 23 9.98563 23C8.93855 23 7.94211 19.8983 6.99362 19.5989C2.93987 18.3191 0 14.5189 0 10.03C0 4.49053 4.47654 0 9.99863 0C15.5207 0 19.9973 4.49053 19.9973 10.03Z'
 
-/** Глиф VKUI 24×24 масштабируем вдвое и центрируем в кружке метки (10, 10). */
+/** Глиф VKUI 24×24 масштабируем и центрируем в кружке метки (10, 10). */
 function glyphMarkup(shape: GlyphShape): string {
   const paths = shape.paths.map((path) => `<path d="${path}" fill="#fff"/>`).join('')
-  return `<g transform="translate(4 4) scale(0.5)" fill-rule="evenodd" clip-rule="evenodd">${paths}</g>`
+  return `<g transform="translate(2.8 2.8) scale(0.6)" fill-rule="evenodd" clip-rule="evenodd">${paths}</g>`
 }
 
 /** SVG-метка площадки: белая капля, цветной кружок и белый глиф. */

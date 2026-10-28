@@ -43,15 +43,8 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
 
   const handleFilterChange = (next: SpectatorLocationFilter) => {
     setFilter(next)
-    if (next === 'all') {
-      setSelectedLocationId(null)
-      return
-    }
-    // При выборе фильтра приближаемся к локации и сразу открываем её карточку.
-    const nextVisible = locations.filter((location) =>
-      matchesSpectatorFilter(location.category, next),
-    )
-    setSelectedLocationId(nextVisible[0]?.id ?? null)
+    // При выборе фильтра карточка локации закрывается, даже если была открыта.
+    setSelectedLocationId(null)
   }
 
   const selectedLocation = locations.find((location) => location.id === selectedLocationId)
