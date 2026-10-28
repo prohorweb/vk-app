@@ -17,7 +17,7 @@ import { MapStagePopover } from '../components/map/MapStagePopover.tsx'
 import { MapSummarySheet } from '../components/map/MapSummarySheet.tsx'
 import { NoticeCard } from '../components/NoticeCard.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
-import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
+import { RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { useOnline } from '../hooks/useOnline.ts'
 import { formatFullDateTime } from '../lib/labels.ts'
 import { readMapMarkerFromUrl } from '../lib/mapScreenParams.ts'
@@ -50,7 +50,6 @@ export function MapPanel({ id }: MapPanelProps) {
   const [filterOpen, setFilterOpen] = useState(false)
   const [disciplineFilterOpen, setDisciplineFilterOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [infoOpen, setInfoOpen] = useState(false)
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() =>
     readMapMarkerFromUrl(),
   )
@@ -172,15 +171,9 @@ export function MapPanel({ id }: MapPanelProps) {
           }}
           filterActive={filterOpen}
           disciplineFilterActive={disciplineFilterOpen || disciplineId !== null}
-          onInfo={() => {
-            setInfoOpen((open) => !open)
-            setMenuOpen(false)
-          }}
           onMenu={() => {
             setMenuOpen((open) => !open)
-            setInfoOpen(false)
           }}
-          infoActive={infoOpen}
           menuActive={menuOpen}
           menuPlacement="bottom"
           onZoomIn={() => mapRef.current?.zoomIn()}
@@ -217,7 +210,6 @@ export function MapPanel({ id }: MapPanelProps) {
         />
       </div>
       <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-      <RouteMapInfo open={infoOpen} onClose={() => setInfoOpen(false)} />
       {showStale ? (
         <NoticeCard
           icon={<Icon24ErrorCircleOutline />}

@@ -627,11 +627,20 @@ body {
 }
 
 .route-map-controls .vkuiIconButton__host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: var(--avacha-map-control-size);
   height: var(--avacha-map-control-size);
   border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--avacha-map-control-shadow);
+}
+
+/* VKUI закладывает иконке padding 12px под кнопку 48px — для 36px ставим 6px, чтобы иконка встала по центру. */
+.route-map-controls .vkuiIconButton__host .vkuiIcon--24,
+.route-map-controls__menu.vkuiIconButton__host .vkuiIcon--24 {
+  padding: 6px;
 }
 
 .route-map-controls__group .vkuiIconButton__host {
@@ -657,6 +666,9 @@ body {
   z-index: 3;
   right: 16px;
   bottom: var(--avacha-map-menu-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: var(--avacha-map-control-size);
   height: var(--avacha-map-control-size);
   border-radius: var(--avacha-map-control-radius);
