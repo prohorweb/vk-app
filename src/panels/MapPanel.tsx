@@ -13,7 +13,6 @@ import {
 } from '../api/queries.ts'
 import { MapDisciplinePopover } from '../components/map/MapDisciplinePopover.tsx'
 import { MapMiniCard } from '../components/map/MapMiniCard.tsx'
-import { MapPositionBanner } from '../components/map/MapPositionBanner.tsx'
 import { MapStagePopover } from '../components/map/MapStagePopover.tsx'
 import { MapSummarySheet } from '../components/map/MapSummarySheet.tsx'
 import { NoticeCard } from '../components/NoticeCard.tsx'
@@ -21,35 +20,15 @@ import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { useOnline } from '../hooks/useOnline.ts'
 import { formatFullDateTime } from '../lib/labels.ts'
-import { formatMapPositionTime } from '../lib/formatMapPositionTime.ts'
 import { readMapMarkerFromUrl } from '../lib/mapScreenParams.ts'
 import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
 import { allRouteCheckpoints } from '../map/routeCheckpoints.ts'
 import { MapView } from '../map/MapView.tsx'
 import { MAP_TRACK_COLOR, ROUTE_INACTIVE_COLOR } from '../map/yandexColors.ts'
-import type { MapPositionsSnapshot, MapViewHandle } from '../map/mapTypes.ts'
+import type { MapViewHandle } from '../map/mapTypes.ts'
 
 type MapPanelProps = {
   id: string
-}
-
-function describePositionsBanner(
-  snapshot: MapPositionsSnapshot | undefined,
-  failed: boolean,
-): string {
-  if (!snapshot) {
-    return failed ? 'Положение недоступно' : 'Положение…'
-  }
-  if (snapshot.updatedAt === null) {
-    return snapshot.source === 'mock' ? 'Демо-данные' : 'Нет отметок'
-  }
-  const time = formatMapPositionTime(snapshot.updatedAt)
-  if (snapshot.source === 'mock') {
-    return `Положение на ${time} · демо-данные`
-  }
-  const stale =
-    snapshot.markers.length > 0 && snapshot.markers.every((marker) => marker.status === 'stale')
-  return stale ? `Положение на ${time} · данные устарели` : `Положение на ${time}`
 }
 
 /** API может отдать трек другого региона — сверяем начало нитки с маршрутом этапа. */
@@ -151,8 +130,6 @@ export function MapPanel({ id }: MapPanelProps) {
     [markers, selectedMarkerId],
   )
 
-  const bannerLabel = describePositionsBanner(snapshot, positionsQuery.isError)
-
   const stale =
     !online ||
     stagesQuery.isError ||
@@ -184,7 +161,6 @@ export function MapPanel({ id }: MapPanelProps) {
           fitKey={snapshot?.stageId ?? trackQuery.data?.id}
           onMarkerClick={(markerId) => setSelectedMarkerId(markerId)}
         />
-        <MapPositionBanner label={bannerLabel} />
         <RouteMapControls
           onFilter={() => {
             setFilterOpen((open) => !open)

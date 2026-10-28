@@ -152,25 +152,6 @@ body {
   transform-origin: center center;
 }
 
-.map-position-banner {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  right: 56px;
-  left: 12px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: var(--vkui--color_background_contrast);
-  box-shadow: var(--vkui--elevation2);
-}
-
-.map-position-banner__text {
-  margin: 0;
-  font-size: 15px;
-  line-height: 20px;
-  font-weight: 500;
-}
-
 .map-summary__peek-head {
   display: flex;
   align-items: flex-start;
