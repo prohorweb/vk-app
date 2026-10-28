@@ -21,6 +21,7 @@ type RouteMapControlsProps = {
   onLocate?: () => void
   infoActive?: boolean
   menuActive?: boolean
+  filterActive?: boolean
   disciplineFilterActive?: boolean
   showInfo?: boolean
   className?: string
@@ -36,6 +37,7 @@ export function RouteMapControls({
   onLocate,
   infoActive,
   menuActive,
+  filterActive,
   disciplineFilterActive,
   showInfo = true,
   className,
@@ -56,37 +58,47 @@ export function RouteMapControls({
           <Icon24InfoCircleOutline />
         </IconButton>
       ) : null}
-      <div className="route-map-controls__cluster">
-        {onFilter ? (
-          <IconButton label="Фильтр этапов на карте" onClick={onFilter}>
-            <Icon24Filter />
-          </IconButton>
+      <div className="route-map-controls__side">
+        {onFilter || onDisciplineFilter ? (
+          <div className="route-map-controls__group">
+            {onFilter ? (
+              <IconButton
+                className={filterActive ? 'route-map-controls__btn--active' : undefined}
+                label="Этапы на карте"
+                onClick={onFilter}
+              >
+                <Icon24ListBulletOutline />
+              </IconButton>
+            ) : null}
+            {onDisciplineFilter ? (
+              <IconButton
+                className={disciplineFilterActive ? 'route-map-controls__btn--active' : undefined}
+                label="Фильтр по дисциплинам"
+                onClick={onDisciplineFilter}
+              >
+                <Icon24Filter />
+              </IconButton>
+            ) : null}
+          </div>
         ) : null}
-        {onDisciplineFilter ? (
+        <div className="route-map-controls__cluster">
+          <IconButton label="Приблизить" onClick={onZoomIn}>
+            <Icon24Add />
+          </IconButton>
+          <IconButton label="Отдалить" onClick={onZoomOut}>
+            <Icon24MinusOutline />
+          </IconButton>
+          <IconButton label="Моё местоположение" onClick={onLocate}>
+            <Icon24LocationMapOutline />
+          </IconButton>
           <IconButton
-            className={disciplineFilterActive ? 'route-map-controls__btn--active' : undefined}
-            label="Фильтр по дисциплинам"
-            onClick={onDisciplineFilter}
+            className={menuActive ? 'route-map-controls__btn--active' : undefined}
+            label="Дополнительно"
+            onClick={onMenu}
           >
-            <Icon24ListBulletOutline />
+            <Icon24MoreVertical />
           </IconButton>
-        ) : null}
-        <IconButton label="Приблизить" onClick={onZoomIn}>
-          <Icon24Add />
-        </IconButton>
-        <IconButton label="Отдалить" onClick={onZoomOut}>
-          <Icon24MinusOutline />
-        </IconButton>
-        <IconButton label="Моё местоположение" onClick={onLocate}>
-          <Icon24LocationMapOutline />
-        </IconButton>
-        <IconButton
-          className={menuActive ? 'route-map-controls__btn--active' : undefined}
-          label="Дополнительно"
-          onClick={onMenu}
-        >
-          <Icon24MoreVertical />
-        </IconButton>
+        </div>
       </div>
     </div>
   )

@@ -11,12 +11,12 @@ import {
   useStageMapPositionsQuery,
   useStageTrackQuery,
 } from '../api/queries.ts'
-import { MapDisciplineSheet } from '../components/map/MapDisciplineSheet.tsx'
+import { MapDisciplinePopover } from '../components/map/MapDisciplinePopover.tsx'
 import { MapMiniCard } from '../components/map/MapMiniCard.tsx'
 import { MapPositionBanner } from '../components/map/MapPositionBanner.tsx'
+import { MapStagePopover } from '../components/map/MapStagePopover.tsx'
 import { MapSummarySheet } from '../components/map/MapSummarySheet.tsx'
 import { NoticeCard } from '../components/NoticeCard.tsx'
-import { RouteFilterSheet } from '../components/route/RouteFilterSheet.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { useOnline } from '../hooks/useOnline.ts'
@@ -186,9 +186,16 @@ export function MapPanel({ id }: MapPanelProps) {
         />
         <MapPositionBanner label={bannerLabel} />
         <RouteMapControls
-          onFilter={() => setFilterOpen(true)}
-          onDisciplineFilter={() => setDisciplineFilterOpen(true)}
-          disciplineFilterActive={disciplineId !== null}
+          onFilter={() => {
+            setFilterOpen((open) => !open)
+            setDisciplineFilterOpen(false)
+          }}
+          onDisciplineFilter={() => {
+            setDisciplineFilterOpen((open) => !open)
+            setFilterOpen(false)
+          }}
+          filterActive={filterOpen}
+          disciplineFilterActive={disciplineFilterOpen || disciplineId !== null}
           onInfo={() => {
             setInfoOpen((open) => !open)
             setMenuOpen(false)
@@ -213,26 +220,26 @@ export function MapPanel({ id }: MapPanelProps) {
             headerRef={headerRef}
           />
         )}
+        <MapStagePopover
+          open={filterOpen}
+          value={stageFilter}
+          onClose={() => setFilterOpen(false)}
+          onChange={(value) => {
+            setStageFilter(value)
+            setSelectedMarkerId(null)
+          }}
+        />
+        <MapDisciplinePopover
+          open={disciplineFilterOpen}
+          value={disciplineId}
+          disciplines={disciplines}
+          onClose={() => setDisciplineFilterOpen(false)}
+          onChange={(value) => {
+            setDisciplineId(value)
+            setSelectedMarkerId(null)
+          }}
+        />
       </div>
-      <RouteFilterSheet
-        open={filterOpen}
-        value={stageFilter}
-        onClose={() => setFilterOpen(false)}
-        onChange={(value) => {
-          setStageFilter(value)
-          setSelectedMarkerId(null)
-        }}
-      />
-      <MapDisciplineSheet
-        open={disciplineFilterOpen}
-        value={disciplineId}
-        disciplines={disciplines}
-        onClose={() => setDisciplineFilterOpen(false)}
-        onChange={(value) => {
-          setDisciplineId(value)
-          setSelectedMarkerId(null)
-        }}
-      />
       <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <RouteMapInfo open={infoOpen} onClose={() => setInfoOpen(false)} />
       {showStale ? (

@@ -81,6 +81,7 @@ export function RoutePanel({ id }: RoutePanelProps) {
           }}
           infoActive={infoOpen}
           menuActive={menuOpen}
+          filterActive={filterOpen}
           onZoomIn={() => mapRef.current?.zoomIn()}
           onZoomOut={() => mapRef.current?.zoomOut()}
           onLocate={() => mapRef.current?.flyToUserLocation()}

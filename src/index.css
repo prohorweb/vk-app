@@ -611,8 +611,26 @@ body {
 }
 
 .route-map-controls__info,
-.route-map-controls__cluster {
+.route-map-controls__side {
   pointer-events: auto;
+}
+
+.route-map-controls__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* Кнопки фильтров стоят в одну горизонтальную строку в белой карточке, как в макете. */
+.route-map-controls__group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--vkui--color_background_contrast);
+  box-shadow: var(--vkui--elevation3);
 }
 
 .route-map-controls__cluster {
@@ -624,6 +642,57 @@ body {
 .route-map-controls .vkuiIconButton__host {
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--vkui--elevation3);
+}
+
+.route-map-controls__group .vkuiIconButton__host {
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.route-map-controls__group .route-map-controls__btn--active.vkuiIconButton__host {
+  background: color-mix(in srgb, var(--vkui--color_background_accent_themed) 12%, transparent);
+  color: var(--vkui--color_icon_accent_themed);
+}
+
+/* Поповер выбора у кнопок тулбара: этапы и дисциплины на карте. */
+.map-choice__backdrop {
+  position: absolute;
+  z-index: 11;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.map-choice {
+  position: absolute;
+  z-index: 12;
+  top: 76px;
+  right: 60px;
+  box-sizing: border-box;
+  width: min(276px, calc(100% - 76px));
+  max-height: calc(100% - 88px);
+  overflow-y: auto;
+  padding: 12px 8px 8px;
+  border-radius: 14px;
+  background: var(--vkui--color_background_modal);
+  box-shadow: var(--vkui--elevation3);
+}
+
+.map-choice__title {
+  margin: 0 0 4px;
+  padding: 0 8px;
+  color: var(--vkui--color_text_primary);
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.map-choice__options {
+  display: flex;
+  flex-direction: column;
 }
 
 .route-active-banner {
