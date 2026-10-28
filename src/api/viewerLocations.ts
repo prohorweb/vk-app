@@ -1,4 +1,8 @@
-import type { ViewerLocationItem, ViewerLocationKind } from '../types/index.ts'
+import type {
+  ViewerLocationCategory,
+  ViewerLocationItem,
+  ViewerLocationKind,
+} from '../types/index.ts'
 import { api, isClientApiError, unwrap } from './client.ts'
 import { mockSpectatorLocations, type SpectatorLocation } from './mocks/viewerLocations.ts'
 
@@ -19,21 +23,24 @@ export const spectatorLocationFilters: { id: SpectatorLocationFilter; label: str
 ]
 
 /**
- * Какие `kind` попадают в фильтр. Зон из макета (`kids`, `food`, `stage`) в
- * контракте пока нет — их добавит issue 08, до этого фильтры пустые.
+ * Какие `category` попадают в фильтр. Категория локации — из БД,
+ * она же используется для «таблеток» на карте.
  */
-const FILTER_KINDS: Record<Exclude<SpectatorLocationFilter, 'all'>, ViewerLocationKind[]> = {
-  kids: [],
-  food: [],
-  stage: [],
-  places: ['start', 'finish', 'viewpoint', 'festival', 'other'],
+const FILTER_CATEGORIES: Record<
+  Exclude<SpectatorLocationFilter, 'all'>,
+  ViewerLocationCategory[]
+> = {
+  kids: ['kids'],
+  food: ['food'],
+  stage: ['stages'],
+  places: ['areas', 'other'],
 }
 
 export function matchesSpectatorFilter(
-  kind: ViewerLocationKind,
+  category: ViewerLocationCategory,
   filter: SpectatorLocationFilter,
 ): boolean {
-  return filter === 'all' || FILTER_KINDS[filter].includes(kind)
+  return filter === 'all' || FILTER_CATEGORIES[filter].includes(category)
 }
 
 export const spectatorKindLabels: Record<ViewerLocationKind, string> = {
@@ -49,6 +56,7 @@ function toSpectatorLocation(item: ViewerLocationItem): SpectatorLocation {
     id: String(item.id),
     name: item.name,
     kind: item.kind,
+    category: item.category,
     lng: item.lon,
     lat: item.lat,
     address: item.address ?? null,

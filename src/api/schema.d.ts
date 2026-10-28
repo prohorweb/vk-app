@@ -377,6 +377,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/participants/favorites/ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * ID участников, на которых подписан текущий пользователь
+         * @description Список ID для клиентской фильтрации «Мои» на карте.
+         *
+         *     Кэш 5 минут, инвалидируется в favorite_add/favorite_remove.
+         */
+        get: operations["list_my_favorite_ids_api_v1_participants_favorites_ids_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/map/participants": {
         parameters: {
             query?: never;
@@ -1278,6 +1300,14 @@ export interface components {
             limit: number;
             /** Offset */
             offset: number;
+        };
+        /**
+         * FavoriteIdsResponse
+         * @description ID участников, на которых подписан пользователь.
+         */
+        FavoriteIdsResponse: {
+            /** Participant Ids */
+            participant_ids: number[];
         };
         /**
          * FavoriteResponse
@@ -2325,6 +2355,12 @@ export interface components {
             type: string;
         };
         /**
+         * ViewerLocationCategory
+         * @description Категория локации для UX-фильтров (таблетки на карте).
+         * @enum {string}
+         */
+        ViewerLocationCategory: "stages" | "areas" | "food" | "kids" | "other";
+        /**
          * ViewerLocationKind
          * @description Виды зрительских локаций
          * @enum {string}
@@ -2340,6 +2376,7 @@ export interface components {
             /** Name */
             name: string;
             kind: components["schemas"]["ViewerLocationKind"];
+            category: components["schemas"]["ViewerLocationCategory"];
             /** Lat */
             lat: number;
             /** Lon */
@@ -3073,10 +3110,39 @@ export interface operations {
             };
         };
     };
+    list_my_favorite_ids_api_v1_participants_favorites_ids_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoriteIdsResponse"];
+                };
+            };
+            /** @description Требуется авторизация */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     map_participants_api_v1_map_participants_get: {
         parameters: {
             query?: {
                 stage_id?: number | null;
+                /** @description Фильтр по дисциплинам */
+                discipline_ids?: number[] | null;
                 limit?: number;
                 offset?: number;
             };
@@ -3552,8 +3618,10 @@ export interface operations {
     list_viewer_locations_api_v1_content_viewer_locations_get: {
         parameters: {
             query?: {
-                /** @description Фильтр по типу локации */
+                /** @description Тип локации */
                 kind?: components["schemas"]["ViewerLocationKind"] | null;
+                /** @description Категория (food / kids / stages / areas / other) */
+                category?: components["schemas"]["ViewerLocationCategory"] | null;
                 /** @description Размер страницы, 1–100. По умолчанию 50. */
                 limit?: number;
                 /** @description Смещение от начала списка, 0–10000. */

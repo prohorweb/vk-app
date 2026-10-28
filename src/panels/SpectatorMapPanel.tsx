@@ -31,9 +31,9 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
   const locationsQuery = useSpectatorLocationsQuery()
   const locations = useMemo(() => locationsQuery.data ?? [], [locationsQuery.data])
 
-  // Чипы всегда как в макете: категории зон появятся вместе с issue 08.
+  // Чипы фильтруют по категории локации из API; kind остаётся для пина на карте.
   const visibleLocations = useMemo(
-    () => locations.filter((location) => matchesSpectatorFilter(location.kind, filter)),
+    () => locations.filter((location) => matchesSpectatorFilter(location.category, filter)),
     [locations, filter],
   )
 

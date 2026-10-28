@@ -1218,6 +1218,37 @@
         }
       }
     },
+    "/api/v1/participants/favorites/ids": {
+      "get": {
+        "tags": [
+          "v1",
+          "participants"
+        ],
+        "summary": "ID участников, на которых подписан текущий пользователь",
+        "description": "Список ID для клиентской фильтрации «Мои» на карте.\n\nКэш 5 минут, инвалидируется в favorite_add/favorite_remove.",
+        "operationId": "list_my_favorite_ids_api_v1_participants_favorites_ids_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoriteIdsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Требуется авторизация"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/map/participants": {
       "get": {
         "tags": [
@@ -1245,6 +1276,27 @@
               ],
               "title": "Stage Id"
             }
+          },
+          {
+            "name": "discipline_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по дисциплинам",
+              "title": "Discipline Ids"
+            },
+            "description": "Фильтр по дисциплинам"
           },
           {
             "name": "limit",
@@ -1992,10 +2044,28 @@
                   "type": "null"
                 }
               ],
-              "description": "Фильтр по типу локации",
+              "description": "Тип локации",
               "title": "Kind"
             },
-            "description": "Фильтр по типу локации"
+            "description": "Тип локации"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ViewerLocationCategory"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Категория (food / kids / stages / areas / other)",
+              "title": "Category"
+            },
+            "description": "Категория (food / kids / stages / areas / other)"
           },
           {
             "name": "limit",
@@ -3841,6 +3911,23 @@
         ],
         "title": "FAQListResponse",
         "description": "Страница опубликованных вопросов с данными пагинации."
+      },
+      "FavoriteIdsResponse": {
+        "properties": {
+          "participant_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Participant Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "participant_ids"
+        ],
+        "title": "FavoriteIdsResponse",
+        "description": "ID участников, на которых подписан пользователь."
       },
       "FavoriteResponse": {
         "properties": {
@@ -6476,6 +6563,18 @@
         ],
         "title": "ValidationError"
       },
+      "ViewerLocationCategory": {
+        "type": "string",
+        "enum": [
+          "stages",
+          "areas",
+          "food",
+          "kids",
+          "other"
+        ],
+        "title": "ViewerLocationCategory",
+        "description": "Категория локации для UX-фильтров (таблетки на карте)."
+      },
       "ViewerLocationKind": {
         "type": "string",
         "enum": [
@@ -6500,6 +6599,9 @@
           },
           "kind": {
             "$ref": "#/components/schemas/ViewerLocationKind"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ViewerLocationCategory"
           },
           "lat": {
             "type": "number",
@@ -6618,6 +6720,7 @@
           "id",
           "name",
           "kind",
+          "category",
           "lat",
           "lon"
         ],
