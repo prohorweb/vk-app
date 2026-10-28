@@ -18,6 +18,8 @@
 - [x] [04-map-all-stages-endpoints.md](04-map-all-stages-endpoints.md) — map: «все этапы» и канонические endpoints (P1)
 - [x] [05-demo-seed.md](05-demo-seed.md) — demo seed: актуальные данные трекера (P1)
 - [x] [06-docs-limits-cors.md](06-docs-limits-cors.md) — docs: лимиты, freshness, CORS (P2)
+- [x] [07-map-route-six-stages.md](07-map-route-six-stages.md) — demo seed: 6 этапов «Авачи» (P0)
+- [ ] [08-viewer-location-zones.md](08-viewer-location-zones.md) — viewer-locations: типы зон из макета (P1)
 
 ## Как создать issues
 
