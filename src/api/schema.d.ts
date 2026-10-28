@@ -689,6 +689,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/guests/what-to-bring": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Что взять с собой */
+        get: operations["get_what_to_bring_api_v1_guests_what_to_bring_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/guests/getting-here": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Как добраться */
+        get: operations["get_getting_here_api_v1_guests_getting_here_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/guests/safety": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Безопасность зимой */
+        get: operations["get_safety_api_v1_guests_safety_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/auth/login": {
         parameters: {
             query?: never;
@@ -929,6 +980,28 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * AccordionItem
+         * @description Один элемент аккордеона (вопрос-ответ).
+         */
+        AccordionItem: {
+            /** Title */
+            title: string;
+            /** Content */
+            content: string;
+        };
+        /**
+         * AccordionPage
+         * @description Универсальная страница с аккордеоном (Как добраться / Безопасность).
+         */
+        AccordionPage: {
+            /** Title */
+            title: string;
+            /** Cover Url */
+            cover_url?: string | null;
+            /** Items */
+            items: components["schemas"]["AccordionItem"][];
+        };
+        /**
          * AdminLoginRequest
          * @description Данные для входа администратора по логину и паролю
          */
@@ -975,7 +1048,7 @@ export interface components {
          * CheckpointKind
          * @enum {string}
          */
-        CheckpointKind: "start" | "finish" | "checkpoint";
+        CheckpointKind: "start" | "finish" | "checkpoint" | "camp";
         /**
          * CheckpointPublicResponse
          * @description КП этапа с высотами и километражом.
@@ -1223,6 +1296,30 @@ export interface components {
             created: boolean;
             /** Supporters Count */
             supporters_count: number;
+        };
+        /**
+         * GuestItemResponse
+         * @description Один блок внутри таба (например, «Первый слой» одежды).
+         */
+        GuestItemResponse: {
+            /** Title */
+            title: string;
+            /** Text */
+            text: string;
+            /** Image Url */
+            image_url?: string | null;
+        };
+        /**
+         * GuestTabResponse
+         * @description Таб (Одежда / Обувь / Снаряжение).
+         */
+        GuestTabResponse: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Items */
+            items: components["schemas"]["GuestItemResponse"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1619,6 +1716,13 @@ export interface components {
              * @description URL обложки (1200×675)
              */
             cover_url?: string | null;
+            /**
+             * Blocks
+             * @description Структурированные блоки: меню, контакты, аккордеоны. Пустой массив — рендерить только content.
+             */
+            blocks?: {
+                [key: string]: unknown;
+            }[];
             /** Updated At */
             updated_at?: string | null;
         };
@@ -2258,6 +2362,21 @@ export interface components {
             first_arrival_planned_at?: string | null;
             /** Safety Notes */
             safety_notes?: string | null;
+        };
+        /**
+         * WhatToBringPage
+         * @description Страница «Что взять с собой».
+         */
+        WhatToBringPage: {
+            /**
+             * Title
+             * @default Что взять с собой
+             */
+            title: string;
+            /** Cover Url */
+            cover_url?: string | null;
+            /** Tabs */
+            tabs: components["schemas"]["GuestTabResponse"][];
         };
     };
     responses: never;
@@ -3521,6 +3640,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_what_to_bring_api_v1_guests_what_to_bring_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WhatToBringPage"];
+                };
+            };
+        };
+    };
+    get_getting_here_api_v1_guests_getting_here_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccordionPage"];
+                };
+            };
+        };
+    };
+    get_safety_api_v1_guests_safety_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccordionPage"];
                 };
             };
         };

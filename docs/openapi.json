@@ -2131,6 +2131,72 @@
         }
       }
     },
+    "/api/v1/guests/what-to-bring": {
+      "get": {
+        "tags": [
+          "v1",
+          "guests"
+        ],
+        "summary": "Что взять с собой",
+        "operationId": "get_what_to_bring_api_v1_guests_what_to_bring_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatToBringPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guests/getting-here": {
+      "get": {
+        "tags": [
+          "v1",
+          "guests"
+        ],
+        "summary": "Как добраться",
+        "operationId": "get_getting_here_api_v1_guests_getting_here_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccordionPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guests/safety": {
+      "get": {
+        "tags": [
+          "v1",
+          "guests"
+        ],
+        "summary": "Безопасность зимой",
+        "operationId": "get_safety_api_v1_guests_safety_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccordionPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/auth/login": {
       "post": {
         "tags": [
@@ -3021,6 +3087,58 @@
   },
   "components": {
     "schemas": {
+      "AccordionItem": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "content"
+        ],
+        "title": "AccordionItem",
+        "description": "Один элемент аккордеона (вопрос-ответ)."
+      },
+      "AccordionPage": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "cover_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Url"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AccordionItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "items"
+        ],
+        "title": "AccordionPage",
+        "description": "Универсальная страница с аккордеоном (Как добраться / Безопасность)."
+      },
       "AdminLoginRequest": {
         "properties": {
           "login": {
@@ -3106,7 +3224,8 @@
         "enum": [
           "start",
           "finish",
-          "checkpoint"
+          "checkpoint",
+          "camp"
         ],
         "title": "CheckpointKind"
       },
@@ -3746,6 +3865,63 @@
         ],
         "title": "FavoriteResponse",
         "description": "Ответ на «Болею за» / отписку."
+      },
+      "GuestItemResponse": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "text"
+        ],
+        "title": "GuestItemResponse",
+        "description": "Один блок внутри таба (например, «Первый слой» одежды)."
+      },
+      "GuestTabResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/GuestItemResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "title",
+          "items"
+        ],
+        "title": "GuestTabResponse",
+        "description": "Таб (Одежда / Обувь / Снаряжение)."
       },
       "HTTPValidationError": {
         "type": "object",
@@ -4688,6 +4864,15 @@
             ],
             "title": "Cover Url",
             "description": "URL обложки (1200×675)"
+          },
+          "blocks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Blocks",
+            "description": "Структурированные блоки: меню, контакты, аккордеоны. Пустой массив — рендерить только content."
           },
           "updated_at": {
             "anyOf": [
@@ -6438,6 +6623,39 @@
         ],
         "title": "ViewerLocationPublicResponse",
         "description": "Публичная зрительская локация для карты."
+      },
+      "WhatToBringPage": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": "Что взять с собой"
+          },
+          "cover_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Url"
+          },
+          "tabs": {
+            "items": {
+              "$ref": "#/components/schemas/GuestTabResponse"
+            },
+            "type": "array",
+            "title": "Tabs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tabs"
+        ],
+        "title": "WhatToBringPage",
+        "description": "Страница «Что взять с собой»."
       }
     },
     "securitySchemes": {

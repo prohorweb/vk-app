@@ -16,7 +16,7 @@
 - [x] P1 — `GET /api/v1/map/participants`: режим «все этапы» и канонические endpoints ([04-map-all-stages-endpoints.md](04-map-all-stages-endpoints.md))
 - [x] P1 — demo seed: `recorded_at` относительно `now`, разные `km_from_start` ([05-demo-seed.md](05-demo-seed.md))
 - [x] P2 — docs: лимиты пагинации, пороги freshness, CORS ([06-docs-limits-cors.md](06-docs-limits-cors.md))
-- [ ] P0 — demo seed: 6 этапов «Авачи» с реальным маршрутом Камчатки ([07-map-route-six-stages.md](07-map-route-six-stages.md))
+- [x] P0 — demo seed: 6 этапов «Авачи» с реальным маршрутом Камчатки ([07-map-route-six-stages.md](07-map-route-six-stages.md)) — `2d8dc00`, остались `km_from_race_start` и сброс кэша
 
 ## Используемые фронтом endpoints
 
@@ -27,5 +27,12 @@
 - `GET /api/v1/stages/{stage_id}/track`
 - `GET /api/v1/results/standings`
 - `GET /api/v1/results/stage/{stage_id}`
+
+## Появилось в develop 28.10.2026 (фронт пока не использует)
+
+- `GET /api/v1/pages/`, `GET /api/v1/pages/{slug}` — статичные страницы (о гонке, правила, организаторы), `content` + `blocks` + `cover_url`.
+- `GET /api/v1/content/viewer-locations` — зрительские локации для карты (start / finish / viewpoint / festival / other), кэш 1 час.
+- `GET /api/v1/guests/what-to-bring`, `/guests/getting-here`, `/guests/safety` — раздел «Гостям».
+- `CheckpointKind` получил `camp` (место ночёвки).
 
 После правок пришлите обновлённый `openapi.json` — фронт регенерирует `schema.d.ts`.
