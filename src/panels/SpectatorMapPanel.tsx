@@ -45,7 +45,7 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
         id: location.id,
         lng: location.lng,
         lat: location.lat,
-        kind: location.kind,
+        category: location.category,
         label: location.name,
         selected: location.id === selectedLocationId,
       })),

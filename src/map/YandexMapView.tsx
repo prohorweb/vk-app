@@ -144,7 +144,7 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
       { hintContent: placemark.label },
       {
         iconLayout: 'default#image',
-        iconImageHref: placemarkPinHref(placemark.kind),
+        iconImageHref: placemarkPinHref(placemark.category),
         iconImageSize: [...PLACEMARK_PIN_SIZE],
         iconImageOffset: [...PLACEMARK_PIN_OFFSET],
         zIndex: placemark.selected ? 1 : 0,

@@ -1,4 +1,4 @@
-import type { TrackPointStatus } from '../types/index.ts'
+import type { TrackPointStatus, ViewerLocationCategory } from '../types/index.ts'
 
 export type MapCheckpointKind = 'start' | 'checkpoint' | 'finish'
 
@@ -9,7 +9,7 @@ export type MapPlacemark = {
   id: string
   lng: number
   lat: number
-  kind: MapPlacemarkKind
+  category: ViewerLocationCategory
   label: string
   /** Выбранная метка поднимается над соседними: подпись площадки показывает карточка. */
   selected?: boolean

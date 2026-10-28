@@ -1,8 +1,5 @@
 import type { MapCheckpointKind } from './mapTypes.ts'
 import type { TrackPointStatus } from '../types/index.ts'
-import { PLACEMARK_COLOR_BY_KIND } from './placemarkPins.ts'
-
-export { PLACEMARK_COLOR_BY_KIND }
 
 /**
  * Цвета слоя данных Yandex Maps. SVG-метки не читают CSS-переменные, поэтому
@@ -36,8 +33,6 @@ export const PARTICIPANT_COLOR_BY_STATUS: Record<TrackPointStatus, string> = {
   estimated: '#f59824',
   stale: '#9aa0a6',
 }
-
-/** Метки зрительских площадок: цвет кружка берётся из палитры пинов (`placemarkPins`). */
 
 /** Легенда для шторки «Этапы на карте» — цвета обязаны совпадать с движком. */
 export const MAP_SCREEN_LEGEND = [

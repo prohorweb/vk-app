@@ -1,8 +1,4 @@
-import type {
-  ViewerLocationCategory,
-  ViewerLocationItem,
-  ViewerLocationKind,
-} from '../types/index.ts'
+import type { ViewerLocationCategory, ViewerLocationItem } from '../types/index.ts'
 import { api, isClientApiError, unwrap } from './client.ts'
 import { mockSpectatorLocations, type SpectatorLocation } from './mocks/viewerLocations.ts'
 
@@ -43,12 +39,12 @@ export function matchesSpectatorFilter(
   return filter === 'all' || FILTER_CATEGORIES[filter].includes(category)
 }
 
-export const spectatorKindLabels: Record<ViewerLocationKind, string> = {
-  start: 'Старт',
-  finish: 'Финиш',
-  viewpoint: 'Смотровая площадка',
-  festival: 'Фестиваль',
-  other: 'Площадка',
+export const spectatorCategoryLabels: Record<ViewerLocationCategory, string> = {
+  stages: 'Сцена',
+  areas: 'Площадка',
+  food: 'Еда',
+  kids: 'Детям',
+  other: 'Другое',
 }
 
 function toSpectatorLocation(item: ViewerLocationItem): SpectatorLocation {

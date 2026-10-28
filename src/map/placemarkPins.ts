@@ -1,4 +1,4 @@
-import type { MapPlacemarkKind } from './mapTypes.ts'
+import type { ViewerLocationCategory } from '../types/index.ts'
 
 /**
  * Метки зрительских площадок из макета «Карта зрительских локаций»: белая капля
@@ -25,25 +25,15 @@ export const PLACEMARK_GLYPH_COLOR: Record<PlacemarkGlyph, string> = {
 }
 
 /**
- * Глиф по типу площадки. В контракте пять видов, а зон из макета
- * (детская, фудкорт, фотозона, этнозона, шатёр) ещё нет — сопоставление
- * смысловое и меняется вместе с `ViewerLocationKind`.
+ * Глиф по категории локации (issue 08): зоны из макета
+ * (сцены, площадки, еда, детям) сопоставляются с `ViewerLocationCategory`.
  */
-export const PLACEMARK_GLYPH_BY_KIND: Record<MapPlacemarkKind, PlacemarkGlyph> = {
-  start: 'fire',
-  finish: 'camera',
-  viewpoint: 'landscape',
-  festival: 'microphone',
-  other: 'apple',
-}
-
-/** Цвет кружка метки — тот же, что у глифа: он же используется в легенде фильтра. */
-export const PLACEMARK_COLOR_BY_KIND: Record<MapPlacemarkKind, string> = {
-  start: PLACEMARK_GLYPH_COLOR.fire,
-  finish: PLACEMARK_GLYPH_COLOR.camera,
-  viewpoint: PLACEMARK_GLYPH_COLOR.landscape,
-  festival: PLACEMARK_GLYPH_COLOR.microphone,
-  other: PLACEMARK_GLYPH_COLOR.apple,
+export const PLACEMARK_GLYPH_BY_CATEGORY: Record<ViewerLocationCategory, PlacemarkGlyph> = {
+  stages: 'microphone',
+  areas: 'landscape',
+  food: 'apple',
+  kids: 'smiley',
+  other: 'fire',
 }
 
 type GlyphShape = {
@@ -104,8 +94,7 @@ function glyphMarkup(shape: GlyphShape): string {
 }
 
 /** SVG-метка площадки: белая капля, цветной кружок и белый глиф. */
-function pinSvg(kind: MapPlacemarkKind): string {
-  const glyph = PLACEMARK_GLYPH_BY_KIND[kind]
+function pinSvg(glyph: PlacemarkGlyph): string {
   const color = PLACEMARK_GLYPH_COLOR[glyph]
   // Поля 2 px вокруг капли — под тень: кончик хвоста остаётся в (12, 25).
   return [
@@ -121,6 +110,7 @@ function pinSvg(kind: MapPlacemarkKind): string {
 }
 
 /** Метка для `iconImageHref`: Yandex Maps принимает SVG как data URI. */
-export function placemarkPinHref(kind: MapPlacemarkKind): string {
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(pinSvg(kind))}`
+export function placemarkPinHref(category: ViewerLocationCategory): string {
+  const glyph = PLACEMARK_GLYPH_BY_CATEGORY[category]
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(pinSvg(glyph))}`
 }

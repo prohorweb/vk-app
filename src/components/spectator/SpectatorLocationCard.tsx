@@ -8,7 +8,7 @@ import {
 } from '@vkontakte/icons'
 import { Button, Subhead, Text, Title } from '@vkontakte/vkui'
 import type { SpectatorLocation } from '../../api/viewerLocations.ts'
-import { spectatorKindLabels, spectatorVkMapsRouteUrl } from '../../api/viewerLocations.ts'
+import { spectatorCategoryLabels, spectatorVkMapsRouteUrl } from '../../api/viewerLocations.ts'
 
 type SpectatorLocationCardProps = {
   location: SpectatorLocation
@@ -16,7 +16,7 @@ type SpectatorLocationCardProps = {
 }
 
 export function SpectatorLocationCard({ location, onClose }: SpectatorLocationCardProps) {
-  const meta = [spectatorKindLabels[location.kind]]
+  const meta = [spectatorCategoryLabels[location.category]]
   if (location.travelTimeMinutes !== null) {
     meta.push(`в пути ~${location.travelTimeMinutes} мин`)
   }
