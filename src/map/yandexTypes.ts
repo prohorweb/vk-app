@@ -77,6 +77,12 @@ export interface YmapsGeoObjectCollection {
 export type YmapsPlacemarkOptions = {
   preset?: string
   iconColor?: string
+  /** Своя картинка метки: SVG-капля площадки вместо пресета. */
+  iconLayout?: 'default#image'
+  iconImageHref?: string
+  iconImageSize?: [number, number]
+  iconImageOffset?: [number, number]
+  zIndex?: number
   cursor?: string
 }
 

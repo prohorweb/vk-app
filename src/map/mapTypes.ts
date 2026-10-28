@@ -11,7 +11,7 @@ export type MapPlacemark = {
   lat: number
   kind: MapPlacemarkKind
   label: string
-  /** Выбранная метка рисуется другим пресетом — с точкой внутри круга. */
+  /** Выбранная метка поднимается над соседними: подпись площадки показывает карточка. */
   selected?: boolean
 }
 

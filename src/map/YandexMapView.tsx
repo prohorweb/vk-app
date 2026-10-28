@@ -8,11 +8,8 @@ import type {
   MapViewHandle,
 } from './mapTypes.ts'
 import type { YmapsApi, YmapsLatLng, YmapsMap } from './yandexTypes.ts'
-import {
-  PARTICIPANT_COLOR_BY_STATUS,
-  PLACEMARK_COLOR_BY_KIND,
-  TRACK_COLOR_BY_KIND,
-} from './yandexColors.ts'
+import { PARTICIPANT_COLOR_BY_STATUS, TRACK_COLOR_BY_KIND } from './yandexColors.ts'
+import { PLACEMARK_PIN_OFFSET, PLACEMARK_PIN_SIZE, placemarkPinHref } from './placemarkPins.ts'
 
 /** Центр по умолчанию — Петропавловск-Камчатский. */
 const DEFAULT_CENTER: YmapsLatLng = [53.04, 158.82]
@@ -137,15 +134,16 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
   }
 
   for (const placemark of props.placemarks ?? []) {
-    // Пресет, а не свой HTML-макет: он сам держит точку привязки по центру круга.
+    // Метка — SVG-капля из макета; кончик хвоста совпадает с координатой точки.
     const pin = new ymaps.Placemark(
       [placemark.lat, placemark.lng],
       { hintContent: placemark.label },
       {
-        // Выбранная площадка — тот же цвет, но с точкой внутри: подпись у края
-        // карты обрезается, а пресет держит точку привязки сам.
-        preset: placemark.selected ? 'islands#circleDotIcon' : 'islands#circleIcon',
-        iconColor: PLACEMARK_COLOR_BY_KIND[placemark.kind],
+        iconLayout: 'default#image',
+        iconImageHref: placemarkPinHref(placemark.kind),
+        iconImageSize: [...PLACEMARK_PIN_SIZE],
+        iconImageOffset: [...PLACEMARK_PIN_OFFSET],
+        zIndex: placemark.selected ? 1 : 0,
         cursor: 'pointer',
       },
     )
