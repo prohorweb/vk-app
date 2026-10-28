@@ -10,6 +10,8 @@
   --avacha-results-bg: var(--avacha-secondary-light-blue);
   --avacha-bib-bg: var(--avacha-secondary-light-blue);
   --avacha-bib-text: var(--avacha-brand-dark-blue);
+  /* Тень тулбара с чипами из макета: 0 4 8 / 8% + 0 0 1 / 8%. */
+  --avacha-toolbar-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 :root,
@@ -74,6 +76,8 @@
   --avacha-results-bg: #1f272b;
   --avacha-bib-bg: #23455c;
   --avacha-bib-text: var(--avacha-secondary-light-blue);
+  /* В тёмной теме тень плотнее, как у VKUI elevation2. */
+  --avacha-toolbar-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.2);
 }
 
 .vkuiButton__modePrimary.vkuiButton__sizeL {
