@@ -9,12 +9,7 @@ import type {
 } from './mapTypes.ts'
 import type { YmapsApi, YmapsLatLng, YmapsMap } from './yandexTypes.ts'
 import { PARTICIPANT_COLOR_BY_STATUS, TRACK_COLOR_BY_KIND } from './yandexColors.ts'
-import {
-  PLACEMARK_GLYPH_BY_KIND,
-  PLACEMARK_PIN_OFFSET,
-  PLACEMARK_PIN_SIZE,
-  placemarkPinHref,
-} from './placemarkPins.ts'
+import { PLACEMARK_PIN_OFFSET, PLACEMARK_PIN_SIZE, placemarkPinHref } from './placemarkPins.ts'
 
 /** Центр по умолчанию — Петропавловск-Камчатский. */
 const DEFAULT_CENTER: YmapsLatLng = [53.04, 158.82]
@@ -145,7 +140,7 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
       { hintContent: placemark.label },
       {
         iconLayout: 'default#image',
-        iconImageHref: placemarkPinHref(placemark.glyph ?? PLACEMARK_GLYPH_BY_KIND[placemark.kind]),
+        iconImageHref: placemarkPinHref(placemark.kind),
         iconImageSize: [...PLACEMARK_PIN_SIZE],
         iconImageOffset: [...PLACEMARK_PIN_OFFSET],
         zIndex: placemark.selected ? 1 : 0,

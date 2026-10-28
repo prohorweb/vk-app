@@ -16,7 +16,7 @@ type SpectatorLocationCardProps = {
 }
 
 export function SpectatorLocationCard({ location, onClose }: SpectatorLocationCardProps) {
-  const meta = [location.zone ? 'Зона фестиваля' : spectatorKindLabels[location.kind]]
+  const meta = [spectatorKindLabels[location.kind]]
   if (location.travelTimeMinutes !== null) {
     meta.push(`в пути ~${location.travelTimeMinutes} мин`)
   }
