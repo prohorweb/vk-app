@@ -82,12 +82,14 @@ export function RouteMapControls({
           </div>
         ) : null}
         <div className="route-map-controls__cluster">
-          <IconButton label="Приблизить" onClick={onZoomIn}>
-            <Icon24Add />
-          </IconButton>
-          <IconButton label="Отдалить" onClick={onZoomOut}>
-            <Icon24MinusOutline />
-          </IconButton>
+          <div className="route-map-controls__zoom">
+            <IconButton label="Приблизить" onClick={onZoomIn}>
+              <Icon24Add />
+            </IconButton>
+            <IconButton label="Отдалить" onClick={onZoomOut}>
+              <Icon24MinusOutline />
+            </IconButton>
+          </div>
           <IconButton label="Моё местоположение" onClick={onLocate}>
             <Icon24LocationMapOutline />
           </IconButton>

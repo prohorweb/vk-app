@@ -621,6 +621,9 @@ body {
 }
 
 .route-map-controls .vkuiIconButton__host {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--vkui--elevation3);
 }
@@ -629,6 +632,26 @@ body {
   border-radius: 8px;
   background: transparent;
   box-shadow: none;
+}
+
+/* Зум — одна прямоугольная карточка с разделителем, как в макете. */
+.route-map-controls__zoom {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--vkui--color_background_contrast);
+  box-shadow: var(--vkui--elevation3);
+}
+
+.route-map-controls__zoom .vkuiIconButton__host {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.route-map-controls__zoom .vkuiIconButton__host + .vkuiIconButton__host {
+  border-top: 1px solid var(--vkui--color_separator_primary);
 }
 
 .route-map-controls__group .route-map-controls__btn--active.vkuiIconButton__host {
