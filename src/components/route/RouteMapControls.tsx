@@ -2,6 +2,7 @@ import {
   Icon24Add,
   Icon24Filter,
   Icon24InfoCircleOutline,
+  Icon24ListBulletOutline,
   Icon24LocationMapOutline,
   Icon24MinusOutline,
   Icon24MoreVertical,
@@ -11,6 +12,8 @@ import { IconButton } from '@vkontakte/vkui'
 type RouteMapControlsProps = {
   /** Без обработчика кнопка фильтра не показывается: на экране уже есть чипы. */
   onFilter?: () => void
+  /** Отдельный фильтр участников по дисциплине. */
+  onDisciplineFilter?: () => void
   onInfo?: () => void
   onMenu: () => void
   onZoomIn?: () => void
@@ -18,12 +21,14 @@ type RouteMapControlsProps = {
   onLocate?: () => void
   infoActive?: boolean
   menuActive?: boolean
+  disciplineFilterActive?: boolean
   showInfo?: boolean
   className?: string
 }
 
 export function RouteMapControls({
   onFilter,
+  onDisciplineFilter,
   onInfo,
   onMenu,
   onZoomIn,
@@ -31,6 +36,7 @@ export function RouteMapControls({
   onLocate,
   infoActive,
   menuActive,
+  disciplineFilterActive,
   showInfo = true,
   className,
 }: RouteMapControlsProps) {
@@ -54,6 +60,15 @@ export function RouteMapControls({
         {onFilter ? (
           <IconButton label="Фильтр этапов на карте" onClick={onFilter}>
             <Icon24Filter />
+          </IconButton>
+        ) : null}
+        {onDisciplineFilter ? (
+          <IconButton
+            className={disciplineFilterActive ? 'route-map-controls__btn--active' : undefined}
+            label="Фильтр по дисциплинам"
+            onClick={onDisciplineFilter}
+          >
+            <Icon24ListBulletOutline />
           </IconButton>
         ) : null}
         <IconButton label="Приблизить" onClick={onZoomIn}>

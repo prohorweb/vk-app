@@ -18,6 +18,7 @@ import {
 } from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, PanelHeaderButton } from '@vkontakte/vkui'
 import { trackerGap, type TrackerGap } from '../api/gaps.ts'
+import { APPLY_URL } from '../lib/links.ts'
 import {
   useActiveSeasonQuery,
   useDisciplinesQuery,
@@ -61,8 +62,6 @@ type DisciplineGroup = {
   title: string
   rows: ResultRow[]
 }
-
-const APPLY_URL = 'https://orgeo.ru/event/info/avacha'
 
 /** За сколько до старта показываем «гонка скоро начнётся» вместо приёма заявок. */
 const SOON_MS = 7 * 24 * 60 * 60 * 1000

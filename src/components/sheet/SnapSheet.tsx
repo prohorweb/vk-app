@@ -1,28 +1,40 @@
-import { useCallback, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from 'react'
 
 export type SheetSnap = 'collapsed' | 'half' | 'full'
 
-const HALF_RATIO = 0.5
+const DEFAULT_HALF_RATIO = 0.5
 
-function halfHeight(maxH: number): number {
-  return Math.round(maxH * HALF_RATIO)
+function halfHeight(maxH: number, halfRatio: number): number {
+  return Math.round(maxH * halfRatio)
 }
 
-function snapHeight(snap: SheetSnap, maxH: number, collapsedH: number): number {
+function snapHeight(snap: SheetSnap, maxH: number, collapsedH: number, halfRatio: number): number {
   if (snap === 'collapsed') {
     return Math.min(collapsedH, maxH)
   }
   if (snap === 'half') {
-    return halfHeight(maxH)
+    return halfHeight(maxH, halfRatio)
   }
   return maxH
 }
 
-function nearestSnap(visibleH: number, maxH: number, collapsedH: number): SheetSnap {
+function nearestSnap(
+  visibleH: number,
+  maxH: number,
+  collapsedH: number,
+  halfRatio: number,
+): SheetSnap {
   const options: { snap: SheetSnap; h: number }[] = [
-    { snap: 'collapsed', h: snapHeight('collapsed', maxH, collapsedH) },
-    { snap: 'half', h: snapHeight('half', maxH, collapsedH) },
-    { snap: 'full', h: snapHeight('full', maxH, collapsedH) },
+    { snap: 'collapsed', h: snapHeight('collapsed', maxH, collapsedH, halfRatio) },
+    { snap: 'half', h: snapHeight('half', maxH, collapsedH, halfRatio) },
+    { snap: 'full', h: snapHeight('full', maxH, collapsedH, halfRatio) },
   ]
   let best: SheetSnap = 'collapsed'
   let bestDelta = Number.POSITIVE_INFINITY
@@ -41,9 +53,10 @@ function snapFromVelocity(
   velocityPxPerMs: number,
   maxH: number,
   collapsedH: number,
+  halfRatio: number,
 ): SheetSnap {
   const threshold = 0.35
-  const halfH = snapHeight('half', maxH, collapsedH)
+  const halfH = snapHeight('half', maxH, collapsedH, halfRatio)
   if (velocityPxPerMs > threshold) {
     if (visibleH > halfH) {
       return 'half'
@@ -56,7 +69,7 @@ function snapFromVelocity(
     }
     return 'full'
   }
-  return nearestSnap(visibleH, maxH, collapsedH)
+  return nearestSnap(visibleH, maxH, collapsedH, halfRatio)
 }
 
 function readTabbarTotalPx(): number {
@@ -77,6 +90,8 @@ type SnapSheetProps = {
   viewportRef: RefObject<HTMLElement | null>
   headerRef: RefObject<HTMLElement | null>
   initialSnap?: SheetSnap | null
+  /** Доля доступной высоты для среднего положения: у карты она больше половины. */
+  halfRatio?: number
   peekKey?: string | number
   peek: ReactNode
   children: (snap: SheetSnap) => ReactNode
@@ -86,6 +101,7 @@ export function SnapSheet({
   viewportRef,
   headerRef,
   initialSnap,
+  halfRatio = DEFAULT_HALF_RATIO,
   peekKey,
   peek,
   children,
@@ -149,8 +165,8 @@ export function SnapSheet({
     setDragVisibleH(null)
   }, [])
 
-  const visibleH = dragVisibleH ?? snapHeight(snap, maxH, collapsedH)
-  const minVisible = snapHeight('collapsed', maxH, collapsedH)
+  const visibleH = dragVisibleH ?? snapHeight(snap, maxH, collapsedH, halfRatio)
+  const minVisible = snapHeight('collapsed', maxH, collapsedH, halfRatio)
   const maxVisible = maxH
   const offsetY = maxH - visibleH
 
@@ -192,7 +208,9 @@ export function SnapSheet({
         velocity = (last.y - first.y) / dt
       }
     }
-    applySnap(snapFromVelocity(drag?.lastVisible ?? visibleH, velocity, maxH, collapsedH))
+    applySnap(
+      snapFromVelocity(drag?.lastVisible ?? visibleH, velocity, maxH, collapsedH, halfRatio),
+    )
   }
 
   const dragProps = {

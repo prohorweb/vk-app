@@ -3,13 +3,17 @@ import { Panel, PanelHeader } from '@vkontakte/vkui'
 import { findMapMarker } from '../api/map.ts'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
 import {
+  useDisciplinesQuery,
+  useParticipantsQuery,
   usePublicStagesQuery,
   useStageCheckpointsQuery,
   useStageMapPositionsQuery,
   useStageTrackQuery,
 } from '../api/queries.ts'
+import { MapDisciplineSheet } from '../components/map/MapDisciplineSheet.tsx'
 import { MapMiniCard } from '../components/map/MapMiniCard.tsx'
 import { MapPositionBanner } from '../components/map/MapPositionBanner.tsx'
+import { MapSummarySheet } from '../components/map/MapSummarySheet.tsx'
 import { RouteFilterSheet } from '../components/route/RouteFilterSheet.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
@@ -56,8 +60,12 @@ function isTrackNearRoute(apiTrack: [number, number][], routeTrack: [number, num
 
 export function MapPanel({ id }: MapPanelProps) {
   const mapRef = useRef<MapViewHandle>(null)
+  const viewportRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
   const [stageFilter, setStageFilter] = useState<RouteMapFilter>('all')
+  const [disciplineId, setDisciplineId] = useState<number | null>(null)
   const [filterOpen, setFilterOpen] = useState(false)
+  const [disciplineFilterOpen, setDisciplineFilterOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [infoOpen, setInfoOpen] = useState(false)
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() =>
@@ -65,6 +73,9 @@ export function MapPanel({ id }: MapPanelProps) {
   )
 
   const stagesQuery = usePublicStagesQuery()
+  const disciplinesQuery = useDisciplinesQuery()
+  const participantsQuery = useParticipantsQuery({ disciplineId })
+  const disciplines = disciplinesQuery.data ?? []
   const activeStageId = useMemo(() => {
     const stages = stagesQuery.data ?? []
     const active = stages.find((stage) => stage.status === 'active')
@@ -112,18 +123,22 @@ export function MapPanel({ id }: MapPanelProps) {
     return tracks.sort((left, right) => Number(left.selected) - Number(right.selected))
   }, [stageNumber, trackQuery.data])
 
-  const participantMarkers = useMemo(
-    () =>
-      (markers ?? []).map((marker) => ({
+  const participantMarkers = useMemo(() => {
+    const allowedIds =
+      disciplineId === null || !participantsQuery.data
+        ? null
+        : new Set(participantsQuery.data.map((participant) => participant.id))
+    return (markers ?? [])
+      .filter((marker) => allowedIds === null || allowedIds.has(marker.participantId))
+      .map((marker) => ({
         id: marker.id,
         participantId: marker.participantId,
         lng: marker.lng,
         lat: marker.lat,
         status: marker.status,
         bib: marker.bib,
-      })),
-    [markers],
-  )
+      }))
+  }, [markers, disciplineId, participantsQuery.data])
 
   const selectedMarker = useMemo(
     () => (selectedMarkerId ? findMapMarker(markers ?? [], selectedMarkerId) : undefined),
@@ -134,8 +149,8 @@ export function MapPanel({ id }: MapPanelProps) {
 
   return (
     <Panel id={id} className="map-screen">
-      <PanelHeader>Карта</PanelHeader>
-      <div className="map-screen__viewport">
+      <PanelHeader getRootRef={headerRef}>Карта</PanelHeader>
+      <div ref={viewportRef} className="map-screen__viewport">
         <MapView
           ref={mapRef}
           tracks={stageTracks}
@@ -148,6 +163,8 @@ export function MapPanel({ id }: MapPanelProps) {
         <MapPositionBanner label={bannerLabel} />
         <RouteMapControls
           onFilter={() => setFilterOpen(true)}
+          onDisciplineFilter={() => setDisciplineFilterOpen(true)}
+          disciplineFilterActive={disciplineId !== null}
           onInfo={() => {
             setInfoOpen((open) => !open)
             setMenuOpen(false)
@@ -164,13 +181,33 @@ export function MapPanel({ id }: MapPanelProps) {
         />
         {selectedMarker ? (
           <MapMiniCard marker={selectedMarker} onClose={() => setSelectedMarkerId(null)} />
-        ) : null}
+        ) : (
+          <MapSummarySheet
+            filter={stageFilter}
+            disciplineId={disciplineId}
+            viewportRef={viewportRef}
+            headerRef={headerRef}
+          />
+        )}
       </div>
       <RouteFilterSheet
         open={filterOpen}
         value={stageFilter}
         onClose={() => setFilterOpen(false)}
-        onChange={(value) => setStageFilter(value)}
+        onChange={(value) => {
+          setStageFilter(value)
+          setSelectedMarkerId(null)
+        }}
+      />
+      <MapDisciplineSheet
+        open={disciplineFilterOpen}
+        value={disciplineId}
+        disciplines={disciplines}
+        onClose={() => setDisciplineFilterOpen(false)}
+        onChange={(value) => {
+          setDisciplineId(value)
+          setSelectedMarkerId(null)
+        }}
       />
       <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       <RouteMapInfo open={infoOpen} onClose={() => setInfoOpen(false)} />
