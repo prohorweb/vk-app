@@ -1,11 +1,11 @@
-import type { MapPlacemarkKind } from './mapTypes.ts'
+import type { SpectatorZone } from '../api/viewerLocations.ts'
+import type { MapPlacemarkKind, PlacemarkGlyph } from './mapTypes.ts'
 
 /**
  * Метки зрительских площадок из макета «Карта зрительских локаций»: белая капля
  * с цветным кружком и белым глифом. Глифы вынесены из SVG-макета как есть,
  * координаты внутри капли — 12×12 от точки `origin`.
  */
-export type PlacemarkGlyph = 'fire' | 'microphone' | 'landscape' | 'camera' | 'smiley' | 'apple'
 
 /**
  * Размер картинки метки и её привязка: кончик хвоста капли должен стоять на точке.
@@ -14,7 +14,7 @@ export type PlacemarkGlyph = 'fire' | 'microphone' | 'landscape' | 'camera' | 's
 export const PLACEMARK_PIN_SIZE: readonly [number, number] = [32, 36]
 export const PLACEMARK_PIN_OFFSET: readonly [number, number] = [-16, -33]
 
-/** Цвета глифов из макета. `smiley` — резерв под детскую зону, в контракте её пока нет. */
+/** Цвета глифов из макета: каждый глиф — своя зона фестиваля. */
 export const PLACEMARK_GLYPH_COLOR: Record<PlacemarkGlyph, string> = {
   fire: '#AC7F5E',
   microphone: '#1973B0',
@@ -24,10 +24,19 @@ export const PLACEMARK_GLYPH_COLOR: Record<PlacemarkGlyph, string> = {
   apple: '#34C759',
 }
 
+/** Глиф зоны фестиваля — 1:1 со скриншотами макета. */
+export const SPECTATOR_ZONE_GLYPH: Record<SpectatorZone, PlacemarkGlyph> = {
+  stage: 'microphone',
+  food: 'apple',
+  photo: 'camera',
+  ethno: 'landscape',
+  kids: 'smiley',
+  tent: 'fire',
+}
+
 /**
- * Глиф по типу площадки. В контракте пять видов, а зон из макета
- * (детская, фудкорт, фотозона, этнозона, шатёр) ещё нет — сопоставление
- * смысловое и меняется вместе с `ViewerLocationKind`.
+ * Временное сопоставление для старых `kind`: на карте зон их больше нет,
+ * но слой меток общий и без `glyph` умеет рисовать точки трассы.
  */
 export const PLACEMARK_GLYPH_BY_KIND: Record<MapPlacemarkKind, PlacemarkGlyph> = {
   start: 'fire',
@@ -37,7 +46,7 @@ export const PLACEMARK_GLYPH_BY_KIND: Record<MapPlacemarkKind, PlacemarkGlyph> =
   other: 'apple',
 }
 
-/** Цвет кружка метки — тот же, что у глифа: он же используется в легенде фильтра. */
+/** Цвет кружка метки — тот же, что у глифа. */
 export const PLACEMARK_COLOR_BY_KIND: Record<MapPlacemarkKind, string> = {
   start: PLACEMARK_GLYPH_COLOR.fire,
   finish: PLACEMARK_GLYPH_COLOR.camera,
@@ -104,8 +113,7 @@ function glyphMarkup(shape: GlyphShape): string {
 }
 
 /** SVG-метка площадки: белая капля, цветной кружок и белый глиф. */
-function pinSvg(kind: MapPlacemarkKind): string {
-  const glyph = PLACEMARK_GLYPH_BY_KIND[kind]
+function pinSvg(glyph: PlacemarkGlyph): string {
   const color = PLACEMARK_GLYPH_COLOR[glyph]
   // Поля 2 px вокруг капли — под тень: кончик хвоста остаётся в (12, 25).
   return [
@@ -121,6 +129,6 @@ function pinSvg(kind: MapPlacemarkKind): string {
 }
 
 /** Метка для `iconImageHref`: Yandex Maps принимает SVG как data URI. */
-export function placemarkPinHref(kind: MapPlacemarkKind): string {
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(pinSvg(kind))}`
+export function placemarkPinHref(glyph: PlacemarkGlyph): string {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(pinSvg(glyph))}`
 }

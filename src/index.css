@@ -3093,6 +3093,11 @@ html.app-hide-tabbar .app-tabbar {
   color: var(--vkui--color_text_secondary);
 }
 
+.spectator-location-card__description {
+  margin: 0 0 12px;
+  color: var(--vkui--color_text_secondary);
+}
+
 .spectator-location-card__facilities {
   display: flex;
   flex-wrap: wrap;

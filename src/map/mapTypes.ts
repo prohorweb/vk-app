@@ -5,11 +5,16 @@ export type MapCheckpointKind = 'start' | 'checkpoint' | 'finish'
 /** Метка-площадка для зрителей: старт/финиш гонки, смотровая, фестиваль. */
 export type MapPlacemarkKind = 'start' | 'finish' | 'viewpoint' | 'festival' | 'other'
 
+/** Глиф внутри метки-капли: зоны фестиваля и временные значения для старых `kind`. */
+export type PlacemarkGlyph = 'fire' | 'microphone' | 'landscape' | 'camera' | 'smiley' | 'apple'
+
 export type MapPlacemark = {
   id: string
   lng: number
   lat: number
   kind: MapPlacemarkKind
+  /** Глиф метки; без него берётся по `kind`. */
+  glyph?: PlacemarkGlyph
   label: string
   /** Выбранная метка поднимается над соседними: подпись площадки показывает карточка. */
   selected?: boolean

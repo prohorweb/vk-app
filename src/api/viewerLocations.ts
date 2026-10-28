@@ -1,9 +1,13 @@
 import type { ViewerLocationItem, ViewerLocationKind } from '../types/index.ts'
 import { api, isClientApiError, unwrap } from './client.ts'
-import { mockSpectatorLocations, type SpectatorLocation } from './mocks/viewerLocations.ts'
+import {
+  mockSpectatorLocations,
+  type SpectatorLocation,
+  type SpectatorZone,
+} from './mocks/viewerLocations.ts'
 
 /** Модель площадки для экрана: API-поля в camelCase плюс признак источника. */
-export type { SpectatorLocation } from './mocks/viewerLocations.ts'
+export type { SpectatorLocation, SpectatorZone } from './mocks/viewerLocations.ts'
 
 const VIEWER_LOCATIONS_LIMIT = 100
 
@@ -19,21 +23,24 @@ export const spectatorLocationFilters: { id: SpectatorLocationFilter; label: str
 ]
 
 /**
- * Какие `kind` попадают в фильтр. Зон из макета (`kids`, `food`, `stage`) в
- * контракте пока нет — их добавит issue 08, до этого фильтры пустые.
+ * Зоны по чипам макета: «Площадки» собирает фотозону, этнозону и шатёр.
+ * Старые `kind` (старт, финиш, смотровая) на этой карте не показываем.
  */
-const FILTER_KINDS: Record<Exclude<SpectatorLocationFilter, 'all'>, ViewerLocationKind[]> = {
-  kids: [],
-  food: [],
-  stage: [],
-  places: ['start', 'finish', 'viewpoint', 'festival', 'other'],
+const FILTER_ZONES: Record<Exclude<SpectatorLocationFilter, 'all'>, SpectatorZone[]> = {
+  kids: ['kids'],
+  food: ['food'],
+  stage: ['stage'],
+  places: ['photo', 'ethno', 'tent'],
 }
 
 export function matchesSpectatorFilter(
-  kind: ViewerLocationKind,
+  location: SpectatorLocation,
   filter: SpectatorLocationFilter,
 ): boolean {
-  return filter === 'all' || FILTER_KINDS[filter].includes(kind)
+  if (filter === 'all') {
+    return true
+  }
+  return location.zone !== null && FILTER_ZONES[filter].includes(location.zone)
 }
 
 export const spectatorKindLabels: Record<ViewerLocationKind, string> = {
@@ -49,6 +56,9 @@ function toSpectatorLocation(item: ViewerLocationItem): SpectatorLocation {
     id: String(item.id),
     name: item.name,
     kind: item.kind,
+    // Контракт пока отдаёт точки трассы: старт, финиш, смотровую и фестиваль.
+    // Зоны фестиваля появятся в `ViewerLocationKind` вместе с issue 08.
+    zone: null,
     lng: item.lon,
     lat: item.lat,
     address: item.address ?? null,
@@ -73,7 +83,14 @@ export async function fetchSpectatorLocations(): Promise<SpectatorLocation[]> {
     const result = await api.GET('/api/v1/content/viewer-locations', {
       params: { query: { limit: VIEWER_LOCATIONS_LIMIT } },
     })
-    return unwrap(result).map(toSpectatorLocation)
+    const locations = unwrap(result).map(toSpectatorLocation)
+    if (locations.length === 0) {
+      return locations
+    }
+    const zones = locations.filter((location) => location.zone !== null)
+    // Пока контракт отдаёт только точки трассы, на карте зон их нет: берём
+    // каталог зон из макета. После issue 08 сюда придут зоны из API.
+    return zones.length > 0 ? zones : mockSpectatorLocations
   } catch (error) {
     if (isClientApiError(error)) {
       throw error

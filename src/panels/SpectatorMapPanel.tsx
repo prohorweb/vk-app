@@ -12,6 +12,7 @@ import { SpectatorArrivalSheet } from '../components/spectator/SpectatorArrivalS
 import { SpectatorLocationCard } from '../components/spectator/SpectatorLocationCard.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import type { MapPlacemark, MapViewHandle } from '../map/mapTypes.ts'
+import { SPECTATOR_ZONE_GLYPH } from '../map/placemarkPins.ts'
 import { MapView } from '../map/MapView.tsx'
 import { PATH } from '../routes.ts'
 
@@ -31,9 +32,9 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
   const locationsQuery = useSpectatorLocationsQuery()
   const locations = useMemo(() => locationsQuery.data ?? [], [locationsQuery.data])
 
-  // Чипы всегда как в макете: категории зон появятся вместе с issue 08.
+  // Чипы тулбара фильтруют зоны фестиваля, как в макете.
   const visibleLocations = useMemo(
-    () => locations.filter((location) => matchesSpectatorFilter(location.kind, filter)),
+    () => locations.filter((location) => matchesSpectatorFilter(location, filter)),
     [locations, filter],
   )
 
@@ -46,6 +47,7 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
         lng: location.lng,
         lat: location.lat,
         kind: location.kind,
+        glyph: location.zone ? SPECTATOR_ZONE_GLYPH[location.zone] : undefined,
         label: location.name,
         selected: location.id === selectedLocationId,
       })),

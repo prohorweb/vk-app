@@ -16,7 +16,7 @@ type SpectatorLocationCardProps = {
 }
 
 export function SpectatorLocationCard({ location, onClose }: SpectatorLocationCardProps) {
-  const meta = [spectatorKindLabels[location.kind]]
+  const meta = [location.zone ? 'Зона фестиваля' : spectatorKindLabels[location.kind]]
   if (location.travelTimeMinutes !== null) {
     meta.push(`в пути ~${location.travelTimeMinutes} мин`)
   }
@@ -39,6 +39,9 @@ export function SpectatorLocationCard({ location, onClose }: SpectatorLocationCa
           </button>
         </div>
         <Subhead className="spectator-location-card__kind">{meta.join(' · ')}</Subhead>
+        {location.description ? (
+          <Text className="spectator-location-card__description">{location.description}</Text>
+        ) : null}
         {location.address ? (
           <div className="spectator-location-card__row">
             <Icon24PlaceOutline />
