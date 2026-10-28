@@ -208,8 +208,8 @@ export function MapPanel({ id }: MapPanelProps) {
             setSelectedMarkerId(null)
           }}
         />
+        <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} variant="popover" />
       </div>
-      <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       {showStale ? (
         <NoticeCard
           icon={<Icon24ErrorCircleOutline />}

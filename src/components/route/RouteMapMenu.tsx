@@ -4,16 +4,28 @@ import { routeMapAttribution, routeOverflowMenuItems } from '../../api/mocks/rou
 type RouteMapMenuProps = {
   open: boolean
   onClose: () => void
+  /** 'sheet' — шторка снизу с затемнением, 'popover' — список над кнопкой без затемнения. */
+  variant?: 'sheet' | 'popover'
 }
 
-export function RouteMapMenu({ open, onClose }: RouteMapMenuProps) {
+export function RouteMapMenu({ open, onClose, variant = 'sheet' }: RouteMapMenuProps) {
   if (!open) {
     return null
   }
 
   return (
-    <div className="route-action-menu" role="presentation">
-      <button type="button" className="route-action-menu__backdrop" aria-label="Закрыть" onClick={onClose} />
+    <div
+      className={['route-action-menu', variant === 'popover' ? 'route-action-menu--popover' : '']
+        .filter(Boolean)
+        .join(' ')}
+      role="presentation"
+    >
+      <button
+        type="button"
+        className="route-action-menu__backdrop"
+        aria-label="Закрыть"
+        onClick={onClose}
+      />
       <Card className="route-action-menu__panel" role="menu">
         {routeOverflowMenuItems.map((label) => (
           <SimpleCell
@@ -44,8 +56,17 @@ export function RouteMapInfo({ open, onClose }: RouteMapInfoProps) {
 
   return (
     <div className="route-action-menu" role="presentation">
-      <button type="button" className="route-action-menu__backdrop" aria-label="Закрыть" onClick={onClose} />
-      <Card className="route-action-menu__panel route-action-menu__panel--info" role="dialog" aria-label="О карте">
+      <button
+        type="button"
+        className="route-action-menu__backdrop"
+        aria-label="Закрыть"
+        onClick={onClose}
+      />
+      <Card
+        className="route-action-menu__panel route-action-menu__panel--info"
+        role="dialog"
+        aria-label="О карте"
+      >
         <p className="route-action-menu__info-text">{routeMapAttribution}</p>
         <SimpleCell
           onClick={() => {

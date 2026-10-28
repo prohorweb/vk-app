@@ -1118,6 +1118,31 @@ body {
   line-height: 16px;
 }
 
+/* Выпадающий список над кнопкой «Дополнительно» — без затемнения. */
+.route-action-menu--popover {
+  position: absolute;
+  z-index: 13;
+  display: block;
+  padding: 0;
+}
+
+.route-action-menu--popover .route-action-menu__backdrop {
+  background: transparent;
+  cursor: default;
+}
+
+.route-action-menu--popover .route-action-menu__panel {
+  position: absolute;
+  right: 16px;
+  bottom: calc(var(--avacha-map-menu-bottom) + var(--avacha-map-control-size) + 8px);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  max-height: none;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: var(--vkui--elevation3);
+}
+
 .participants-screen {
   box-sizing: border-box;
   /* Панель — flex-колонка, поэтому без flex-shrink фон обрывался на первом экране. */
