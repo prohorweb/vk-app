@@ -5,17 +5,39 @@ import { RouteActiveBanner } from '../components/route/RouteActiveBanner.tsx'
 import { RouteFilterSheet } from '../components/route/RouteFilterSheet.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
-import { RoutePlaceholder } from '../components/route/RoutePlaceholder.tsx'
 import { RouteSheet } from '../components/route/RouteSheet.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { readRouteMapFilterFromUrl, readRouteSheetSnapFromUrl } from '../lib/routeScreenParams.ts'
+import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
+import type { MapCheckpoint, MapViewHandle } from '../map/mapTypes.ts'
+import { MapView } from '../map/MapView.tsx'
+import { MAP_TRACK_COLOR, ROUTE_INACTIVE_COLOR } from '../map/yandexColors.ts'
 
 type RoutePanelProps = {
   id: string
 }
 
+/** КП на карте: для «Все этапы» точки на стыках совпадают, дубли убираем. */
+function checkpointsFor(filter: RouteMapFilter): MapCheckpoint[] {
+  if (filter !== 'all') {
+    return routeStageCheckpoints[filter] ?? []
+  }
+  const seen = new Set<string>()
+  return Object.values(routeStageCheckpoints)
+    .flat()
+    .filter((checkpoint) => {
+      const key = `${checkpoint.lat.toFixed(4)}:${checkpoint.lng.toFixed(4)}`
+      if (seen.has(key)) {
+        return false
+      }
+      seen.add(key)
+      return true
+    })
+}
+
 export function RoutePanel({ id }: RoutePanelProps) {
   const goBack = useMoreSectionBack()
+  const mapRef = useRef<MapViewHandle>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const initialSnap = useMemo(() => readRouteSheetSnapFromUrl(), [])
@@ -29,16 +51,38 @@ export function RoutePanel({ id }: RoutePanelProps) {
 
   const showStageBanner = mapFilter !== 'all' && !bannerDismissed
 
+  // Геометрия — те же этапы, что рисует главный экран: все этапы красным,
+  // выбранный этап толще, остальные остаются жёлтыми.
+  const stageTracks = useMemo(() => {
+    const tracks = routeStageTracks.map((track, index) => {
+      const selected = mapFilter === index + 1
+      const all = mapFilter === 'all'
+      return {
+        ...track,
+        selected,
+        color: all || selected ? MAP_TRACK_COLOR : ROUTE_INACTIVE_COLOR,
+        width: all ? 3 : selected ? 4 : 2,
+      }
+    })
+    // Выбранный этап рисуем последним, иначе общий маршрут перекрывает его.
+    return tracks.sort((left, right) => Number(left.selected) - Number(right.selected))
+  }, [mapFilter])
+
+  const checkpoints = useMemo(() => checkpointsFor(mapFilter), [mapFilter])
+
   return (
     <Panel id={id} className="route-screen">
-      <PanelHeader
-        getRootRef={headerRef}
-        before={<PanelHeaderBack onClick={goBack} />}
-      >
+      <PanelHeader getRootRef={headerRef} before={<PanelHeaderBack onClick={goBack} />}>
         Маршрут
       </PanelHeader>
       <div ref={viewportRef} className="route-screen__viewport">
-        <RoutePlaceholder mapFilter={mapFilter} />
+        <MapView
+          ref={mapRef}
+          tracks={stageTracks}
+          checkpoints={checkpoints}
+          fitBounds
+          fitKey={String(mapFilter)}
+        />
         <RouteMapControls
           onFilter={() => setFilterOpen(true)}
           onInfo={() => {
@@ -51,6 +95,9 @@ export function RoutePanel({ id }: RoutePanelProps) {
           }}
           infoActive={infoOpen}
           menuActive={menuOpen}
+          onZoomIn={() => mapRef.current?.zoomIn()}
+          onZoomOut={() => mapRef.current?.zoomOut()}
+          onLocate={() => mapRef.current?.flyToUserLocation()}
         />
         {showStageBanner && typeof mapFilter === 'number' ? (
           <RouteActiveBanner stageNumber={mapFilter} onDismiss={() => setBannerDismissed(true)} />

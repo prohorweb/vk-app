@@ -39,13 +39,6 @@ export type ElevationStageMarker = {
   km: number
 }
 
-export type RouteMapMarker = {
-  id: string
-  kind: 'start' | 'checkpoint' | 'finish'
-  x: number
-  y: number
-}
-
 export type RouteStageDetail = {
   headline: string
   distanceKm: number
@@ -221,22 +214,6 @@ export const routeStageDetails: Record<number, RouteStageDetail> = {
 export function getRouteStageDetail(stageId: number): RouteStageDetail {
   return routeStageDetails[stageId] ?? routeStageDetails[1]
 }
-
-/** SVG path in viewBox 0 0 360 640 (условные координаты). */
-export const routeTrackFullPath =
-  'M 48 420 L 92 380 L 140 340 L 188 300 L 228 280 L 268 260 L 300 240 L 318 220'
-
-export const routeTrackStagePaths: Record<number, string> = {
-  1: 'M 48 420 L 92 380 L 140 340 L 188 300',
-  2: 'M 188 300 L 228 280 L 268 260',
-}
-
-export const routeMapMarkers: RouteMapMarker[] = [
-  { id: 'start', kind: 'start', x: 48, y: 420 },
-  { id: 'cp1', kind: 'checkpoint', x: 140, y: 340 },
-  { id: 'cp2', kind: 'checkpoint', x: 228, y: 280 },
-  { id: 'finish', kind: 'finish', x: 318, y: 220 },
-]
 
 export const routeFilterOptions: { value: RouteMapFilter; label: string }[] = [
   { value: 'all', label: 'Все этапы' },
