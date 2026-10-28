@@ -64,10 +64,7 @@ export interface YmapsMap {
   getZoom(): number
   setZoom(zoom: number, options?: YmapsMapAnimationOptions): void
   panTo(center: YmapsLatLng, options?: { flying?: boolean; duration?: number }): void
-  setBounds(
-    bounds: readonly [YmapsLatLng, YmapsLatLng],
-    options?: YmapsSetBoundsOptions,
-  ): void
+  setBounds(bounds: readonly [YmapsLatLng, YmapsLatLng], options?: YmapsSetBoundsOptions): void
   destroy(): void
 }
 
@@ -96,11 +93,7 @@ export type YmapsPolylineOptions = {
 
 export interface YmapsApi {
   ready(callback: () => void): void
-  Map: new (
-    element: HTMLElement,
-    state: YmapsMapState,
-    options?: YmapsMapOptions,
-  ) => YmapsMap
+  Map: new (element: HTMLElement, state: YmapsMapState, options?: YmapsMapOptions) => YmapsMap
   Polyline: new (
     coordinates: readonly YmapsLatLng[],
     properties?: Record<string, unknown>,

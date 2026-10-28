@@ -1,14 +1,15 @@
 import { useMemo, useRef, useState } from 'react'
-import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
-import type { SpectatorFilterId } from '../api/mocks/program.ts'
-import { spectatorFilters, spectatorLocations } from '../api/mocks/program.ts'
+import { Panel, PanelHeader, PanelHeaderBack, Subhead } from '@vkontakte/vkui'
+import { useSpectatorLocationsQuery } from '../api/queries.ts'
+import { spectatorLocationFilters, type SpectatorLocationFilter } from '../api/viewerLocations.ts'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
-import { RoutePlaceholder } from '../components/route/RoutePlaceholder.tsx'
 import { SpectatorArrivalSheet } from '../components/spectator/SpectatorArrivalSheet.tsx'
 import { SpectatorLocationCard } from '../components/spectator/SpectatorLocationCard.tsx'
-import { SpectatorLocationMarkerIcon } from '../components/spectator/spectatorLocationMarkerIcon.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
+import type { MapPlacemark, MapViewHandle } from '../map/mapTypes.ts'
+import { PLACEMARK_COLOR_BY_KIND } from '../map/yandexColors.ts'
+import { MapView } from '../map/MapView.tsx'
 import { PATH } from '../routes.ts'
 
 type SpectatorMapPanelProps = {
@@ -19,16 +20,39 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
   const goBack = useMoreSectionBack(PATH.program, { consumeMenuReturn: false })
   const viewportRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  const [filter, setFilter] = useState<SpectatorFilterId>('all')
+  const mapRef = useRef<MapViewHandle>(null)
+  const [filter, setFilter] = useState<SpectatorLocationFilter>('all')
   const [menuOpen, setMenuOpen] = useState(false)
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
 
+  const locationsQuery = useSpectatorLocationsQuery()
+  const locations = useMemo(() => locationsQuery.data ?? [], [locationsQuery.data])
+
+  // Показываем только те типы площадок, которые реально пришли из справочника.
+  const filters = useMemo(() => {
+    const kinds = new Set(locations.map((location) => location.kind))
+    return spectatorLocationFilters.filter((item) => item.id === 'all' || kinds.has(item.id))
+  }, [locations])
+
   const visibleLocations = useMemo(
-    () =>
-      spectatorLocations.filter((item) => filter === 'all' || item.filter === filter),
-    [filter],
+    () => locations.filter((location) => filter === 'all' || location.kind === filter),
+    [locations, filter],
   )
-  const selectedLocation = spectatorLocations.find((item) => item.id === selectedLocationId)
+
+  const selectedLocation = locations.find((location) => location.id === selectedLocationId)
+
+  const placemarks = useMemo<MapPlacemark[]>(
+    () =>
+      visibleLocations.map((location) => ({
+        id: location.id,
+        lng: location.lng,
+        lat: location.lat,
+        kind: location.kind,
+        label: location.name,
+        selected: location.id === selectedLocationId,
+      })),
+    [visibleLocations, selectedLocationId],
+  )
 
   return (
     <Panel id={id} className="spectator-map-screen">
@@ -37,12 +61,12 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
         before={<PanelHeaderBack onClick={goBack} />}
         className="spectator-map-screen__header"
       >
-        {selectedLocation?.title ?? (
-          <span className="spectator-map-screen__header-title">Карта зрительских локаций</span>
-        )}
+        <span className="spectator-map-screen__header-title">
+          {selectedLocation?.name ?? 'Карта зрительских локаций'}
+        </span>
       </PanelHeader>
       <div className="spectator-map-screen__filters" role="tablist" aria-label="Фильтр локаций">
-        {spectatorFilters.map((item) => (
+        {filters.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -54,34 +78,34 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
             ].join(' ')}
             onClick={() => setFilter(item.id)}
           >
+            {item.id === 'all' ? null : (
+              <span
+                className="spectator-map-screen__filter-dot"
+                aria-hidden
+                style={{ background: PLACEMARK_COLOR_BY_KIND[item.id] }}
+              />
+            )}
             {item.label}
           </button>
         ))}
       </div>
       <div ref={viewportRef} className="spectator-map-screen__viewport">
-        <RoutePlaceholder mapFilter="all" />
-        <div className="spectator-map-screen__markers" aria-hidden>
-          {visibleLocations.map((location) => (
-            <button
-              key={location.id}
-              type="button"
-              className={[
-                'spectator-map-marker',
-                `spectator-map-marker--${location.filter}`,
-                selectedLocationId === location.id ? 'spectator-map-marker--active' : '',
-              ].join(' ')}
-              style={{ left: `${location.mapX}%`, top: `${location.mapY}%` }}
-              aria-label={location.title}
-              onClick={() => setSelectedLocationId(location.id)}
-            >
-              <SpectatorLocationMarkerIcon filter={location.filter} />
-            </button>
-          ))}
-        </div>
+        <MapView
+          ref={mapRef}
+          placemarks={placemarks}
+          fitBounds
+          fitKey={`${filter}:${locations.length}`}
+          onPlacemarkClick={setSelectedLocationId}
+        />
+        {!locationsQuery.isLoading && visibleLocations.length === 0 ? (
+          <Subhead className="spectator-map-screen__empty">Площадок пока нет</Subhead>
+        ) : null}
         <RouteMapControls
           className="route-map-controls--spectator"
           showInfo={false}
-          onFilter={() => {}}
+          onZoomIn={() => mapRef.current?.zoomIn()}
+          onZoomOut={() => mapRef.current?.zoomOut()}
+          onLocate={() => mapRef.current?.flyToUserLocation()}
           onMenu={() => setMenuOpen((open) => !open)}
           menuActive={menuOpen}
         />
@@ -91,7 +115,10 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
           hidden={Boolean(selectedLocation)}
         />
         {selectedLocation ? (
-          <SpectatorLocationCard location={selectedLocation} onClose={() => setSelectedLocationId(null)} />
+          <SpectatorLocationCard
+            location={selectedLocation}
+            onClose={() => setSelectedLocationId(null)}
+          />
         ) : null}
       </div>
       <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} />

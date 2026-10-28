@@ -25,6 +25,7 @@ import type {
 import { api, OfflineError, unwrap } from './client.ts'
 import { fetchStageCheckpoints, fetchStageMapPositions, fetchStageTrack } from './map.ts'
 import { trackPoints } from './mock.ts'
+import { fetchSpectatorLocations } from './viewerLocations.ts'
 
 const TRACK_REFETCH_MS = 2 * 60 * 1000
 const MAP_MARKERS_REFETCH_MS = 120 * 1000
@@ -117,7 +118,9 @@ export async function fetchDisciplines(seasonId: number): Promise<DisciplinePubl
   const result = await api.GET('/api/v1/directory/disciplines', {
     params: { query: { season_id: seasonId } },
   })
-  return unwrap(result).sort((left, right) => left.sort_order - right.sort_order || left.id - right.id)
+  return unwrap(result).sort(
+    (left, right) => left.sort_order - right.sort_order || left.id - right.id,
+  )
 }
 
 export async function fetchFaq(): Promise<FAQListResponse> {
@@ -191,7 +194,10 @@ export async function fetchProtocolsForStages(stages: StagePublic[]): Promise<St
   const protocols = await Promise.all(stages.map((stage) => fetchStageProtocol(stage.id)))
   const order = new Map(stages.map((stage) => [stage.id, stage.order_index]))
   return protocols
-    .filter((protocol): protocol is StageProtocol => protocol !== null && protocol.publication !== 'draft')
+    .filter(
+      (protocol): protocol is StageProtocol =>
+        protocol !== null && protocol.publication !== 'draft',
+    )
     .sort((left, right) => (order.get(left.stage_id) ?? 0) - (order.get(right.stage_id) ?? 0))
 }
 
@@ -316,6 +322,15 @@ export function useStageCheckpointsQuery(stageId: number) {
     queryKey: ['map', 'checkpoints', stageId],
     queryFn: () => fetchStageCheckpoints(stageId),
     staleTime: STAGE_ROUTE_STALE_MS,
+  })
+}
+
+/** Справочник зрительских площадок: бэкенд кэширует его на час. */
+export function useSpectatorLocationsQuery() {
+  return useQuery({
+    queryKey: ['content', 'viewer-locations'],
+    queryFn: fetchSpectatorLocations,
+    staleTime: 60 * 60 * 1000,
   })
 }
 

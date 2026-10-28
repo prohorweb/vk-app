@@ -10,7 +10,7 @@ import type {
   MapPositionsSnapshot,
   MapTrack,
 } from '../map/mapTypes.ts'
-import { ApiError, api, OfflineError, unwrap } from './client.ts'
+import { api, isClientApiError, OfflineError, unwrap } from './client.ts'
 import { getMapStageCheckpoints, getMapStageTrack } from './mocks/mapStage.ts'
 import { buildMapPositionsSnapshot } from './mocks/positions.ts'
 
@@ -63,11 +63,6 @@ function latestRecordedAt(markers: MapPositionMarker[]): string | null {
     }
   }
   return latestMs > 0 ? new Date(latestMs).toISOString() : null
-}
-
-/** 4xx — ошибка contract или auth: маскировать её mock-данными нельзя, остальное — fallback. */
-function isClientApiError(error: unknown): error is ApiError {
-  return error instanceof ApiError && error.status >= 400 && error.status < 500
 }
 
 function isLngLatPair(value: unknown): value is [number, number] {

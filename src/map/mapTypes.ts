@@ -2,6 +2,19 @@ import type { TrackPointStatus } from '../types/index.ts'
 
 export type MapCheckpointKind = 'start' | 'checkpoint' | 'finish'
 
+/** Метка-площадка для зрителей: старт/финиш гонки, смотровая, фестиваль. */
+export type MapPlacemarkKind = 'start' | 'finish' | 'viewpoint' | 'festival' | 'other'
+
+export type MapPlacemark = {
+  id: string
+  lng: number
+  lat: number
+  kind: MapPlacemarkKind
+  label: string
+  /** Выбранная метка рисуется другим пресетом — с точкой внутри круга. */
+  selected?: boolean
+}
+
 export type MapTrack = {
   id: string
   coordinates: [number, number][]
@@ -59,10 +72,13 @@ export type MapViewProps = {
   tracks?: MapTrack[]
   checkpoints?: MapCheckpoint[]
   markers?: MapParticipantMarker[]
+  /** Площадки для зрителей: цветная метка на карте, подпись — только в хинте. */
+  placemarks?: MapPlacemark[]
   fitBounds?: boolean
   /** Смена ключа пересобирает bounds; обновление данных при том же ключе камеру не трогает. */
   fitKey?: string | number
   onMarkerClick?: (markerId: string) => void
+  onPlacemarkClick?: (placemarkId: string) => void
   className?: string
 }
 

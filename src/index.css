@@ -2868,14 +2868,19 @@ html.app-hide-tabbar .app-tabbar {
   overflow: hidden;
 }
 
-.spectator-map-screen__header .vkuiPanelHeader__content-in {
+.spectator-map-screen__header .vkuiPanelHeader__contentIn {
+  overflow: visible;
   white-space: normal;
 }
 
+/* Заголовок в две строки: названия площадок длиннее одного ряда. */
 .spectator-map-screen__header-title {
-  display: inline-block;
-  max-width: 220px;
-  line-height: 22px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 17px;
+  line-height: 20px;
 }
 
 .spectator-map-screen__filters {
@@ -2888,7 +2893,10 @@ html.app-hide-tabbar .app-tabbar {
 }
 
 .spectator-map-screen__filter {
+  display: flex;
   flex: none;
+  align-items: center;
+  gap: 6px;
   padding: 8px 12px;
   border: 0;
   border-radius: 10px;
@@ -2898,59 +2906,22 @@ html.app-hide-tabbar .app-tabbar {
   cursor: pointer;
 }
 
+/* Точка повторяет цвет метки на карте: легенда прямо в чипах фильтра. */
+.spectator-map-screen__filter-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
 .spectator-map-screen__filter--active {
   background: var(--vkui--color_background_accent_themed);
   color: var(--vkui--color_text_contrast);
 }
 
-.spectator-map-screen__markers {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.spectator-map-marker {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin: -16px 0 0 -16px;
-  padding: 0;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: var(--vkui--color_background_accent_themed);
-  color: var(--vkui--color_icon_contrast);
-  box-shadow: var(--vkui--elevation2);
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.spectator-map-marker--kids {
-  background: #7b61ff;
-}
-
-.spectator-map-marker--food {
-  background: #f59824;
-}
-
-.spectator-map-marker--tribune {
-  background: #1a3a6e;
-}
-
-.spectator-map-marker--shop {
-  background: #2fc26e;
-}
-
-.spectator-map-marker--photo {
-  background: #e64646;
-}
-
-.spectator-map-marker--active {
-  outline: 2px solid var(--vkui--color_stroke_accent_themed);
-  outline-offset: 2px;
+/* На акцентном фоне точка своего цвета теряется — обводим её контуром. */
+.spectator-map-screen__filter--active .spectator-map-screen__filter-dot {
+  outline: 1px solid var(--vkui--color_background_contrast);
+  outline-offset: 1px;
 }
 
 .route-map-controls--spectator {
@@ -3058,13 +3029,12 @@ html.app-hide-tabbar .app-tabbar {
   right: 0;
   bottom: 0;
   left: 0;
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
   pointer-events: none;
 }
 
 .spectator-location-card__panel {
   pointer-events: auto;
-  padding: 8px 16px 16px;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   border-radius: 12px 12px 0 0;
   background: var(--vkui--color_background_modal);
   box-shadow: var(--vkui--elevation3);
@@ -3108,15 +3078,44 @@ html.app-hide-tabbar .app-tabbar {
   color: var(--vkui--color_text_secondary);
 }
 
-.spectator-location-card__phone {
-  color: var(--vkui--color_text_link);
-  text-decoration: none;
+.spectator-location-card__kind {
+  display: block;
+  margin: -4px 0 12px;
+  color: var(--vkui--color_text_secondary);
 }
 
-.spectator-location-card__hours {
-  display: block;
-  margin: 0 0 16px;
+.spectator-location-card__facilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.spectator-location-card__facility {
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: var(--vkui--color_background_secondary);
+  color: var(--vkui--color_text_primary);
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.spectator-location-card__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--vkui--color_background_secondary);
   color: var(--vkui--color_text_secondary);
+}
+
+.spectator-location-card__note svg {
+  flex: none;
+  margin-top: 1px;
 }
 
 .program-row {

@@ -19,20 +19,6 @@ export type ProgramAllDayZone = {
   icon: 'stage' | 'food' | 'photo' | 'ethno'
 }
 
-export type SpectatorFilterId = 'all' | 'kids' | 'food' | 'tribune' | 'shop' | 'photo'
-
-export type SpectatorLocation = {
-  id: string
-  title: string
-  filter: SpectatorFilterId
-  address: string
-  phone: string
-  lng: number
-  lat: number
-  mapX: number
-  mapY: number
-}
-
 export type SpectatorArrivalRow = {
   place: number
   participantId: number
@@ -76,12 +62,24 @@ export function programDayTitle(dayId: string): string {
 
 const eventsFeb6: ProgramEvent[] = [
   { id: 'e1', dayId: '2026-02-06', time: '12:00', title: 'Старт Этапа 2', place: 'Авачинский' },
-  { id: 'e2', dayId: '2026-02-06', time: '13:30', title: 'Концерт ансамбля', place: 'Главная сцена' },
+  {
+    id: 'e2',
+    dayId: '2026-02-06',
+    time: '13:30',
+    title: 'Концерт ансамбля',
+    place: 'Главная сцена',
+  },
   { id: 'e3', dayId: '2026-02-06', time: '14:00', title: 'Награждение', place: 'Главная сцена' },
   { id: 'e4', dayId: '2026-02-06', time: '15:30', title: 'Мастер-класс', place: 'Этнозона' },
   { id: 'e5', dayId: '2026-02-06', time: '16:00', title: 'Экскурсия', place: 'Фотозона' },
   { id: 'e6', dayId: '2026-02-06', time: '17:00', title: 'Финиш этапа', place: 'Авачинский' },
-  { id: 'e7', dayId: '2026-02-06', time: '18:30', title: 'Вечерняя программа', place: 'Главная сцена' },
+  {
+    id: 'e7',
+    dayId: '2026-02-06',
+    time: '18:30',
+    title: 'Вечерняя программа',
+    place: 'Главная сцена',
+  },
 ]
 
 export const programEventsByDay: Record<string, ProgramEvent[]> = {
@@ -97,62 +95,6 @@ export const programAllDayZones: ProgramAllDayZone[] = [
   { id: 'food', title: 'Фудкорт', icon: 'food' },
   { id: 'photo', title: 'Фотозона', icon: 'photo' },
   { id: 'ethno', title: 'Этнозона', icon: 'ethno' },
-]
-
-export const spectatorFilters: { id: SpectatorFilterId; label: string }[] = [
-  { id: 'all', label: 'Все' },
-  { id: 'kids', label: 'Детям' },
-  { id: 'food', label: 'Еда' },
-  { id: 'tribune', label: 'Трибуны' },
-  { id: 'shop', label: 'Магазин' },
-  { id: 'photo', label: 'Фото' },
-]
-
-export const spectatorLocations: SpectatorLocation[] = [
-  {
-    id: 'kids',
-    title: 'Детская зона',
-    filter: 'kids',
-    address: 'Петропавловск-Камчатский, просп. Циолковского, 25',
-    phone: '+7 (000) 000-00-00',
-    lng: 158.643,
-    lat: 53.019,
-    mapX: 38,
-    mapY: 52,
-  },
-  {
-    id: 'food',
-    title: 'Фудкорт',
-    filter: 'food',
-    address: 'Биатлонный комплекс им. В. Фатьянова',
-    phone: '+7 (000) 000-00-01',
-    lng: 158.651,
-    lat: 53.024,
-    mapX: 62,
-    mapY: 44,
-  },
-  {
-    id: 'stage',
-    title: 'Главная сцена',
-    filter: 'tribune',
-    address: 'Биатлонный комплекс им. В. Фатьянова',
-    phone: '+7 (000) 000-00-02',
-    lng: 158.655,
-    lat: 53.022,
-    mapX: 55,
-    mapY: 58,
-  },
-  {
-    id: 'photo',
-    title: 'Фотозона',
-    filter: 'photo',
-    address: 'Серебряные холмы',
-    phone: '+7 (000) 000-00-03',
-    lng: 158.648,
-    lat: 53.028,
-    mapX: 72,
-    mapY: 36,
-  },
 ]
 
 export const spectatorArrival = {
@@ -183,10 +125,6 @@ export const spectatorArrival = {
       gap: '6:13',
     },
   ] satisfies SpectatorArrivalRow[],
-}
-
-export function spectatorVkMapsRouteUrl(lng: number, lat: number): string {
-  return `https://maps.vk.com/?ll=${lng},${lat}&z=16`
 }
 
 export function defaultProgramDayId(): string {

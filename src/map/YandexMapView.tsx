@@ -1,13 +1,25 @@
 import vkBridge from '@vkontakte/vk-bridge'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import type { MapCheckpoint, MapParticipantMarker, MapTrack, MapViewHandle } from './mapTypes.ts'
+import type {
+  MapCheckpoint,
+  MapParticipantMarker,
+  MapPlacemark,
+  MapTrack,
+  MapViewHandle,
+} from './mapTypes.ts'
 import type { YmapsApi, YmapsLatLng, YmapsMap } from './yandexTypes.ts'
-import { PARTICIPANT_COLOR_BY_STATUS, TRACK_COLOR_BY_KIND } from './yandexColors.ts'
+import {
+  PARTICIPANT_COLOR_BY_STATUS,
+  PLACEMARK_COLOR_BY_KIND,
+  TRACK_COLOR_BY_KIND,
+} from './yandexColors.ts'
 
 /** Центр по умолчанию — Петропавловск-Камчатский. */
 const DEFAULT_CENTER: YmapsLatLng = [53.04, 158.82]
 const DEFAULT_ZOOM = 10
 const FIT_PADDING = 30
+/** Одна точка не даёт рамки: `setBounds` ушёл бы в максимальный зум без тайлов. */
+const SINGLE_POINT_ZOOM = 14
 
 type YandexMapViewProps = {
   ymaps: YmapsApi
@@ -15,9 +27,11 @@ type YandexMapViewProps = {
   tracks?: MapTrack[]
   checkpoints?: MapCheckpoint[]
   markers?: MapParticipantMarker[]
+  placemarks?: MapPlacemark[]
   fitBounds?: boolean
   fitKey?: string | number
   onMarkerClick?: (markerId: string) => void
+  onPlacemarkClick?: (placemarkId: string) => void
   className?: string
 }
 
@@ -32,6 +46,7 @@ function collectBounds(
   tracks: readonly MapTrack[],
   checkpoints: readonly MapCheckpoint[],
   markers: readonly MapParticipantMarker[],
+  placemarks: readonly MapPlacemark[],
 ): DataBounds | null {
   let south: number | null = null
   let north: number | null = null
@@ -47,6 +62,7 @@ function collectBounds(
   for (const point of [
     ...checkpoints.map((checkpoint) => ({ lat: checkpoint.lat, lng: checkpoint.lng })),
     ...markers.map((marker) => ({ lat: marker.lat, lng: marker.lng })),
+    ...placemarks.map((placemark) => ({ lat: placemark.lat, lng: placemark.lng })),
   ]) {
     south = south === null ? point.lat : Math.min(south, point.lat)
     north = north === null ? point.lat : Math.max(north, point.lat)
@@ -119,13 +135,42 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
     placemark.events.add('click', () => props.onMarkerClick?.(marker.id))
     map.geoObjects.add(placemark)
   }
+
+  for (const placemark of props.placemarks ?? []) {
+    // Пресет, а не свой HTML-макет: он сам держит точку привязки по центру круга.
+    const pin = new ymaps.Placemark(
+      [placemark.lat, placemark.lng],
+      { hintContent: placemark.label },
+      {
+        // Выбранная площадка — тот же цвет, но с точкой внутри: подпись у края
+        // карты обрезается, а пресет держит точку привязки сам.
+        preset: placemark.selected ? 'islands#circleDotIcon' : 'islands#circleIcon',
+        iconColor: PLACEMARK_COLOR_BY_KIND[placemark.kind],
+        cursor: 'pointer',
+      },
+    )
+    pin.events.add('click', () => props.onPlacemarkClick?.(placemark.id))
+    map.geoObjects.add(pin)
+  }
 }
 
 function fitToData(map: YmapsMap, props: YandexMapViewProps) {
-  const bounds = collectBounds(toTrackList(props), props.checkpoints ?? [], props.markers ?? [])
-  if (bounds) {
-    map.setBounds(bounds, { checkZoomRange: true, zoomMargin: FIT_PADDING, duration: 400 })
+  const bounds = collectBounds(
+    toTrackList(props),
+    props.checkpoints ?? [],
+    props.markers ?? [],
+    props.placemarks ?? [],
+  )
+  if (!bounds) {
+    return
   }
+  const [[south, west], [north, east]] = bounds
+  if (south === north && west === east) {
+    map.setZoom(SINGLE_POINT_ZOOM, { duration: 300 })
+    map.panTo([south, west], { duration: 300 })
+    return
+  }
+  map.setBounds(bounds, { checkZoomRange: true, zoomMargin: FIT_PADDING, duration: 400 })
 }
 
 export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(function YandexMapView(
@@ -135,9 +180,11 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     tracks,
     checkpoints,
     markers,
+    placemarks,
     fitBounds = true,
     fitKey,
     onMarkerClick,
+    onPlacemarkClick,
     className,
   },
   ref,
@@ -151,9 +198,11 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     tracks,
     checkpoints,
     markers,
+    placemarks,
     fitBounds,
     fitKey,
     onMarkerClick,
+    onPlacemarkClick,
     className,
   })
   propsRef.current = {
@@ -162,9 +211,11 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     tracks,
     checkpoints,
     markers,
+    placemarks,
     fitBounds,
     fitKey,
     onMarkerClick,
+    onPlacemarkClick,
     className,
   }
 
@@ -232,7 +283,7 @@ export const YandexMapView = forwardRef<MapViewHandle, YandexMapViewProps>(funct
     }
     lastFitKeyRef.current = fitKey
     fitToData(map, propsRef.current)
-  }, [ymaps, track, tracks, checkpoints, markers, fitBounds, fitKey])
+  }, [ymaps, track, tracks, checkpoints, markers, placemarks, fitBounds, fitKey])
 
   return (
     <div

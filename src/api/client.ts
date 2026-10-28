@@ -31,6 +31,11 @@ function readApiBaseUrl(): string | undefined {
   return undefined
 }
 
+/** 4xx — ошибка контракта или доступа: маскировать её mock-данными нельзя, остальное — fallback. */
+export function isClientApiError(error: unknown): error is ApiError {
+  return error instanceof ApiError && error.status >= 400 && error.status < 500
+}
+
 export const apiBaseUrl = readApiBaseUrl()
 
 export const hasApiUrl = apiBaseUrl !== undefined

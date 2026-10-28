@@ -9,7 +9,8 @@ import {
 import { IconButton } from '@vkontakte/vkui'
 
 type RouteMapControlsProps = {
-  onFilter: () => void
+  /** Без обработчика кнопка фильтра не показывается: на экране уже есть чипы. */
+  onFilter?: () => void
   onInfo?: () => void
   onMenu: () => void
   onZoomIn?: () => void
@@ -37,7 +38,10 @@ export function RouteMapControls({
     <div className={['route-map-controls', className].filter(Boolean).join(' ')}>
       {showInfo && onInfo ? (
         <IconButton
-          className={['route-map-controls__info', infoActive ? 'route-map-controls__btn--active' : '']
+          className={[
+            'route-map-controls__info',
+            infoActive ? 'route-map-controls__btn--active' : '',
+          ]
             .filter(Boolean)
             .join(' ')}
           label="Информация о карте"
@@ -47,9 +51,11 @@ export function RouteMapControls({
         </IconButton>
       ) : null}
       <div className="route-map-controls__cluster">
-        <IconButton label="Фильтр этапов на карте" onClick={onFilter}>
-          <Icon24Filter />
-        </IconButton>
+        {onFilter ? (
+          <IconButton label="Фильтр этапов на карте" onClick={onFilter}>
+            <Icon24Filter />
+          </IconButton>
+        ) : null}
         <IconButton label="Приблизить" onClick={onZoomIn}>
           <Icon24Add />
         </IconButton>
