@@ -23,6 +23,7 @@ import type {
   DisciplinePublic,
 } from '../types/index.ts'
 import { api, OfflineError, unwrap } from './client.ts'
+import { fetchFavoriteIds, fetchFavoriteParticipants, fetchMyProfile } from './favorites.ts'
 import { fetchStageCheckpoints, fetchStageMapPositions, fetchStageTrack } from './map.ts'
 import { trackPoints } from './mock.ts'
 import { fetchSpectatorLocations } from './viewerLocations.ts'
@@ -337,6 +338,30 @@ export function useSpectatorLocationsQuery() {
   })
 }
 
+export function useMyProfileQuery() {
+  return useQuery({
+    queryKey: ['auth', 'me'],
+    queryFn: fetchMyProfile,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useFavoriteIdsQuery() {
+  return useQuery({
+    queryKey: ['favorites', 'ids'],
+    queryFn: fetchFavoriteIds,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useFavoriteParticipantsQuery() {
+  return useQuery({
+    queryKey: ['favorites', 'participants'],
+    queryFn: fetchFavoriteParticipants,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export function useFavoriteMutation(participantId: number) {
   const queryClient = useQueryClient()
 
@@ -352,6 +377,7 @@ export function useFavoriteMutation(participantId: number) {
       await queryClient.cancelQueries({ queryKey: ['supporters', participantId] })
       await queryClient.cancelQueries({ queryKey: ['participant', participantId] })
       await queryClient.cancelQueries({ queryKey: ['participants'] })
+      await queryClient.cancelQueries({ queryKey: ['favorites'] })
 
       const previousSupporters = queryClient.getQueryData<ParticipantSupporters>([
         'supporters',
@@ -364,6 +390,11 @@ export function useFavoriteMutation(participantId: number) {
       const previousLists = queryClient.getQueriesData<ParticipantListItem[]>({
         queryKey: ['participants'],
       })
+      const previousFavoriteIds = queryClient.getQueryData<number[]>(['favorites', 'ids'])
+      const previousFavoriteParticipants = queryClient.getQueryData<ParticipantListItem[]>([
+        'favorites',
+        'participants',
+      ])
 
       const delta = nextFavorite ? 1 : -1
       const baseCount =
@@ -389,7 +420,33 @@ export function useFavoriteMutation(participantId: number) {
         ),
       )
 
-      return { previousSupporters, previousDetail, previousLists }
+      const nextIds = nextFavorite
+        ? [...new Set([...(previousFavoriteIds ?? []), participantId])]
+        : (previousFavoriteIds ?? []).filter((id) => id !== participantId)
+      queryClient.setQueryData<number[]>(['favorites', 'ids'], nextIds)
+
+      if (previousFavoriteParticipants) {
+        const fromList = queryClient
+          .getQueriesData<ParticipantListItem[]>({ queryKey: ['participants'] })
+          .flatMap(([, list]) => list ?? [])
+          .find((item) => item.id === participantId)
+        const nextFavorites = nextFavorite
+          ? previousFavoriteParticipants.some((item) => item.id === participantId)
+            ? previousFavoriteParticipants
+            : fromList
+              ? [...previousFavoriteParticipants, fromList]
+              : previousFavoriteParticipants
+          : previousFavoriteParticipants.filter((item) => item.id !== participantId)
+        queryClient.setQueryData(['favorites', 'participants'], nextFavorites)
+      }
+
+      return {
+        previousSupporters,
+        previousDetail,
+        previousLists,
+        previousFavoriteIds,
+        previousFavoriteParticipants,
+      }
     },
     onError: (_error, _nextFavorite, context) => {
       if (!context) {
@@ -400,9 +457,14 @@ export function useFavoriteMutation(participantId: number) {
       for (const [key, data] of context.previousLists) {
         restoreQuery(queryClient, key, data)
       }
+      restoreQuery(queryClient, ['favorites', 'ids'], context.previousFavoriteIds)
+      restoreQuery(queryClient, ['favorites', 'participants'], context.previousFavoriteParticipants)
     },
     onSettled: () => {
-      void queryClient.invalidateQueries()
+      void queryClient.invalidateQueries({ queryKey: ['favorites'] })
+      void queryClient.invalidateQueries({ queryKey: ['supporters', participantId] })
+      void queryClient.invalidateQueries({ queryKey: ['participant', participantId] })
+      void queryClient.invalidateQueries({ queryKey: ['participants'] })
     },
     onSuccess: (payload, nextFavorite) => {
       queryClient.setQueryData<ParticipantSupporters>(['supporters', participantId], {

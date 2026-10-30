@@ -15,6 +15,8 @@ import { MapPanel } from './panels/MapPanel.tsx'
 import { MediaPanel } from './panels/MediaPanel.tsx'
 import { ParticipantPanel } from './panels/ParticipantPanel.tsx'
 import { ParticipantsPanel } from './panels/ParticipantsPanel.tsx'
+import { ProfileFavoritesPanel } from './panels/ProfileFavoritesPanel.tsx'
+import { ProfileNotificationsPanel } from './panels/ProfileNotificationsPanel.tsx'
 import { ProfilePanel } from './panels/ProfilePanel.tsx'
 import { ProgramPanel } from './panels/ProgramPanel.tsx'
 import { SpectatorMapPanel } from './panels/SpectatorMapPanel.tsx'
@@ -35,6 +37,8 @@ import {
   PANEL_PARTICIPANT,
   PANEL_PARTICIPANTS,
   PANEL_PROFILE,
+  PANEL_PROFILE_FAVORITES,
+  PANEL_PROFILE_NOTIFICATIONS,
   PANEL_PROGRAM,
   PANEL_SPECTATOR_MAP,
   PANEL_RESULTS,
@@ -157,6 +161,8 @@ export function App() {
             <GuestsContactsPanel id={PANEL_GUESTS_CONTACTS} />
             <AboutPanel id={PANEL_ABOUT} />
             <ProfilePanel id={PANEL_PROFILE} />
+            <ProfileFavoritesPanel id={PANEL_PROFILE_FAVORITES} />
+            <ProfileNotificationsPanel id={PANEL_PROFILE_NOTIFICATIONS} />
           </View>
         </Epic>
         <MoreMenuSheet open={moreMenuOpen} onClose={() => setMoreMenuOpen(false)} />

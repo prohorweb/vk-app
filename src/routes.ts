@@ -32,6 +32,8 @@ export const PANEL_GUESTS_SAFETY = 'panel_guests_safety'
 export const PANEL_GUESTS_FAQ = 'panel_guests_faq'
 export const PANEL_GUESTS_CONTACTS = 'panel_guests_contacts'
 export const PANEL_PROFILE = 'panel_profile'
+export const PANEL_PROFILE_FAVORITES = 'panel_profile_favorites'
+export const PANEL_PROFILE_NOTIFICATIONS = 'panel_profile_notifications'
 export const PANEL_ABOUT = 'panel_about'
 
 export const PATH = {
@@ -51,10 +53,14 @@ export const PATH = {
   guestsContacts: '/more/guests/contacts',
   about: '/more/about',
   profile: '/more/profile',
+  profileFavorites: '/more/profile/favorites',
+  profileNotifications: '/more/profile/notifications',
 } as const
 
 export const MORE_MENU_PANELS = [
   PANEL_PROFILE,
+  PANEL_PROFILE_FAVORITES,
+  PANEL_PROFILE_NOTIFICATIONS,
   PANEL_ABOUT,
   PANEL_ROUTE,
   PANEL_GUESTS,
@@ -95,6 +101,8 @@ export const routes = RoutesConfig.create([
       createPanel(PANEL_GUESTS_CONTACTS, PATH.guestsContacts),
       createPanel(PANEL_ABOUT, PATH.about),
       createPanel(PANEL_PROFILE, PATH.profile),
+      createPanel(PANEL_PROFILE_FAVORITES, PATH.profileFavorites),
+      createPanel(PANEL_PROFILE_NOTIFICATIONS, PATH.profileNotifications),
     ]),
   ]),
 ])
