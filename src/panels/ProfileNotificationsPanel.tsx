@@ -12,15 +12,17 @@ import {
 } from '@vkontakte/vkui'
 import { setFavorite } from '../api/favorites.ts'
 import { queryClient } from '../api/queryClient.ts'
-import { useFavoriteMutation, useFavoriteParticipantsQuery } from '../api/queries.ts'
+import { useFavoriteParticipantsQuery } from '../api/queries.ts'
 import { FavoriteParticipantCell } from '../components/profile/FavoriteParticipantCell.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import {
   NOTIFICATION_PREFERENCES,
+  isParticipantNotifyEnabled,
   isPreferenceEnabled,
   readNotificationSettings,
   setNotificationPreference,
   setNotificationsAllowed,
+  setParticipantNotifications,
   type NotificationSettingsState,
 } from '../lib/notificationSettings.ts'
 import type { ParticipantListItem } from '../types/index.ts'
@@ -94,7 +96,11 @@ export function ProfileNotificationsPanel({ id }: ProfileNotificationsPanelProps
                 <FavoriteNotifyRow
                   key={participant.id}
                   participant={participant}
+                  notifyEnabled={isParticipantNotifyEnabled(settings, participant.id)}
                   masterEnabled={settings.notifications_allowed}
+                  onNotifyChange={(enabled) => {
+                    setSettings(setParticipantNotifications(participant.id, enabled))
+                  }}
                   onOpen={() => void routeNavigator.push(`/participants/${participant.id}`)}
                 />
               ))}
@@ -172,27 +178,27 @@ export function ProfileNotificationsPanel({ id }: ProfileNotificationsPanelProps
 
 function FavoriteNotifyRow({
   participant,
+  notifyEnabled,
   masterEnabled,
+  onNotifyChange,
   onOpen,
 }: {
   participant: ParticipantListItem
+  notifyEnabled: boolean
   masterEnabled: boolean
+  onNotifyChange: (enabled: boolean) => void
   onOpen: () => void
 }) {
-  const favorite = useFavoriteMutation(participant.id)
-
   return (
     <div className="profile-notify-row">
       <div className="profile-notify-row__cell">
         <FavoriteParticipantCell participant={participant} onOpen={onOpen} />
       </div>
       <Switch
-        checked
-        disabled={!masterEnabled || favorite.isPending}
+        checked={notifyEnabled}
+        disabled={!masterEnabled}
         onChange={(event) => {
-          if (!event.target.checked) {
-            favorite.mutate(false)
-          }
+          onNotifyChange(event.target.checked)
         }}
         aria-label={`Уведомления: ${participant.name}`}
       />

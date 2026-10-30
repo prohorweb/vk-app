@@ -16,8 +16,12 @@ export const NOTIFICATION_PREFERENCES: ReadonlyArray<{
 ]
 
 export type NotificationSettingsState = {
+  /** Глобальный master: push включён. Не меняет отдельные preference. */
   notifications_allowed: boolean
+  /** Независимые типы событий гонки. */
   preferences: Record<NotificationEventType, boolean>
+  /** Уведомления по избранным участникам: id → включено. */
+  participant_notifications: Record<string, boolean>
 }
 
 function defaultPreferences(enabled: boolean): Record<NotificationEventType, boolean> {
@@ -30,7 +34,21 @@ function defaultState(enabled: boolean): NotificationSettingsState {
   return {
     notifications_allowed: enabled,
     preferences: defaultPreferences(enabled),
+    participant_notifications: {},
   }
+}
+
+function parseParticipantNotifications(raw: unknown): Record<string, boolean> {
+  if (!raw || typeof raw !== 'object') {
+    return {}
+  }
+  const next: Record<string, boolean> = {}
+  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (value === true || value === false) {
+      next[key] = value
+    }
+  }
+  return next
 }
 
 function parseStored(raw: string | null): NotificationSettingsState | null {
@@ -50,6 +68,7 @@ function parseStored(raw: string | null): NotificationSettingsState | null {
     return {
       notifications_allowed: parsed.notifications_allowed,
       preferences,
+      participant_notifications: parseParticipantNotifications(parsed.participant_notifications),
     }
   } catch {
     return null
@@ -64,29 +83,48 @@ function writeNotificationSettings(state: NotificationSettingsState): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
+/** Старт: согласие включает push и все типы событий. */
 export function applyStartNotificationConsent(enabled: boolean): void {
   writeNotificationSettings(defaultState(enabled))
 }
 
+/** Только master push. Отдельные переключатели не трогаем. */
 export function setNotificationsAllowed(enabled: boolean): NotificationSettingsState {
-  const next = defaultState(enabled)
+  const current = readNotificationSettings()
+  const next = {
+    ...current,
+    notifications_allowed: enabled,
+  }
   writeNotificationSettings(next)
   return next
 }
 
+/** Один тип события — независимо от остальных. Master не меняем. */
 export function setNotificationPreference(
   eventType: NotificationEventType,
   enabled: boolean,
 ): NotificationSettingsState {
   const current = readNotificationSettings()
-  if (!current.notifications_allowed && !enabled) {
-    return current
-  }
-  const preferences = { ...current.preferences, [eventType]: enabled }
-  const notifications_allowed = Object.values(preferences).some((value) => value === true)
   const next = {
-    notifications_allowed,
-    preferences: notifications_allowed ? preferences : defaultPreferences(false),
+    ...current,
+    preferences: { ...current.preferences, [eventType]: enabled },
+  }
+  writeNotificationSettings(next)
+  return next
+}
+
+/** Переключатель уведомлений по конкретному избранному участнику. */
+export function setParticipantNotifications(
+  participantId: number,
+  enabled: boolean,
+): NotificationSettingsState {
+  const current = readNotificationSettings()
+  const next = {
+    ...current,
+    participant_notifications: {
+      ...current.participant_notifications,
+      [String(participantId)]: enabled,
+    },
   }
   writeNotificationSettings(next)
   return next
@@ -97,4 +135,16 @@ export function isPreferenceEnabled(
   eventType: NotificationEventType,
 ): boolean {
   return state.notifications_allowed && state.preferences[eventType] === true
+}
+
+/** По умолчанию для избранного — включено, пока пользователь не выключил. */
+export function isParticipantNotifyEnabled(
+  state: NotificationSettingsState,
+  participantId: number,
+): boolean {
+  if (!state.notifications_allowed) {
+    return false
+  }
+  const stored = state.participant_notifications[String(participantId)]
+  return stored !== false
 }
