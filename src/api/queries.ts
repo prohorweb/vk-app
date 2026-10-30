@@ -357,11 +357,12 @@ export function useMyProfileQuery() {
   })
 }
 
-export function useFavoriteIdsQuery() {
+export function useFavoriteIdsQuery(enabled = true) {
   return useQuery({
     queryKey: ['favorites', 'ids'],
     queryFn: fetchFavoriteIds,
     staleTime: 5 * 60 * 1000,
+    enabled,
   })
 }
 
