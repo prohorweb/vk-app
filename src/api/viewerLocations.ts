@@ -53,6 +53,7 @@ function toSpectatorLocation(item: ViewerLocationItem): SpectatorLocation {
     name: item.name,
     kind: item.kind,
     category: item.category,
+    glyph: item.glyph,
     lng: item.lon,
     lat: item.lat,
     address: item.address ?? null,

@@ -2361,6 +2361,12 @@ export interface components {
          */
         ViewerLocationCategory: "stages" | "areas" | "food" | "kids" | "other";
         /**
+         * ViewerLocationGlyph
+         * @description Глиф иконки локации на карте (фронт маппит на VKUI-иконки).
+         * @enum {string}
+         */
+        ViewerLocationGlyph: "mic" | "food" | "house" | "image" | "globe" | "smile" | "pin";
+        /**
          * ViewerLocationKind
          * @description Виды зрительских локаций
          * @enum {string}
@@ -2377,6 +2383,7 @@ export interface components {
             name: string;
             kind: components["schemas"]["ViewerLocationKind"];
             category: components["schemas"]["ViewerLocationCategory"];
+            glyph: components["schemas"]["ViewerLocationGlyph"];
             /** Lat */
             lat: number;
             /** Lon */

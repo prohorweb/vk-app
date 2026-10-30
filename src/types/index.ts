@@ -34,6 +34,7 @@ export type MapFreshnessStatus = MapParticipant['freshness_status']
 export type MapCheckpointItem = components['schemas']['CheckpointPublicResponse']
 export type ViewerLocationKind = components['schemas']['ViewerLocationKind']
 export type ViewerLocationCategory = components['schemas']['ViewerLocationCategory']
+export type ViewerLocationGlyph = components['schemas']['ViewerLocationGlyph']
 export type ViewerLocationItem = components['schemas']['ViewerLocationPublicResponse']
 
 export const participantSorts = ['bib', 'name', 'supporters'] as const

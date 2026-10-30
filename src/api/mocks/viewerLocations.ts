@@ -1,10 +1,15 @@
-import type { ViewerLocationCategory, ViewerLocationKind } from '../../types/index.ts'
+import type {
+  ViewerLocationCategory,
+  ViewerLocationGlyph,
+  ViewerLocationKind,
+} from '../../types/index.ts'
 
 export type SpectatorLocation = {
   id: string
   name: string
   kind: ViewerLocationKind
   category: ViewerLocationCategory
+  glyph: ViewerLocationGlyph
   lng: number
   lat: number
   address: string | null
@@ -29,6 +34,7 @@ export const mockSpectatorLocations: SpectatorLocation[] = [
     name: 'Старт гонки, Петропавловск-Камчатский',
     kind: 'start',
     category: 'other',
+    glyph: 'pin',
     lng: 158.637403,
     lat: 53.09619,
     address: 'Камчатский край, б/к им. В. Фатьянова',
@@ -47,6 +53,7 @@ export const mockSpectatorLocations: SpectatorLocation[] = [
     name: 'Финиш этапа 1, Пиначево',
     kind: 'finish',
     category: 'other',
+    glyph: 'pin',
     lng: 158.391665,
     lat: 53.349125,
     address: 'Камчатский край, Пиначево',
@@ -65,6 +72,7 @@ export const mockSpectatorLocations: SpectatorLocation[] = [
     name: 'Смотровая площадка «Перевал Двойной»',
     kind: 'viewpoint',
     category: 'areas',
+    glyph: 'pin',
     lng: 158.57592,
     lat: 53.331542,
     address: 'Камчатский край, перевал Двойной',
@@ -83,6 +91,7 @@ export const mockSpectatorLocations: SpectatorLocation[] = [
     name: 'Фестивальная площадка «Авача»',
     kind: 'festival',
     category: 'stages',
+    glyph: 'mic',
     lng: 158.643,
     lat: 53.019,
     address: 'Петропавловск-Камчатский, центр города',

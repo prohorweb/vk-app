@@ -11,7 +11,7 @@ import { RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { SpectatorArrivalSheet } from '../components/spectator/SpectatorArrivalSheet.tsx'
 import { SpectatorLocationCard } from '../components/spectator/SpectatorLocationCard.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
-import { placemarkGlyphFor } from '../map/placemarkPins.ts'
+import { resolvePlacemarkGlyph } from '../map/placemarkPins.ts'
 import type { MapPlacemark, MapViewHandle } from '../map/mapTypes.ts'
 import { MapView } from '../map/MapView.tsx'
 import { PATH } from '../routes.ts'
@@ -36,7 +36,7 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
     [locationsQuery.data],
   )
 
-  // Чипы фильтруют по категории локации из API; kind остаётся для пина на карте.
+  // Чипы фильтруют по категории локации из API; иконка плашки — из glyph.
   const visibleLocations = useMemo(
     () => locations.filter((location) => matchesSpectatorFilter(location.category, filter)),
     [locations, filter],
@@ -56,7 +56,7 @@ export function SpectatorMapPanel({ id }: SpectatorMapPanelProps) {
         id: location.id,
         lng: location.lng,
         lat: location.lat,
-        glyph: placemarkGlyphFor(location.name, location.category),
+        glyph: resolvePlacemarkGlyph(location.glyph),
         label: location.name,
         selected: location.id === selectedLocationId,
       })),
