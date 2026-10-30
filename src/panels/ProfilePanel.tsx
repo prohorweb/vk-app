@@ -10,7 +10,6 @@ import { Button, Panel, PanelHeader, PanelHeaderBack, Spinner } from '@vkontakte
 import coverImage from '../assets/start/bg.jpg'
 import { useFavoriteParticipantsQuery, useMyProfileQuery } from '../api/queries.ts'
 import { FavoriteParticipantCell } from '../components/profile/FavoriteParticipantCell.tsx'
-import { Picture } from '../components/Picture.tsx'
 import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { readNotificationSettings } from '../lib/notificationSettings.ts'
 import { PATH } from '../routes.ts'
@@ -30,7 +29,7 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
   const notifications = readNotificationSettings()
   const notificationsSubtitle = notifications.notifications_allowed
     ? favorites.length > 0
-      ? `Включены · ${favorites.length} ${participantsWord(favorites.length)}`
+      ? `Включены ${favorites.length} ${participantsWord(favorites.length)}`
       : 'Включены'
     : 'Выключены'
 
@@ -44,9 +43,9 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
       <div className="profile-screen__body">
         <section className="profile-hero" aria-label="Профиль пользователя">
           <div className="profile-hero__cover">
-            <Picture src={coverImage} alt="" ratio="2 / 1" className="profile-hero__cover-image" />
+            <img className="profile-hero__cover-image" src={coverImage} alt="" />
           </div>
-          <div className="profile-hero__identity">
+          <div className="profile-hero__row">
             {profile?.photo_url ? (
               <img className="profile-hero__avatar" src={profile.photo_url} alt="" />
             ) : (
@@ -67,7 +66,7 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
               onClick={() => void routeNavigator.push(PATH.profileFavorites)}
             >
               Все
-              <Icon24ChevronRight width={20} height={20} aria-hidden />
+              <Icon24ChevronRight width={16} height={16} aria-hidden />
             </button>
           </div>
           {favoritesQuery.isLoading ? (
@@ -82,11 +81,12 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
           ) : (
             <div className="profile-screen__empty-block">
               <p className="profile-screen__empty-text">
-                Пока никого нет. Добавьте участника кнопкой «Болею за…» в его карточке.
+                Пока никого нет. Добавьте участника кнопкой «Болею за…» в карточке.
               </p>
               <Button
                 size="m"
                 mode="secondary"
+                stretched
                 onClick={() => void routeNavigator.push(PATH.participants)}
               >
                 К участникам
@@ -97,12 +97,23 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
 
         <section className="profile-card">
           <h2 className="profile-card__title">Сохранённые материалы</h2>
-          <p className="profile-screen__hint">
-            Сохранённые новости и фото появятся здесь позже.
-          </p>
+          <div className="profile-saved">
+            <div className="profile-saved__item">
+              <div className="profile-saved__thumb profile-saved__thumb--news" aria-hidden>
+                <span className="profile-saved__thumb-label">Авача</span>
+              </div>
+              <span className="profile-saved__caption">Новости</span>
+              <span className="profile-saved__meta">Пока пусто</span>
+            </div>
+            <div className="profile-saved__item">
+              <div className="profile-saved__thumb profile-saved__thumb--photo" aria-hidden />
+              <span className="profile-saved__caption">Фото</span>
+              <span className="profile-saved__meta">Пока пусто</span>
+            </div>
+          </div>
         </section>
 
-        <section className="profile-card profile-card--menu">
+        <div className="profile-menu">
           <button
             type="button"
             className="profile-menu-row"
@@ -147,13 +158,12 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
             </span>
             <span className="profile-menu-row__text">
               <span className="profile-menu-row__title">
-                {profile?.is_favorite_app ? 'В избранном VK' : 'Добавить в избранное'}
+                {profile?.is_favorite_app ? 'Удалить из избранного' : 'Добавить в избранное'}
               </span>
-              <span className="profile-menu-row__subtitle">Быстрый доступ к приложению</span>
             </span>
             <Icon24ChevronRight className="profile-menu-row__chevron" aria-hidden />
           </button>
-        </section>
+        </div>
       </div>
     </Panel>
   )
