@@ -6,7 +6,6 @@ import type { RouteMapFilter } from '../api/mocks/route.ts'
 import {
   useDisciplinesQuery,
   useFavoriteIdsQuery,
-  useMyProfileQuery,
   usePublicStagesQuery,
   useStageCheckpointsQuery,
   useStageMapPositionsQuery,
@@ -62,13 +61,9 @@ export function MapPanel({ id }: MapPanelProps) {
 
   const stagesQuery = usePublicStagesQuery()
   const disciplinesQuery = useDisciplinesQuery()
-  const profileQuery = useMyProfileQuery()
-  const isAuthorized = profileQuery.data != null
-  const favoriteIdsQuery = useFavoriteIdsQuery(isAuthorized)
+  const favoriteIdsQuery = useFavoriteIdsQuery()
   const disciplines = disciplinesQuery.data ?? []
-  const favoriteIds = isAuthorized ? (favoriteIdsQuery.data ?? []) : []
-  const showFavoritesFilter = isAuthorized
-  const activeFavoritesOnly = showFavoritesFilter && favoritesOnly
+  const favoriteIds = favoriteIdsQuery.data ?? []
   const activeStageId = useMemo(() => {
     const stages = stagesQuery.data ?? []
     const active = stages.find((stage) => stage.status === 'active')
@@ -120,7 +115,7 @@ export function MapPanel({ id }: MapPanelProps) {
 
   const participantMarkers = useMemo(() => {
     return (markers ?? [])
-      .filter((marker) => !activeFavoritesOnly || favoriteIdSet.has(marker.participantId))
+      .filter((marker) => !favoritesOnly || favoriteIdSet.has(marker.participantId))
       .map((marker) => ({
         id: marker.id,
         participantId: marker.participantId,
@@ -129,7 +124,7 @@ export function MapPanel({ id }: MapPanelProps) {
         status: marker.status,
         bib: marker.bib,
       }))
-  }, [markers, activeFavoritesOnly, favoriteIdSet])
+  }, [markers, favoritesOnly, favoriteIdSet])
 
   const selectedMarker = useMemo(
     () => (selectedMarkerId ? findMapMarker(markers ?? [], selectedMarkerId) : undefined),
@@ -137,7 +132,7 @@ export function MapPanel({ id }: MapPanelProps) {
   )
 
   const favoritesEmptyHint = useMemo(() => {
-    if (!activeFavoritesOnly) {
+    if (!favoritesOnly) {
       return null
     }
     if (favoriteIds.length === 0) {
@@ -153,20 +148,20 @@ export function MapPanel({ id }: MapPanelProps) {
       }
     }
     return null
-  }, [activeFavoritesOnly, favoriteIds.length, participantMarkers.length])
+  }, [favoritesOnly, favoriteIds.length, participantMarkers.length])
 
   const stale =
     !online ||
     stagesQuery.isError ||
     disciplinesQuery.isError ||
-    (showFavoritesFilter && favoriteIdsQuery.isError) ||
+    favoriteIdsQuery.isError ||
     positionsQuery.isError ||
     trackQuery.isError ||
     checkpointsQuery.isError
   const lastUpdatedAt = Math.max(
     stagesQuery.dataUpdatedAt,
     disciplinesQuery.dataUpdatedAt,
-    showFavoritesFilter ? favoriteIdsQuery.dataUpdatedAt : 0,
+    favoriteIdsQuery.dataUpdatedAt,
     positionsQuery.dataUpdatedAt,
     trackQuery.dataUpdatedAt,
     checkpointsQuery.dataUpdatedAt,
@@ -200,22 +195,18 @@ export function MapPanel({ id }: MapPanelProps) {
             setDisciplineFilterOpen(false)
             setFavoritesFilterOpen(false)
           }}
-          onFavoritesFilter={
-            showFavoritesFilter
-              ? () => {
-                  setFavoritesFilterOpen((open) => !open)
-                  setFilterOpen(false)
-                  setDisciplineFilterOpen(false)
-                }
-              : undefined
-          }
+          onFavoritesFilter={() => {
+            setFavoritesFilterOpen((open) => !open)
+            setFilterOpen(false)
+            setDisciplineFilterOpen(false)
+          }}
           onDisciplineFilter={() => {
             setDisciplineFilterOpen((open) => !open)
             setFilterOpen(false)
             setFavoritesFilterOpen(false)
           }}
           filterActive={filterOpen}
-          favoritesFilterActive={favoritesFilterOpen || activeFavoritesOnly}
+          favoritesFilterActive={favoritesFilterOpen || favoritesOnly}
           disciplineFilterActive={disciplineFilterOpen || disciplineId !== null}
           onMenu={() => {
             setMenuOpen((open) => !open)
@@ -261,17 +252,15 @@ export function MapPanel({ id }: MapPanelProps) {
             setSelectedMarkerId(null)
           }}
         />
-        {showFavoritesFilter ? (
-          <MapFavoritesPopover
-            open={favoritesFilterOpen}
-            value={favoritesOnly}
-            onClose={() => setFavoritesFilterOpen(false)}
-            onChange={(value) => {
-              setFavoritesOnly(value)
-              setSelectedMarkerId(null)
-            }}
-          />
-        ) : null}
+        <MapFavoritesPopover
+          open={favoritesFilterOpen}
+          value={favoritesOnly}
+          onClose={() => setFavoritesFilterOpen(false)}
+          onChange={(value) => {
+            setFavoritesOnly(value)
+            setSelectedMarkerId(null)
+          }}
+        />
         <MapDisciplinePopover
           open={disciplineFilterOpen}
           value={disciplineId}
