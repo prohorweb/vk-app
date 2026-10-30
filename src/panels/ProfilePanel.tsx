@@ -6,11 +6,10 @@ import {
   Icon24NotificationOutline,
   Icon24UserAddOutline,
 } from '@vkontakte/icons'
-import { Button, Panel, PanelHeader, PanelHeaderBack, Spinner } from '@vkontakte/vkui'
+import { Button, Panel, PanelHeader, Spinner } from '@vkontakte/vkui'
 import coverImage from '../assets/start/bg.jpg'
 import { useFavoriteParticipantsQuery, useMyProfileQuery } from '../api/queries.ts'
 import { FavoriteParticipantCell } from '../components/profile/FavoriteParticipantCell.tsx'
-import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { readNotificationSettings } from '../lib/notificationSettings.ts'
 import { PATH } from '../routes.ts'
 
@@ -19,7 +18,6 @@ type ProfilePanelProps = {
 }
 
 export function ProfilePanel({ id }: ProfilePanelProps) {
-  const goBack = useMoreSectionBack()
   const routeNavigator = useRouteNavigator()
   const profileQuery = useMyProfileQuery()
   const favoritesQuery = useFavoriteParticipantsQuery()
@@ -39,7 +37,7 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
 
   return (
     <Panel id={id} className="profile-screen">
-      <PanelHeader before={<PanelHeaderBack onClick={goBack} />}>Профиль</PanelHeader>
+      <PanelHeader>Профиль</PanelHeader>
       <div className="profile-screen__body">
         <section className="profile-hero" aria-label="Профиль пользователя">
           <div className="profile-hero__cover">

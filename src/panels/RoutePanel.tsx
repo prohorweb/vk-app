@@ -1,12 +1,11 @@
 import { useMemo, useRef, useState } from 'react'
-import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
+import { Panel, PanelHeader } from '@vkontakte/vkui'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
 import { RouteActiveBanner } from '../components/route/RouteActiveBanner.tsx'
 import { RouteFilterSheet } from '../components/route/RouteFilterSheet.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapInfo, RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { RouteSheet } from '../components/route/RouteSheet.tsx'
-import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { readRouteMapFilterFromUrl, readRouteSheetSnapFromUrl } from '../lib/routeScreenParams.ts'
 import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
 import type { MapViewHandle } from '../map/mapTypes.ts'
@@ -19,7 +18,6 @@ type RoutePanelProps = {
 }
 
 export function RoutePanel({ id }: RoutePanelProps) {
-  const goBack = useMoreSectionBack()
   const mapRef = useRef<MapViewHandle>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -58,9 +56,7 @@ export function RoutePanel({ id }: RoutePanelProps) {
 
   return (
     <Panel id={id} className="route-screen">
-      <PanelHeader getRootRef={headerRef} before={<PanelHeaderBack onClick={goBack} />}>
-        Маршрут
-      </PanelHeader>
+      <PanelHeader getRootRef={headerRef}>Маршрут</PanelHeader>
       <div ref={viewportRef} className="route-screen__viewport">
         <MapView
           ref={mapRef}

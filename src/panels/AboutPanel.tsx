@@ -1,7 +1,6 @@
-import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
+import { Panel, PanelHeader } from '@vkontakte/vkui'
 import { Picture } from '../components/Picture.tsx'
 import { useDragScroll } from '../hooks/useDragScroll.ts'
-import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { publicImage } from '../lib/publicImage.ts'
 
 type AboutPanelProps = {
@@ -46,13 +45,9 @@ function PhotoGallery({ label, photos }: { label: string; photos: AboutPhoto[] }
 }
 
 export function AboutPanel({ id }: AboutPanelProps) {
-  const goBack = useMoreSectionBack()
-
   return (
     <Panel id={id}>
-      <PanelHeader before={<PanelHeaderBack onClick={goBack} />}>
-        О гонке
-      </PanelHeader>
+      <PanelHeader>О гонке</PanelHeader>
       <Picture
         className="about-hero"
         src={publicImage('about/hero.jpg')}

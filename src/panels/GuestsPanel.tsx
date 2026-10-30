@@ -1,10 +1,9 @@
 import { Icon24ChevronRight } from '@vkontakte/icons'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
+import { Panel, PanelHeader } from '@vkontakte/vkui'
 import { guestsCards, guestsHero, type GuestsCard } from '../api/mocks/guests.ts'
 import { GuestsHero } from '../components/GuestsHero.tsx'
 import { GuestsIcon } from '../components/GuestsIcon.tsx'
-import { useMoreSectionBack } from '../hooks/useMoreSectionBack.ts'
 import { PATH } from '../routes.ts'
 
 type GuestsPanelProps = {
@@ -20,12 +19,11 @@ const guestsPaths: Record<GuestsCard['id'], string> = {
 }
 
 export function GuestsPanel({ id }: GuestsPanelProps) {
-  const goBack = useMoreSectionBack()
   const routeNavigator = useRouteNavigator()
 
   return (
     <Panel id={id} className="guests-screen">
-      <PanelHeader before={<PanelHeaderBack onClick={goBack} />}>Гостям</PanelHeader>
+      <PanelHeader>Гостям</PanelHeader>
       <GuestsHero
         src={guestsHero}
         alt="Упряжка на заснеженной равнине на фоне камчатских гор"
