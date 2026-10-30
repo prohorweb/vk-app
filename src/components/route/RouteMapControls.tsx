@@ -1,5 +1,6 @@
 import {
   Icon24Add,
+  Icon24FavoriteOutline,
   Icon24Filter,
   Icon24InfoCircleOutline,
   Icon24ListBulletOutline,
@@ -12,6 +13,8 @@ import { IconButton } from '@vkontakte/vkui'
 type RouteMapControlsProps = {
   /** Без обработчика кнопка фильтра не показывается: на экране уже есть чипы. */
   onFilter?: () => void
+  /** Фильтр «Мои фавориты» — клиентское пересечение с favorites/ids. */
+  onFavoritesFilter?: () => void
   /** Отдельный фильтр участников по дисциплине. */
   onDisciplineFilter?: () => void
   onInfo?: () => void
@@ -22,6 +25,7 @@ type RouteMapControlsProps = {
   infoActive?: boolean
   menuActive?: boolean
   filterActive?: boolean
+  favoritesFilterActive?: boolean
   disciplineFilterActive?: boolean
   /** Где кнопка «Дополнительно»: в колонке справа или отдельно у нижнего края карты. */
   menuPlacement?: 'stack' | 'bottom'
@@ -31,6 +35,7 @@ type RouteMapControlsProps = {
 
 export function RouteMapControls({
   onFilter,
+  onFavoritesFilter,
   onDisciplineFilter,
   onInfo,
   onMenu,
@@ -40,6 +45,7 @@ export function RouteMapControls({
   infoActive,
   menuActive,
   filterActive,
+  favoritesFilterActive,
   disciplineFilterActive,
   menuPlacement = 'stack',
   showInfo = true,
@@ -86,7 +92,7 @@ export function RouteMapControls({
           </IconButton>
         ) : null}
         <div className="route-map-controls__side">
-          {onFilter || onDisciplineFilter ? (
+          {onFilter || onFavoritesFilter || onDisciplineFilter ? (
             <div className="route-map-controls__group">
               {onFilter ? (
                 <IconButton
@@ -95,6 +101,15 @@ export function RouteMapControls({
                   onClick={onFilter}
                 >
                   <Icon24ListBulletOutline />
+                </IconButton>
+              ) : null}
+              {onFavoritesFilter ? (
+                <IconButton
+                  className={favoritesFilterActive ? 'route-map-controls__btn--active' : undefined}
+                  label="Мои фавориты на карте"
+                  onClick={onFavoritesFilter}
+                >
+                  <Icon24FavoriteOutline />
                 </IconButton>
               ) : null}
               {onDisciplineFilter ? (

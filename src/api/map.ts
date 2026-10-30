@@ -88,13 +88,24 @@ export function findMapMarker(
   return markers.find((marker) => marker.id === markerId)
 }
 
-export async function fetchStageMapPositions(stageId: number): Promise<MapPositionsSnapshot> {
+export async function fetchStageMapPositions(
+  stageId: number,
+  disciplineIds?: number[] | null,
+): Promise<MapPositionsSnapshot> {
   if (!navigator.onLine) {
     throw new OfflineError()
   }
   try {
     const result = await api.GET('/api/v1/map/participants', {
-      params: { query: { stage_id: stageId, limit: MAP_MARKERS_LIMIT } },
+      params: {
+        query: {
+          stage_id: stageId,
+          limit: MAP_MARKERS_LIMIT,
+          ...(disciplineIds && disciplineIds.length > 0
+            ? { discipline_ids: disciplineIds }
+            : {}),
+        },
+      },
     })
     const data = unwrap(result)
     const markers = data.items

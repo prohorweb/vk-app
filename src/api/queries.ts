@@ -311,10 +311,11 @@ export function useTrackPointsQuery() {
   })
 }
 
-export function useStageMapPositionsQuery(stageId: number) {
+export function useStageMapPositionsQuery(stageId: number, disciplineId: number | null = null) {
+  const disciplineIds = disciplineId === null ? null : [disciplineId]
   return useQuery({
-    queryKey: ['map', 'positions', stageId],
-    queryFn: () => fetchStageMapPositions(stageId),
+    queryKey: ['map', 'positions', stageId, disciplineId],
+    queryFn: () => fetchStageMapPositions(stageId, disciplineIds),
     refetchInterval: MAP_MARKERS_REFETCH_MS,
     placeholderData: keepPreviousData,
   })

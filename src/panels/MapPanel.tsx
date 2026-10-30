@@ -1,17 +1,18 @@
 import { useMemo, useRef, useState } from 'react'
 import { Icon24ErrorCircleOutline } from '@vkontakte/icons'
-import { Panel, PanelHeader } from '@vkontakte/vkui'
+import { Button, Panel, PanelHeader } from '@vkontakte/vkui'
 import { findMapMarker } from '../api/map.ts'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
 import {
   useDisciplinesQuery,
-  useParticipantsQuery,
+  useFavoriteIdsQuery,
   usePublicStagesQuery,
   useStageCheckpointsQuery,
   useStageMapPositionsQuery,
   useStageTrackQuery,
 } from '../api/queries.ts'
 import { MapDisciplinePopover } from '../components/map/MapDisciplinePopover.tsx'
+import { MapFavoritesPopover } from '../components/map/MapFavoritesPopover.tsx'
 import { MapMiniCard } from '../components/map/MapMiniCard.tsx'
 import { MapStagePopover } from '../components/map/MapStagePopover.tsx'
 import { MapSummarySheet } from '../components/map/MapSummarySheet.tsx'
@@ -47,8 +48,10 @@ export function MapPanel({ id }: MapPanelProps) {
   const headerRef = useRef<HTMLDivElement>(null)
   const [stageFilter, setStageFilter] = useState<RouteMapFilter>('all')
   const [disciplineId, setDisciplineId] = useState<number | null>(null)
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
   const [disciplineFilterOpen, setDisciplineFilterOpen] = useState(false)
+  const [favoritesFilterOpen, setFavoritesFilterOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() =>
     readMapMarkerFromUrl(),
@@ -58,8 +61,9 @@ export function MapPanel({ id }: MapPanelProps) {
 
   const stagesQuery = usePublicStagesQuery()
   const disciplinesQuery = useDisciplinesQuery()
-  const participantsQuery = useParticipantsQuery({ disciplineId })
+  const favoriteIdsQuery = useFavoriteIdsQuery()
   const disciplines = disciplinesQuery.data ?? []
+  const favoriteIds = favoriteIdsQuery.data ?? []
   const activeStageId = useMemo(() => {
     const stages = stagesQuery.data ?? []
     const active = stages.find((stage) => stage.status === 'active')
@@ -68,7 +72,7 @@ export function MapPanel({ id }: MapPanelProps) {
 
   // Публичный API позиций требует stage_id, поэтому «Все этапы» показывает активный этап.
   const stageId = typeof stageFilter === 'number' ? stageFilter : activeStageId
-  const positionsQuery = useStageMapPositionsQuery(stageId)
+  const positionsQuery = useStageMapPositionsQuery(stageId, disciplineId)
   const trackQuery = useStageTrackQuery(stageId)
   const checkpointsQuery = useStageCheckpointsQuery(stageId)
 
@@ -107,13 +111,11 @@ export function MapPanel({ id }: MapPanelProps) {
     return tracks.sort((left, right) => Number(left.selected) - Number(right.selected))
   }, [stageNumber, trackQuery.data])
 
+  const favoriteIdSet = useMemo(() => new Set(favoriteIds), [favoriteIds])
+
   const participantMarkers = useMemo(() => {
-    const allowedIds =
-      disciplineId === null || !participantsQuery.data
-        ? null
-        : new Set(participantsQuery.data.map((participant) => participant.id))
     return (markers ?? [])
-      .filter((marker) => allowedIds === null || allowedIds.has(marker.participantId))
+      .filter((marker) => !favoritesOnly || favoriteIdSet.has(marker.participantId))
       .map((marker) => ({
         id: marker.id,
         participantId: marker.participantId,
@@ -122,30 +124,55 @@ export function MapPanel({ id }: MapPanelProps) {
         status: marker.status,
         bib: marker.bib,
       }))
-  }, [markers, disciplineId, participantsQuery.data])
+  }, [markers, favoritesOnly, favoriteIdSet])
 
   const selectedMarker = useMemo(
     () => (selectedMarkerId ? findMapMarker(markers ?? [], selectedMarkerId) : undefined),
     [markers, selectedMarkerId],
   )
 
+  const favoritesEmptyHint = useMemo(() => {
+    if (!favoritesOnly) {
+      return null
+    }
+    if (favoriteIds.length === 0) {
+      return {
+        title: 'Вы пока ни на кого не подписаны',
+        showReset: false,
+      }
+    }
+    if (participantMarkers.length === 0) {
+      return {
+        title: 'Нет ваших кайюров в этом фильтре',
+        showReset: true,
+      }
+    }
+    return null
+  }, [favoritesOnly, favoriteIds.length, participantMarkers.length])
+
   const stale =
     !online ||
     stagesQuery.isError ||
     disciplinesQuery.isError ||
-    participantsQuery.isError ||
+    favoriteIdsQuery.isError ||
     positionsQuery.isError ||
     trackQuery.isError ||
     checkpointsQuery.isError
   const lastUpdatedAt = Math.max(
     stagesQuery.dataUpdatedAt,
     disciplinesQuery.dataUpdatedAt,
-    participantsQuery.dataUpdatedAt,
+    favoriteIdsQuery.dataUpdatedAt,
     positionsQuery.dataUpdatedAt,
     trackQuery.dataUpdatedAt,
     checkpointsQuery.dataUpdatedAt,
   )
   const showStale = stale && lastUpdatedAt > 0 && staleDismissedAt !== lastUpdatedAt
+
+  const closePopovers = () => {
+    setFilterOpen(false)
+    setDisciplineFilterOpen(false)
+    setFavoritesFilterOpen(false)
+  }
 
   return (
     <Panel id={id} className="map-screen">
@@ -166,12 +193,20 @@ export function MapPanel({ id }: MapPanelProps) {
           onFilter={() => {
             setFilterOpen((open) => !open)
             setDisciplineFilterOpen(false)
+            setFavoritesFilterOpen(false)
+          }}
+          onFavoritesFilter={() => {
+            setFavoritesFilterOpen((open) => !open)
+            setFilterOpen(false)
+            setDisciplineFilterOpen(false)
           }}
           onDisciplineFilter={() => {
             setDisciplineFilterOpen((open) => !open)
             setFilterOpen(false)
+            setFavoritesFilterOpen(false)
           }}
           filterActive={filterOpen}
+          favoritesFilterActive={favoritesFilterOpen || favoritesOnly}
           disciplineFilterActive={disciplineFilterOpen || disciplineId !== null}
           onMenu={() => {
             setMenuOpen((open) => !open)
@@ -181,6 +216,23 @@ export function MapPanel({ id }: MapPanelProps) {
           onZoomIn={() => mapRef.current?.zoomIn()}
           onZoomOut={() => mapRef.current?.zoomOut()}
         />
+        {favoritesEmptyHint ? (
+          <div className="map-favorites-hint" role="status">
+            <p className="map-favorites-hint__title">{favoritesEmptyHint.title}</p>
+            {favoritesEmptyHint.showReset ? (
+              <Button
+                size="s"
+                mode="secondary"
+                onClick={() => {
+                  setFavoritesOnly(false)
+                  closePopovers()
+                }}
+              >
+                Все
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
         {selectedMarker ? (
           <MapMiniCard marker={selectedMarker} onClose={() => setSelectedMarkerId(null)} />
         ) : (
@@ -197,6 +249,15 @@ export function MapPanel({ id }: MapPanelProps) {
           onClose={() => setFilterOpen(false)}
           onChange={(value) => {
             setStageFilter(value)
+            setSelectedMarkerId(null)
+          }}
+        />
+        <MapFavoritesPopover
+          open={favoritesFilterOpen}
+          value={favoritesOnly}
+          onClose={() => setFavoritesFilterOpen(false)}
+          onChange={(value) => {
+            setFavoritesOnly(value)
             setSelectedMarkerId(null)
           }}
         />
