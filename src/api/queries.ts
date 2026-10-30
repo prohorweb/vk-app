@@ -23,7 +23,13 @@ import type {
   DisciplinePublic,
 } from '../types/index.ts'
 import { api, OfflineError, unwrap } from './client.ts'
-import { fetchFavoriteIds, fetchFavoriteParticipants, fetchMyProfile } from './favorites.ts'
+import {
+  fetchFavoriteIds,
+  fetchFavoriteParticipants,
+  fetchMyProfile,
+  setFavorite,
+  withLocalFavoriteFlag,
+} from './favorites.ts'
 import { fetchStageCheckpoints, fetchStageMapPositions, fetchStageTrack } from './map.ts'
 import { trackPoints } from './mock.ts'
 import { fetchSpectatorLocations } from './viewerLocations.ts'
@@ -75,7 +81,11 @@ export async function fetchSupporters(id: number): Promise<ParticipantSupporters
   const result = await api.GET('/api/v1/participants/{participant_id}/supporters', {
     params: { path: { participant_id: id } },
   })
-  return unwrap(result)
+  const payload = unwrap(result)
+  return {
+    ...payload,
+    is_favorite: withLocalFavoriteFlag(id, payload.is_favorite),
+  }
 }
 
 export async function fetchNews(): Promise<NewsPostListResponse> {
@@ -367,11 +377,22 @@ export function useFavoriteMutation(participantId: number) {
 
   return useMutation({
     mutationFn: async (nextFavorite: boolean): Promise<FavoriteResponse> => {
-      const params = { path: { participant_id: participantId } }
-      const result = nextFavorite
-        ? await api.POST('/api/v1/participants/{participant_id}/favorite', { params })
-        : await api.DELETE('/api/v1/participants/{participant_id}/favorite', { params })
-      return unwrap(result)
+      const previousSupporters = queryClient.getQueryData<ParticipantSupporters>([
+        'supporters',
+        participantId,
+      ])
+      const previousDetail = queryClient.getQueryData<ParticipantDetail>([
+        'participant',
+        participantId,
+      ])
+      const baseCount =
+        previousSupporters?.supporters_count ?? previousDetail?.supporters_count ?? 0
+      const result = await setFavorite(participantId, nextFavorite, baseCount)
+      return {
+        ok: true,
+        created: result.created,
+        supporters_count: result.supporters_count,
+      }
     },
     onMutate: async (nextFavorite) => {
       await queryClient.cancelQueries({ queryKey: ['supporters', participantId] })
@@ -425,20 +446,34 @@ export function useFavoriteMutation(participantId: number) {
         : (previousFavoriteIds ?? []).filter((id) => id !== participantId)
       queryClient.setQueryData<number[]>(['favorites', 'ids'], nextIds)
 
-      if (previousFavoriteParticipants) {
-        const fromList = queryClient
-          .getQueriesData<ParticipantListItem[]>({ queryKey: ['participants'] })
-          .flatMap(([, list]) => list ?? [])
-          .find((item) => item.id === participantId)
-        const nextFavorites = nextFavorite
-          ? previousFavoriteParticipants.some((item) => item.id === participantId)
-            ? previousFavoriteParticipants
-            : fromList
-              ? [...previousFavoriteParticipants, fromList]
-              : previousFavoriteParticipants
-          : previousFavoriteParticipants.filter((item) => item.id !== participantId)
-        queryClient.setQueryData(['favorites', 'participants'], nextFavorites)
-      }
+      const fromList =
+        previousDetail && previousDetail.id === participantId
+          ? ({
+              id: previousDetail.id,
+              name: previousDetail.name,
+              number: previousDetail.number,
+              region: previousDetail.region,
+              discipline_id: previousDetail.discipline_id,
+              discipline: previousDetail.discipline,
+              photo_url: previousDetail.photo_url,
+              status: previousDetail.status,
+              dogs_count: previousDetail.dogs_count,
+              supporters_count: nextCount,
+            } satisfies ParticipantListItem)
+          : queryClient
+              .getQueriesData<ParticipantListItem[]>({ queryKey: ['participants'] })
+              .flatMap(([, list]) => list ?? [])
+              .find((item) => item.id === participantId)
+
+      const baseFavorites = previousFavoriteParticipants ?? []
+      const nextFavorites = nextFavorite
+        ? baseFavorites.some((item) => item.id === participantId)
+          ? baseFavorites
+          : fromList
+            ? [...baseFavorites, { ...fromList, supporters_count: nextCount }]
+            : baseFavorites
+        : baseFavorites.filter((item) => item.id !== participantId)
+      queryClient.setQueryData(['favorites', 'participants'], nextFavorites)
 
       return {
         previousSupporters,

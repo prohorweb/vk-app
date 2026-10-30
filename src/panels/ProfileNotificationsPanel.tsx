@@ -10,7 +10,7 @@ import {
   PanelHeaderBack,
   Switch,
 } from '@vkontakte/vkui'
-import { api, unwrap } from '../api/client.ts'
+import { setFavorite } from '../api/favorites.ts'
 import { queryClient } from '../api/queryClient.ts'
 import { useFavoriteMutation, useFavoriteParticipantsQuery } from '../api/queries.ts'
 import { FavoriteParticipantCell } from '../components/profile/FavoriteParticipantCell.tsx'
@@ -202,12 +202,9 @@ function FavoriteNotifyRow({
 
 async function unsubscribeAll(favorites: ParticipantListItem[]): Promise<void> {
   await Promise.all(
-    favorites.map(async (participant) => {
-      const result = await api.DELETE('/api/v1/participants/{participant_id}/favorite', {
-        params: { path: { participant_id: participant.id } },
-      })
-      unwrap(result)
-    }),
+    favorites.map((participant) =>
+      setFavorite(participant.id, false, participant.supporters_count),
+    ),
   )
   await queryClient.invalidateQueries({ queryKey: ['favorites'] })
   await queryClient.invalidateQueries({ queryKey: ['supporters'] })

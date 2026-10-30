@@ -1,3 +1,8 @@
+import {
+  isLocalFavorite,
+  readLocalFavoriteIds,
+  setLocalFavorite,
+} from '../lib/localFavorites.ts'
 import type { FavoriteIdsResponse, ParticipantListItem, UserProfile } from '../types/index.ts'
 import { api, ApiError, isClientApiError, unwrap } from './client.ts'
 import { getAccessToken } from './token.ts'
@@ -21,10 +26,10 @@ export async function fetchMyProfile(): Promise<UserProfile | null> {
   }
 }
 
-/** ID избранных участников. Без авторизации — пустой список. */
+/** ID избранных: API при авторизации, иначе localStorage гостя. */
 export async function fetchFavoriteIds(): Promise<number[]> {
   if (!getAccessToken()) {
-    return []
+    return readLocalFavoriteIds()
   }
   try {
     const result = await api.GET('/api/v1/participants/favorites/ids')
@@ -32,12 +37,12 @@ export async function fetchFavoriteIds(): Promise<number[]> {
     return payload.participant_ids
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      return []
+      return readLocalFavoriteIds()
     }
     if (isClientApiError(error)) {
       throw error
     }
-    return []
+    return readLocalFavoriteIds()
   }
 }
 
@@ -59,4 +64,41 @@ export async function fetchFavoriteParticipants(): Promise<ParticipantListItem[]
     const item = byId.get(id)
     return item ? [item] : []
   })
+}
+
+/** Добавить/убрать из избранного: API или localStorage для гостя. */
+export async function setFavorite(
+  participantId: number,
+  nextFavorite: boolean,
+  currentSupportersCount: number,
+): Promise<{ supporters_count: number; created: boolean }> {
+  if (!getAccessToken()) {
+    setLocalFavorite(participantId, nextFavorite)
+    const delta = nextFavorite ? 1 : -1
+    return {
+      supporters_count: Math.max(0, currentSupportersCount + delta),
+      created: nextFavorite,
+    }
+  }
+
+  const params = { path: { participant_id: participantId } }
+  const result = nextFavorite
+    ? await api.POST('/api/v1/participants/{participant_id}/favorite', { params })
+    : await api.DELETE('/api/v1/participants/{participant_id}/favorite', { params })
+  const payload = unwrap(result)
+  return {
+    supporters_count: payload.supporters_count,
+    created: payload.created,
+  }
+}
+
+/** is_favorite с учётом локального избранного гостя. */
+export function withLocalFavoriteFlag(
+  participantId: number,
+  isFavoriteFromApi: boolean,
+): boolean {
+  if (getAccessToken()) {
+    return isFavoriteFromApi
+  }
+  return isLocalFavorite(participantId)
 }
