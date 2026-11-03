@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Separator, SimpleCell, Spinner } from '@vkontakte/vkui'
 import {
@@ -9,6 +9,12 @@ import {
 } from '../../api/devScenarios.ts'
 import { ApiError } from '../../api/client.ts'
 import { enableDevKineticPolling } from '../../lib/devKinetic.ts'
+import {
+  canStartDevKinetic,
+  getDevKineticWaitMs,
+  setActiveDevScenario,
+  subscribeDevScenarioState,
+} from '../../lib/devScenarioState.ts'
 
 type DevScenariosMenuProps = {
   onClose: () => void
@@ -30,10 +36,31 @@ function errorMessage(error: unknown): string {
   return 'Не удалось выполнить действие'
 }
 
+function kineticSubtitle(waitMs: number, canMove: boolean): string {
+  if (canMove) {
+    return `только live · device_id ${DEV_KINETIC_DEVICE_ID}`
+  }
+  if (waitMs > 0) {
+    return `ждём БД… ${Math.ceil(waitMs / 1000)} с`
+  }
+  return 'сначала сценарий «Гонка идёт»'
+}
+
 /** Пункты демо-сценариев в меню карты — только DEV-сборка. */
 export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
   const queryClient = useQueryClient()
   const [pending, setPending] = useState<PendingAction>(null)
+  const [nowMs, setNowMs] = useState(() => Date.now())
+
+  useEffect(() => subscribeDevScenarioState(() => setNowMs(Date.now())), [])
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNowMs(Date.now()), 250)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const waitMs = getDevKineticWaitMs(nowMs)
+  const canMove = canStartDevKinetic(nowMs)
 
   const scenarioMutation = useMutation({
     mutationFn: applyDevScenario,
@@ -41,8 +68,13 @@ export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
       setPending(name)
     },
     onSuccess: async (_data, name) => {
+      setActiveDevScenario(name)
       await queryClient.invalidateQueries()
-      onNotice(`Сценарий: ${SCENARIO_LABELS[name]}`)
+      if (name === 'live') {
+        onNotice('Сценарий: Гонка идёт. Подождите ~6 с, затем «Движение Волкова»')
+      } else {
+        onNotice(`Сценарий: ${SCENARIO_LABELS[name]}`)
+      }
       onClose()
     },
     onError: (error) => {
@@ -93,10 +125,13 @@ export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
         </SimpleCell>
       ))}
       <SimpleCell
-        disabled={busy}
+        disabled={busy || !canMove}
         indicator={pending === 'move' ? <Spinner size="s" /> : undefined}
-        subtitle={`device_id ${DEV_KINETIC_DEVICE_ID}`}
+        subtitle={kineticSubtitle(waitMs, canMove)}
         onClick={() => {
+          if (!canMove) {
+            return
+          }
           moveMutation.mutate()
         }}
       >

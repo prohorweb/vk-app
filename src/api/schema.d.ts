@@ -172,6 +172,10 @@ export interface paths {
          *
          *     Учитываются этапы с publication=provisional|official.
          *     Draft-черновики не показываются.
+         *
+         *     Опциональные фильтры:
+         *     - `discipline_id` — показать только участников указанной дисциплины
+         *     - `season_id` — показать этапы указанного сезона (по умолчанию активный сезон)
          */
         get: operations["standings_api_v1_results_standings_get"];
         put?: never;
@@ -195,6 +199,9 @@ export interface paths {
          *
          *     Если этап существует, но результаты не опубликованы (draft),
          *     возвращается 200 с publication=draft и пустым rows.
+         *
+         *     Опциональный фильтр:
+         *     - `discipline_id` — показать только участников указанной дисциплины
          */
         get: operations["stage_protocol_api_v1_results_stage__stage_id__get"];
         put?: never;
@@ -215,6 +222,10 @@ export interface paths {
         /**
          * Таблица лидеров
          * @description Таблица лидеров.
+         *
+         *     Опциональные фильтры:
+         *     - `discipline_id` — показать только участников указанной дисциплины
+         *     - `season_id` — показать этапы указанного сезона (по умолчанию активный сезон)
          */
         get: operations["leaderboard_api_v1_results_leaderboard_get"];
         put?: never;
@@ -997,6 +1008,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/dev/scenarios/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Scenarios
+         * @description Возвращает список доступных сценариев для кнопок во фронте
+         */
+        get: operations["list_scenarios_api_v1_dev_scenarios__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dev/scenarios/{scenario_name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Switch Scenario
+         * @description Переключает состояние приложения на указанный сценарий
+         */
+        post: operations["switch_scenario_api_v1_dev_scenarios__scenario_name__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dev/scenarios/move/{device_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Demo Movement
+         * @description Запускает фоновое движение указанного трекера (для показа)
+         */
+        post: operations["start_demo_movement_api_v1_dev_scenarios_move__device_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1375,6 +1446,12 @@ export interface components {
             participant_name: string;
             /** Participant Number */
             participant_number: number;
+            /** Discipline Id */
+            discipline_id?: number | null;
+            /** Discipline Code */
+            discipline_code?: string | null;
+            /** Discipline Name */
+            discipline_name?: string | null;
             /** Position */
             position: number;
             /** Final Time Seconds */
@@ -2119,6 +2196,12 @@ export interface components {
             participant_name: string;
             /** Participant Number */
             participant_number: number;
+            /** Discipline Id */
+            discipline_id?: number | null;
+            /** Discipline Code */
+            discipline_code?: string | null;
+            /** Discipline Name */
+            discipline_name?: string | null;
             /** Start Time */
             start_time?: string | null;
             /** Finish Time */
@@ -2235,6 +2318,12 @@ export interface components {
             participant_name: string;
             /** Participant Number */
             participant_number: number;
+            /** Discipline Id */
+            discipline_id?: number | null;
+            /** Discipline Code */
+            discipline_code?: string | null;
+            /** Discipline Name */
+            discipline_name?: string | null;
             /**
              * Total Penalty Seconds
              * @default 0
@@ -2738,7 +2827,10 @@ export interface operations {
     };
     standings_api_v1_results_standings_get: {
         parameters: {
-            query?: never;
+            query?: {
+                discipline_id?: number | null;
+                season_id?: number | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2754,11 +2846,22 @@ export interface operations {
                     "application/json": components["schemas"]["RaceStandings"];
                 };
             };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
     };
     stage_protocol_api_v1_results_stage__stage_id__get: {
         parameters: {
-            query?: never;
+            query?: {
+                discipline_id?: number | null;
+            };
             header?: never;
             path: {
                 stage_id: number;
@@ -2798,6 +2901,8 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
+                discipline_id?: number | null;
+                season_id?: number | null;
             };
             header?: never;
             path?: never;
@@ -4348,6 +4453,90 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OfficialMarkResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_scenarios_api_v1_dev_scenarios__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    switch_scenario_api_v1_dev_scenarios__scenario_name__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_demo_movement_api_v1_dev_scenarios_move__device_id__post: {
+        parameters: {
+            query?: {
+                steps?: number;
+            };
+            header?: never;
+            path: {
+                device_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

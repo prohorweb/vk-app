@@ -113,8 +113,8 @@ export function MapSummarySheet({
   const stagesQuery = usePublicStagesQuery()
   const disciplinesQuery = useDisciplinesQuery()
   const participantsQuery = useParticipantsQuery({ disciplineId })
-  const protocolsQuery = useProtocolsQuery()
-  const standingsQuery = useStandingsQuery()
+  const protocolsQuery = useProtocolsQuery(disciplineId)
+  const standingsQuery = useStandingsQuery(disciplineId)
 
   const stages = useMemo(() => stagesQuery.data ?? [], [stagesQuery.data])
   const disciplines = useMemo(() => disciplinesQuery.data ?? [], [disciplinesQuery.data])

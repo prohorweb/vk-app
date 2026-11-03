@@ -191,14 +191,34 @@ export function useSupportersQuery(id: number | undefined) {
   })
 }
 
-export async function fetchStandings(): Promise<RaceStandings> {
-  const result = await api.GET('/api/v1/results/standings')
+type ResultsFilters = {
+  disciplineId?: number | null
+  seasonId?: number | null
+}
+
+export async function fetchStandings(filters: ResultsFilters = {}): Promise<RaceStandings> {
+  const result = await api.GET('/api/v1/results/standings', {
+    params: {
+      query: {
+        discipline_id: filters.disciplineId ?? undefined,
+        season_id: filters.seasonId ?? undefined,
+      },
+    },
+  })
   return unwrap(result)
 }
 
-export async function fetchStageProtocol(stageId: number): Promise<StageProtocol | null> {
+export async function fetchStageProtocol(
+  stageId: number,
+  filters: Pick<ResultsFilters, 'disciplineId'> = {},
+): Promise<StageProtocol | null> {
   const result = await api.GET('/api/v1/results/stage/{stage_id}', {
-    params: { path: { stage_id: stageId } },
+    params: {
+      path: { stage_id: stageId },
+      query: {
+        discipline_id: filters.disciplineId ?? undefined,
+      },
+    },
   })
   if (result.response.status === 404) {
     return null
@@ -206,8 +226,13 @@ export async function fetchStageProtocol(stageId: number): Promise<StageProtocol
   return unwrap(result)
 }
 
-export async function fetchProtocolsForStages(stages: StagePublic[]): Promise<StageProtocol[]> {
-  const protocols = await Promise.all(stages.map((stage) => fetchStageProtocol(stage.id)))
+export async function fetchProtocolsForStages(
+  stages: StagePublic[],
+  filters: Pick<ResultsFilters, 'disciplineId'> = {},
+): Promise<StageProtocol[]> {
+  const protocols = await Promise.all(
+    stages.map((stage) => fetchStageProtocol(stage.id, filters)),
+  )
   const order = new Map(stages.map((stage) => [stage.id, stage.order_index]))
   return protocols
     .filter(
@@ -217,10 +242,13 @@ export async function fetchProtocolsForStages(stages: StagePublic[]): Promise<St
     .sort((left, right) => (order.get(left.stage_id) ?? 0) - (order.get(right.stage_id) ?? 0))
 }
 
-export function useStageProtocolQuery(stageId: number | null) {
+export function useStageProtocolQuery(
+  stageId: number | null,
+  disciplineId: number | null = null,
+) {
   return useQuery({
-    queryKey: ['results', 'protocol', stageId],
-    queryFn: () => fetchStageProtocol(stageId ?? 0),
+    queryKey: ['results', 'protocol', stageId, disciplineId],
+    queryFn: () => fetchStageProtocol(stageId ?? 0, { disciplineId }),
     enabled: stageId !== null,
   })
 }
@@ -268,20 +296,24 @@ export function useSupportersRatingQuery() {
   })
 }
 
-export function useStandingsQuery() {
+export function useStandingsQuery(disciplineId: number | null = null) {
+  const seasonQuery = useActiveSeasonQuery()
+  const seasonId = seasonQuery.data?.id ?? null
+
   return useQuery({
-    queryKey: ['results', 'standings'],
-    queryFn: fetchStandings,
+    queryKey: ['results', 'standings', seasonId, disciplineId],
+    queryFn: () => fetchStandings({ seasonId, disciplineId }),
+    enabled: seasonQuery.isSuccess || seasonQuery.isError,
   })
 }
 
-export function useProtocolsQuery() {
+export function useProtocolsQuery(disciplineId: number | null = null) {
   const stagesQuery = usePublicStagesQuery()
   const stages = stagesQuery.data ?? []
 
   return useQuery({
-    queryKey: ['results', 'protocols', stages.map((stage) => stage.id)],
-    queryFn: () => fetchProtocolsForStages(stages),
+    queryKey: ['results', 'protocols', stages.map((stage) => stage.id), disciplineId],
+    queryFn: () => fetchProtocolsForStages(stages, { disciplineId }),
     enabled: stagesQuery.isSuccess,
   })
 }
