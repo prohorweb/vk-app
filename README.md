@@ -15,7 +15,7 @@
 | VK | vk-bridge, vk-bridge-react, vk-mini-apps-router (hash-роутинг панелей) |
 | Данные | TanStack Query 5 + persist в `localStorage`, openapi-fetch |
 | Контракт API | `docs/openapi.json` → `src/api/schema.d.ts` (`npm run gen:api`, openapi-typescript) |
-| Карта | VK Карты / mmr-gl через адаптер `MapView` (`VITE_VK_MAPS_KEY`; без ключа — заглушка) |
+| Карта | Yandex Maps JS API 2.1 через адаптер `MapView` → `YandexMapView` (при сбое SDK — PNG-заглушка) |
 | Бэкенд (отдельный репо в `backend/`) | FastAPI, async SQLAlchemy 2, Alembic, PostgreSQL 16, Redis 7, Celery, Poetry |
 
 ## Приёмы
@@ -23,7 +23,7 @@
 - **Контракт первичен.** Типы только из сгенерированной схемы; `schema.d.ts` руками не правят. Поля API не выдумывают.
 - **Данные через `src/api` + TanStack Query.** Моки — fallback при недоступности API, не основной источник.
 - **Офлайн.** Persisted cache: показывают последние данные и подписывают время обновления.
-- **Карта за интерфейсом `MapView`.** Движок можно заменить; панели не ходят в mmr-gl напрямую.
+- **Карта за интерфейсом `MapView`.** Сейчас движок — Yandex Maps; панели не импортируют SDK напрямую (`YandexMapView`, `yandexSdk`).
 - **Фильтры карты.** Дисциплина — query на сервер (`discipline_ids`); «Мои фавориты» — клиентское пересечение с `favorites/ids` (общий кэш карты не ломают).
 - **UI на VKUI.** Свои стили — CSS-переменные `--avacha-*` и токены VKUI; цвета/размеры не хардкодят. Светлая тема, акцент `#045890`.
 - **Только функциональные компоненты и хуки**, без `any`.
