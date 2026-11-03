@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Icon24ErrorCircleOutline } from '@vkontakte/icons'
-import { Button, Panel, PanelHeader } from '@vkontakte/vkui'
+import { Button, Panel, PanelHeader, Snackbar } from '@vkontakte/vkui'
 import { findMapMarker } from '../api/map.ts'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
 import {
@@ -53,6 +53,7 @@ export function MapPanel({ id }: MapPanelProps) {
   const [disciplineFilterOpen, setDisciplineFilterOpen] = useState(false)
   const [favoritesFilterOpen, setFavoritesFilterOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [devNotice, setDevNotice] = useState<string | null>(null)
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() =>
     readMapMarkerFromUrl(),
   )
@@ -271,7 +272,12 @@ export function MapPanel({ id }: MapPanelProps) {
             setSelectedMarkerId(null)
           }}
         />
-        <RouteMapMenu open={menuOpen} onClose={() => setMenuOpen(false)} variant="popover" />
+        <RouteMapMenu
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          variant="popover"
+          onDevNotice={import.meta.env.DEV ? setDevNotice : undefined}
+        />
       </div>
       {showStale ? (
         <NoticeCard
@@ -280,6 +286,9 @@ export function MapPanel({ id }: MapPanelProps) {
           text={`Последнее обновление ${formatFullDateTime(lastUpdatedAt)}`}
           onClose={() => setStaleDismissedAt(lastUpdatedAt)}
         />
+      ) : null}
+      {devNotice ? (
+        <Snackbar onClose={() => setDevNotice(null)}>{devNotice}</Snackbar>
       ) : null}
     </Panel>
   )

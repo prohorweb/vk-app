@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   keepPreviousData,
   useMutation,
@@ -22,6 +23,10 @@ import type {
   SeasonPublic,
   DisciplinePublic,
 } from '../types/index.ts'
+import {
+  getMapPositionsRefetchInterval,
+  subscribeDevKinetic,
+} from '../lib/devKinetic.ts'
 import { api, OfflineError, unwrap } from './client.ts'
 import {
   fetchFavoriteIds,
@@ -311,12 +316,24 @@ export function useTrackPointsQuery() {
   })
 }
 
+/** demo kinetic: при активном move polling ~3 с вместо обычных 120 с. */
+function useMapMarkersRefetchInterval(): number {
+  const [intervalMs, setIntervalMs] = useState(() =>
+    getMapPositionsRefetchInterval(MAP_MARKERS_REFETCH_MS),
+  )
+  useEffect(() => subscribeDevKinetic(() => {
+    setIntervalMs(getMapPositionsRefetchInterval(MAP_MARKERS_REFETCH_MS))
+  }), [])
+  return intervalMs
+}
+
 export function useStageMapPositionsQuery(stageId: number, disciplineId: number | null = null) {
   const disciplineIds = disciplineId === null ? null : [disciplineId]
+  const refetchInterval = useMapMarkersRefetchInterval()
   return useQuery({
     queryKey: ['map', 'positions', stageId, disciplineId],
     queryFn: () => fetchStageMapPositions(stageId, disciplineIds),
-    refetchInterval: MAP_MARKERS_REFETCH_MS,
+    refetchInterval,
     placeholderData: keepPreviousData,
   })
 }

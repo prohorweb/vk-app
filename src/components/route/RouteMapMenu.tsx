@@ -1,14 +1,21 @@
 import { Card, SimpleCell } from '@vkontakte/vkui'
 import { routeMapAttribution, routeOverflowMenuItems } from '../../api/mocks/route.ts'
+import { DevScenariosMenu } from '../map/DevScenariosMenu.tsx'
 
 type RouteMapMenuProps = {
   open: boolean
   onClose: () => void
   /** 'sheet' — шторка снизу с затемнением, 'popover' — список над кнопкой без затемнения. */
   variant?: 'sheet' | 'popover'
+  onDevNotice?: (message: string) => void
 }
 
-export function RouteMapMenu({ open, onClose, variant = 'sheet' }: RouteMapMenuProps) {
+export function RouteMapMenu({
+  open,
+  onClose,
+  variant = 'sheet',
+  onDevNotice,
+}: RouteMapMenuProps) {
   if (!open) {
     return null
   }
@@ -39,6 +46,9 @@ export function RouteMapMenu({ open, onClose, variant = 'sheet' }: RouteMapMenuP
             {label}
           </SimpleCell>
         ))}
+        {import.meta.env.DEV && onDevNotice ? (
+          <DevScenariosMenu onClose={onClose} onNotice={onDevNotice} />
+        ) : null}
       </Card>
     </div>
   )
