@@ -13,7 +13,10 @@ export default defineConfig(({ mode }) => {
         ? undefined
         : {
             '/api': {
-              target: 'http://127.0.0.1:8000',
+              // In compose set VITE_DEV_PROXY_TARGET=http://api:8000
+              target:
+                process.env.VITE_DEV_PROXY_TARGET?.trim() ||
+                'http://127.0.0.1:8000',
               changeOrigin: true,
             },
           },
