@@ -71,7 +71,7 @@ export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
       setActiveDevScenario(name)
       await queryClient.invalidateQueries()
       if (name === 'live') {
-        onNotice('Сценарий: Гонка идёт. Подождите ~6 с, затем «Движение Волкова»')
+        onNotice('Сценарий: Гонка идёт. Подождите ~6 с, затем «Движение Дорохова»')
       } else {
         onNotice(`Сценарий: ${SCENARIO_LABELS[name]}`)
       }
@@ -93,7 +93,7 @@ export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
     onSuccess: async () => {
       enableDevKineticPolling()
       await queryClient.invalidateQueries({ queryKey: ['map', 'positions'] })
-      onNotice('Движение Волкова запущено')
+      onNotice('Движение Дорохова запущено')
       onClose()
     },
     onError: (error) => {
@@ -135,7 +135,7 @@ export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
           moveMutation.mutate()
         }}
       >
-        Движение Волкова
+        Движение Дорохова
       </SimpleCell>
     </>
   )

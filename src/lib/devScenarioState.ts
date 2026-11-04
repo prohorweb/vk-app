@@ -27,7 +27,7 @@ export function setActiveDevScenario(name: DevScenarioName): void {
   notify()
 }
 
-/** Движение Волкова только в live и после settle БД. */
+/** Движение Дорохова только в live и после settle БД. */
 export function canStartDevKinetic(nowMs = Date.now()): boolean {
   return activeScenario === 'live' && nowMs >= liveReadyAtMs
 }

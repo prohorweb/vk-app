@@ -3,7 +3,7 @@ import { ApiError, OfflineError, apiBaseUrl, hasApiUrl } from './client.ts'
 
 export type DevScenarioName = 'upcoming' | 'live' | 'finished'
 
-/** В сценарии `live` у Волкова (№7) device_id = 7. */
+/** В сценарии `live` у Дорохова (№7) device_id = 7. */
 export const DEV_KINETIC_DEVICE_ID = 7
 
 async function postDevPath(pathSuffix: string): Promise<void> {
