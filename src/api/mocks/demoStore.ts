@@ -137,13 +137,15 @@ export function mockSeason(): SeasonPublic | null {
   return structuredClone(bundle().season)
 }
 
-export function mockStages(_seasonId: number): StagePublic[] {
+export function mockStages(seasonId: number): StagePublic[] {
+  void seasonId
   return structuredClone(bundle().stages).sort(
     (a, b) => a.order_index - b.order_index || a.number - b.number,
   )
 }
 
-export function mockDisciplines(_seasonId: number): DisciplinePublic[] {
+export function mockDisciplines(seasonId: number): DisciplinePublic[] {
+  void seasonId
   return structuredClone(bundle().disciplines).sort(
     (a, b) => a.sort_order - b.sort_order || a.id - b.id,
   )
