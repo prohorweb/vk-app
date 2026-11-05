@@ -36,9 +36,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    # Без environment github-pages: иначе Deployment branches
+    # блокирует ветку deploy (правило «только protected / selected»).
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
