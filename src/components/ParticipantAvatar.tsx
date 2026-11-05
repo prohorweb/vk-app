@@ -1,4 +1,5 @@
 import { guessGender, type PersonGender } from '../lib/gender.ts'
+import { resolvePublicUrl } from '../lib/publicImage.ts'
 import { Picture } from './Picture.tsx'
 
 type Hairstyle = 'short' | 'long' | 'bun'
@@ -73,9 +74,10 @@ type ParticipantAvatarProps = {
 export function ParticipantAvatar({ id, name, src, className }: ParticipantAvatarProps) {
   const alt = `Фото участника ${name}`
   const classes = ['participant-avatar', className].filter(Boolean).join(' ')
+  const resolved = resolvePublicUrl(src)
 
-  if (src) {
-    return <Picture className={classes} src={src} alt={alt} ratio="1 / 1" />
+  if (resolved) {
+    return <Picture className={classes} src={resolved} alt={alt} ratio="1 / 1" />
   }
 
   return (
@@ -93,9 +95,10 @@ type ParticipantCoverProps = {
 
 export function ParticipantCover({ id, name, src }: ParticipantCoverProps) {
   const alt = `Фото участника ${name}`
+  const resolved = resolvePublicUrl(src)
 
-  if (src) {
-    return <Picture className="participant-card__photo" src={src} alt={alt} ratio="16 / 9" />
+  if (resolved) {
+    return <Picture className="participant-card__photo" src={resolved} alt={alt} ratio="16 / 9" />
   }
 
   const look = lookFor(id, guessGender(name))

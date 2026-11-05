@@ -11,6 +11,7 @@ import coverImage from '../assets/start/bg.jpg'
 import { useFavoriteParticipantsQuery, useMyProfileQuery } from '../api/queries.ts'
 import { FavoriteParticipantCell } from '../components/profile/FavoriteParticipantCell.tsx'
 import { readNotificationSettings } from '../lib/notificationSettings.ts'
+import { resolvePublicUrl } from '../lib/publicImage.ts'
 import { PATH } from '../routes.ts'
 
 type ProfilePanelProps = {
@@ -45,7 +46,11 @@ export function ProfilePanel({ id }: ProfilePanelProps) {
           </div>
           <div className="profile-hero__row">
             {profile?.photo_url ? (
-              <img className="profile-hero__avatar" src={profile.photo_url} alt="" />
+              <img
+                className="profile-hero__avatar"
+                src={resolvePublicUrl(profile.photo_url) ?? profile.photo_url}
+                alt=""
+              />
             ) : (
               <span className="profile-hero__avatar profile-hero__avatar--placeholder" aria-hidden>
                 {initials(displayName)}
