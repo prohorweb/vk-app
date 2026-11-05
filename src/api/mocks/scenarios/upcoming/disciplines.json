@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "code": "ski",
+    "name": "Лыжи",
+    "sort_order": 0
+  },
+  {
+    "id": 2,
+    "code": "sled_8",
+    "name": "Нарта 8",
+    "sort_order": 1
+  },
+  {
+    "id": 3,
+    "code": "sled_8plus",
+    "name": "Нарта более 8",
+    "sort_order": 2
+  }
+]

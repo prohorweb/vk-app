@@ -1,5 +1,6 @@
 import { Card, SimpleCell } from '@vkontakte/vkui'
 import { routeMapAttribution, routeOverflowMenuItems } from '../../api/mocks/route.ts'
+import { showDevScenariosMenu } from '../../api/mocks/useMockApi.ts'
 import { DevScenariosMenu } from '../map/DevScenariosMenu.tsx'
 
 type RouteMapMenuProps = {
@@ -46,7 +47,7 @@ export function RouteMapMenu({
             {label}
           </SimpleCell>
         ))}
-        {import.meta.env.DEV && onDevNotice ? (
+        {showDevScenariosMenu && onDevNotice ? (
           <DevScenariosMenu onClose={onClose} onNotice={onDevNotice} />
         ) : null}
       </Card>

@@ -1,0 +1,23 @@
+[
+  {
+    "participant_id": 2,
+    "name": "Везунчикова Наталья",
+    "number": 2,
+    "supporters_count": 1,
+    "delta_24h": 1
+  },
+  {
+    "participant_id": 5,
+    "name": "Комсомолева Ирина",
+    "number": 5,
+    "supporters_count": 1,
+    "delta_24h": 1
+  },
+  {
+    "participant_id": 8,
+    "name": "Романов Алексей",
+    "number": 8,
+    "supporters_count": 1,
+    "delta_24h": 1
+  }
+]

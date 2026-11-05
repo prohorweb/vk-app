@@ -4,7 +4,9 @@ import { useAdaptivity, useAppearance, useInsets } from '@vkontakte/vk-bridge-re
 import { AdaptivityProvider, AppRoot, Banner, ConfigProvider } from '@vkontakte/vkui'
 import { signInWithVk } from './api/auth.ts'
 import { hasApiUrl } from './api/client.ts'
+import { useMockApi } from './api/mocks/useMockApi.ts'
 import { useBrowserAdaptivity } from './hooks/useBrowserAdaptivity.ts'
+import { setActiveDevScenario } from './lib/devScenarioState.ts'
 import { transformVKBridgeAdaptivity } from './lib/transformVKBridgeAdaptivity.ts'
 
 type AppConfigProps = {
@@ -32,6 +34,11 @@ export function AppConfig({ children }: AppConfigProps) {
     : browserAdaptivity
 
   useEffect(() => {
+    if (useMockApi) {
+      // Presentation default: live fixtures; kinetic available immediately.
+      setActiveDevScenario('live', 0)
+      return
+    }
     void signInWithVk().catch(() => {
       // Вне VK авторизация не проходит — экран работает на публичном API.
     })
@@ -46,7 +53,7 @@ export function AppConfig({ children }: AppConfigProps) {
       <AdaptivityProvider {...adaptivity}>
         <AppRoot mode="full" safeAreaInsets={insets} className={inClient ? undefined : 'app-frame'}>
           <div className="app-shell">
-            {!hasApiUrl ? (
+            {!hasApiUrl && !useMockApi ? (
               <Banner title="Адрес API не задан" subtitle="Укажите VITE_API_URL в файле .env" />
             ) : null}
             <div className="app-shell__body">{children}</div>

@@ -5,6 +5,8 @@ import {
 } from '../lib/localFavorites.ts'
 import type { FavoriteIdsResponse, ParticipantListItem, UserProfile } from '../types/index.ts'
 import { api, ApiError, isClientApiError, unwrap } from './client.ts'
+import { mockParticipants } from './mocks/demoStore.ts'
+import { useMockApi } from './mocks/useMockApi.ts'
 import { getAccessToken } from './token.ts'
 
 /** Профиль текущего пользователя. Без токена — null (гость). */
@@ -55,10 +57,13 @@ export async function fetchFavoriteParticipants(): Promise<ParticipantListItem[]
   if (ids.length === 0) {
     return []
   }
-  const result = await api.GET('/api/v1/participants', {
-    params: { query: { sort: 'bib' } },
-  })
-  const participants = unwrap(result)
+  const participants = useMockApi
+    ? mockParticipants({ sort: 'bib' })
+    : unwrap(
+        await api.GET('/api/v1/participants', {
+          params: { query: { sort: 'bib' } },
+        }),
+      )
   const byId = new Map(participants.map((item) => [item.id, item]))
   return ids.flatMap((id) => {
     const item = byId.get(id)

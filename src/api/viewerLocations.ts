@@ -1,5 +1,7 @@
 import type { ViewerLocationCategory, ViewerLocationItem } from '../types/index.ts'
 import { api, isClientApiError, unwrap } from './client.ts'
+import { mockViewerLocations } from './mocks/demoStore.ts'
+import { useMockApi } from './mocks/useMockApi.ts'
 import { mockSpectatorLocations, type SpectatorLocation } from './mocks/viewerLocations.ts'
 
 /** Модель площадки для экрана: API-поля в camelCase плюс признак источника. */
@@ -71,6 +73,12 @@ function toSpectatorLocation(item: ViewerLocationItem): SpectatorLocation {
 
 /** Публичный справочник зрительских площадок. Пустой ответ — это данные, а не повод для мока. */
 export async function fetchSpectatorLocations(): Promise<SpectatorLocation[]> {
+  if (useMockApi) {
+    return mockViewerLocations().map((item) => ({
+      ...toSpectatorLocation(item),
+      source: 'mock',
+    }))
+  }
   if (!navigator.onLine) {
     return mockSpectatorLocations
   }

@@ -20,6 +20,10 @@ export class ApiError extends Error {
 }
 
 function readApiBaseUrl(): string | undefined {
+  // Mock presentation (GitHub Pages): no real API host required.
+  if (import.meta.env.VITE_USE_MOCK === 'true') {
+    return ''
+  }
   const value = import.meta.env.VITE_API_URL?.trim()
   if (value) {
     return value.replace(/\/$/, '')

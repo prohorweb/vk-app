@@ -2693,7 +2693,7 @@ html.app-hide-tabbar .app-tabbar {
 
 .results-table__head {
   display: grid;
-  grid-template-columns: 30px 1fr auto;
+  grid-template-columns: 30px 40px 1fr auto;
   gap: 8px;
   padding: 8px 16px;
   background: var(--vkui--color_background_secondary);
@@ -2716,8 +2716,9 @@ html.app-hide-tabbar .app-tabbar {
 
 .results-row {
   display: grid;
-  grid-template-columns: 30px 1fr auto;
+  grid-template-columns: 30px 40px 1fr auto;
   gap: 8px;
+  align-items: start;
   padding: 12px 16px;
   border-top: 1px solid var(--vkui--color_separator_primary);
   cursor: pointer;
@@ -2728,11 +2729,15 @@ html.app-hide-tabbar .app-tabbar {
 }
 
 .results-row__num {
-  padding-top: 1px;
+  padding-top: 12px;
   color: var(--vkui--color_text_primary);
   font-size: 13px;
   line-height: 16px;
   letter-spacing: 0.2px;
+}
+
+.results-row__avatar {
+  margin-top: 0;
 }
 
 .results-row__main {

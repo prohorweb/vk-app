@@ -1,0 +1,38 @@
+{
+  "1": {
+    "stage_id": 1,
+    "stage_name": "Этап 1. б/к им. Фатьянова — Пиначево",
+    "publication": "draft",
+    "rows": []
+  },
+  "2": {
+    "stage_id": 2,
+    "stage_name": "Этап 2. Пиначево — Налычево",
+    "publication": "draft",
+    "rows": []
+  },
+  "3": {
+    "stage_id": 3,
+    "stage_name": "Этап 3. Налычево — кольцевой",
+    "publication": "draft",
+    "rows": []
+  },
+  "4": {
+    "stage_id": 4,
+    "stage_name": "Этап 4. Налычево — ночной",
+    "publication": "draft",
+    "rows": []
+  },
+  "5": {
+    "stage_id": 5,
+    "stage_name": "Этап 5. Налычево — Пиначево",
+    "publication": "draft",
+    "rows": []
+  },
+  "6": {
+    "stage_id": 6,
+    "stage_name": "Этап 6. Пиначево — б/к им. Фатьянова",
+    "publication": "draft",
+    "rows": []
+  }
+}

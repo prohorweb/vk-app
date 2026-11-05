@@ -1,0 +1,299 @@
+{
+  "stage_id": 2,
+  "items": [
+    {
+      "id": 1,
+      "number": 1,
+      "name": "Иванов Иван",
+      "stage_id": 2,
+      "discipline_id": 1,
+      "discipline": "Лыжи",
+      "status": "active",
+      "freshness_status": "fresh",
+      "position": {
+        "lat": 53.357535,
+        "lon": 158.392283,
+        "recorded_at": "2026-11-05T13:05:44.418034Z",
+        "average_speed_kmh": 0.4,
+        "km_from_start": 2.29
+      }
+    },
+    {
+      "id": 2,
+      "number": 2,
+      "name": "Везунчикова Наталья",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "active",
+      "freshness_status": "fresh",
+      "position": {
+        "lat": 53.363495,
+        "lon": 158.393782,
+        "recorded_at": "2026-11-05T13:02:44.418034Z",
+        "average_speed_kmh": 0.7,
+        "km_from_start": 4.58
+      }
+    },
+    {
+      "id": 3,
+      "number": 3,
+      "name": "Болдахиненко Роман",
+      "stage_id": 2,
+      "discipline_id": 2,
+      "discipline": "Нарта 8",
+      "status": "active",
+      "freshness_status": "fresh",
+      "position": {
+        "lat": 53.38116,
+        "lon": 158.417442,
+        "recorded_at": "2026-11-05T12:59:44.418034Z",
+        "average_speed_kmh": 1.1,
+        "km_from_start": 6.87
+      }
+    },
+    {
+      "id": 4,
+      "number": 4,
+      "name": "Ермоленко Антон",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "active",
+      "freshness_status": "fresh",
+      "position": {
+        "lat": 53.404367,
+        "lon": 158.441055,
+        "recorded_at": "2026-11-05T12:56:44.418034Z",
+        "average_speed_kmh": 1.4,
+        "km_from_start": 9.16
+      }
+    },
+    {
+      "id": 5,
+      "number": 5,
+      "name": "Комсомолева Ирина",
+      "stage_id": 2,
+      "discipline_id": 1,
+      "discipline": "Лыжи",
+      "status": "active",
+      "freshness_status": "fresh",
+      "position": {
+        "lat": 53.420717,
+        "lon": 158.455377,
+        "recorded_at": "2026-11-05T12:53:44.418034Z",
+        "average_speed_kmh": 1.8,
+        "km_from_start": 11.45
+      }
+    },
+    {
+      "id": 6,
+      "number": 6,
+      "name": "Харитонов Николай",
+      "stage_id": 2,
+      "discipline_id": 2,
+      "discipline": "Нарта 8",
+      "status": "active",
+      "freshness_status": "delayed",
+      "position": {
+        "lat": 53.428158,
+        "lon": 158.465275,
+        "recorded_at": "2026-11-05T12:50:44.418034Z",
+        "average_speed_kmh": 2.2,
+        "km_from_start": 13.75
+      }
+    },
+    {
+      "id": 7,
+      "number": 7,
+      "name": "Дорохов Кирилл",
+      "stage_id": 2,
+      "discipline_id": 2,
+      "discipline": "Нарта 8",
+      "status": "active",
+      "freshness_status": "delayed",
+      "position": {
+        "lat": 53.451933,
+        "lon": 158.62306,
+        "recorded_at": "2026-11-05T12:47:44.418034Z",
+        "average_speed_kmh": 5.7,
+        "km_from_start": 36.4
+      }
+    },
+    {
+      "id": 8,
+      "number": 8,
+      "name": "Романов Алексей",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "active",
+      "freshness_status": "delayed",
+      "position": {
+        "lat": 53.445558,
+        "lon": 158.498962,
+        "recorded_at": "2026-11-05T12:44:44.418034Z",
+        "average_speed_kmh": 2.9,
+        "km_from_start": 18.33
+      }
+    },
+    {
+      "id": 9,
+      "number": 9,
+      "name": "Егоров Павел",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "active",
+      "freshness_status": "delayed",
+      "position": {
+        "lat": 53.450062,
+        "lon": 158.51117,
+        "recorded_at": "2026-11-05T12:41:44.418034Z",
+        "average_speed_kmh": 3.3,
+        "km_from_start": 20.62
+      }
+    },
+    {
+      "id": 10,
+      "number": 10,
+      "name": "Евстигнеева Елена",
+      "stage_id": 2,
+      "discipline_id": 1,
+      "discipline": "Лыжи",
+      "status": "active",
+      "freshness_status": "delayed",
+      "position": {
+        "lat": 53.454957,
+        "lon": 158.521428,
+        "recorded_at": "2026-11-05T12:38:44.418034Z",
+        "average_speed_kmh": 3.6,
+        "km_from_start": 22.91
+      }
+    },
+    {
+      "id": 11,
+      "number": 11,
+      "name": "Алехнович Сергей",
+      "stage_id": 2,
+      "discipline_id": 2,
+      "discipline": "Нарта 8",
+      "status": "finished",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 12,
+      "number": 12,
+      "name": "Газманов Денис",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "finished",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 13,
+      "number": 13,
+      "name": "Левконевская Мария",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "finished",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 14,
+      "number": 14,
+      "name": "Кузенковский Виталий",
+      "stage_id": 2,
+      "discipline_id": 1,
+      "discipline": "Лыжи",
+      "status": "withdrawn",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 15,
+      "number": 15,
+      "name": "Свиридова Анна",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "registered",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 16,
+      "number": 16,
+      "name": "Кривогорницын Александр",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "registered",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 17,
+      "number": 17,
+      "name": "Короленко Алексей",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "registered",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 18,
+      "number": 18,
+      "name": "Литвякова Мария",
+      "stage_id": 2,
+      "discipline_id": 2,
+      "discipline": "Нарта 8",
+      "status": "registered",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 19,
+      "number": 19,
+      "name": "Федоренкова Алёна",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "registered",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 20,
+      "number": 20,
+      "name": "Новиков Сергей",
+      "stage_id": 2,
+      "discipline_id": 1,
+      "discipline": "Лыжи",
+      "status": "registered",
+      "freshness_status": "no_data",
+      "position": null
+    },
+    {
+      "id": 21,
+      "number": 21,
+      "name": "Светлогорский Андрей",
+      "stage_id": 2,
+      "discipline_id": 3,
+      "discipline": "Нарта более 8",
+      "status": "registered",
+      "freshness_status": "no_data",
+      "position": null
+    }
+  ],
+  "total": 21,
+  "limit": 500,
+  "offset": 0
+}

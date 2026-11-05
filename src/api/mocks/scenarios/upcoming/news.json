@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": 5,
+      "title": "Финиш гонки позади: итоги «Авачи 2027»",
+      "lead": "Кратко о событиях дня: финиш гонки позади: итоги «авачи 2027».",
+      "cover_url": null,
+      "source": "manual",
+      "stage_id": null,
+      "published_at": "2026-11-05T13:10:39.050553Z",
+      "is_important": false,
+      "is_pinned": false
+    },
+    {
+      "id": 3,
+      "title": "Победитель первого дня — неожиданный рывок",
+      "lead": "Кратко о событиях дня: победитель первого дня — неожиданный рывок.",
+      "cover_url": null,
+      "source": "manual",
+      "stage_id": null,
+      "published_at": "2026-11-04T13:10:39.050553Z",
+      "is_important": false,
+      "is_pinned": false
+    },
+    {
+      "id": 2,
+      "title": "Первый этап завершён: результаты и время лидеров",
+      "lead": "Кратко о событиях дня: первый этап завершён: результаты и время лидеров.",
+      "cover_url": null,
+      "source": "manual",
+      "stage_id": 1,
+      "published_at": "2026-11-03T13:10:39.050553Z",
+      "is_important": true,
+      "is_pinned": false
+    }
+  ],
+  "total": 3,
+  "limit": 50,
+  "offset": 0
+}

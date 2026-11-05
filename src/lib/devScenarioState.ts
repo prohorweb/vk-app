@@ -17,10 +17,14 @@ export function getActiveDevScenario(): DevScenarioName | null {
   return activeScenario
 }
 
-export function setActiveDevScenario(name: DevScenarioName): void {
+/** `settleMs` — пауза перед kinetic; для mock можно передать ~400. */
+export function setActiveDevScenario(
+  name: DevScenarioName,
+  settleMs: number = DEV_LIVE_SETTLE_MS,
+): void {
   activeScenario = name
   if (name === 'live') {
-    liveReadyAtMs = Date.now() + DEV_LIVE_SETTLE_MS
+    liveReadyAtMs = Date.now() + settleMs
   } else {
     liveReadyAtMs = 0
   }

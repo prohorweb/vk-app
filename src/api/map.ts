@@ -11,8 +11,14 @@ import type {
   MapTrack,
 } from '../map/mapTypes.ts'
 import { api, isClientApiError, OfflineError, unwrap } from './client.ts'
+import {
+  mockMapParticipants,
+  mockStageCheckpoints,
+  mockStageTrack,
+} from './mocks/demoStore.ts'
 import { getMapStageCheckpoints, getMapStageTrack } from './mocks/mapStage.ts'
 import { buildMapPositionsSnapshot } from './mocks/positions.ts'
+import { useMockApi } from './mocks/useMockApi.ts'
 
 const MAP_MARKERS_LIMIT = 500
 const DEFAULT_TRACK_COLOR = '#e64646'
@@ -92,6 +98,18 @@ export async function fetchStageMapPositions(
   stageId: number,
   disciplineIds?: number[] | null,
 ): Promise<MapPositionsSnapshot> {
+  if (useMockApi) {
+    const data = mockMapParticipants(stageId, disciplineIds)
+    const markers = data.items
+      .map(toMapPositionMarker)
+      .filter((marker): marker is MapPositionMarker => marker !== null)
+    return {
+      stageId: data.stage_id,
+      updatedAt: latestRecordedAt(markers),
+      markers,
+      source: 'mock',
+    }
+  }
   if (!navigator.onLine) {
     throw new OfflineError()
   }
@@ -126,6 +144,13 @@ export async function fetchStageMapPositions(
 }
 
 export async function fetchStageTrack(stageId: number): Promise<MapTrack> {
+  if (useMockApi) {
+    return {
+      id: `stage-${stageId}`,
+      coordinates: parseStageTrack(mockStageTrack(stageId)),
+      color: DEFAULT_TRACK_COLOR,
+    }
+  }
   if (!navigator.onLine) {
     throw new OfflineError()
   }
@@ -147,6 +172,9 @@ export async function fetchStageTrack(stageId: number): Promise<MapTrack> {
 }
 
 export async function fetchStageCheckpoints(stageId: number): Promise<MapCheckpoint[]> {
+  if (useMockApi) {
+    return mockStageCheckpoints(stageId).map(toMapCheckpoint)
+  }
   if (!navigator.onLine) {
     throw new OfflineError()
   }

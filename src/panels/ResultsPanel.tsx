@@ -28,6 +28,7 @@ import {
   useStandingsQuery,
 } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
+import { ParticipantAvatar } from '../components/ParticipantAvatar.tsx'
 import {
   disciplineLabel,
   formatCount,
@@ -526,6 +527,7 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
                         <div className="results-table">
                           <div className="results-table__head">
                             <span>п/п</span>
+                            <span aria-hidden />
                             <span>участник</span>
                             <span className="results-table__times">
                               <span>результат этапа</span>
@@ -558,6 +560,12 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
                                 }}
                               >
                                 <span className="results-row__num">{positionOf(row) ?? '—'}</span>
+                                <ParticipantAvatar
+                                  className="avatar-40 results-row__avatar"
+                                  id={row.participant.id}
+                                  name={row.participant.name}
+                                  src={row.participant.photo_url}
+                                />
                                 <div className="results-row__main">
                                   <p className="results-row__name">
                                     <span>{name.first}</span>

@@ -3,6 +3,7 @@ import { Icon24ErrorCircleOutline } from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, Snackbar } from '@vkontakte/vkui'
 import { findMapMarker } from '../api/map.ts'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
+import { showDevScenariosMenu } from '../api/mocks/useMockApi.ts'
 import {
   useDisciplinesQuery,
   useFavoriteIdsQuery,
@@ -276,7 +277,7 @@ export function MapPanel({ id }: MapPanelProps) {
           open={menuOpen}
           onClose={() => setMenuOpen(false)}
           variant="popover"
-          onDevNotice={import.meta.env.DEV ? setDevNotice : undefined}
+          onDevNotice={showDevScenariosMenu ? setDevNotice : undefined}
         />
       </div>
       {showStale ? (
@@ -288,7 +289,9 @@ export function MapPanel({ id }: MapPanelProps) {
         />
       ) : null}
       {devNotice ? (
-        <Snackbar onClose={() => setDevNotice(null)}>{devNotice}</Snackbar>
+        <Snackbar onClose={() => setDevNotice(null)} onClosed={() => setDevNotice(null)}>
+          {devNotice}
+        </Snackbar>
       ) : null}
     </Panel>
   )

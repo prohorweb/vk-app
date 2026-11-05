@@ -1,0 +1,107 @@
+{
+  "1": {
+    "participant_id": 1,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "2": {
+    "participant_id": 2,
+    "supporters_count": 1,
+    "is_favorite": false
+  },
+  "3": {
+    "participant_id": 3,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "4": {
+    "participant_id": 4,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "5": {
+    "participant_id": 5,
+    "supporters_count": 1,
+    "is_favorite": false
+  },
+  "6": {
+    "participant_id": 6,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "7": {
+    "participant_id": 7,
+    "supporters_count": 1,
+    "is_favorite": false
+  },
+  "8": {
+    "participant_id": 8,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "9": {
+    "participant_id": 9,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "10": {
+    "participant_id": 10,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "11": {
+    "participant_id": 11,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "12": {
+    "participant_id": 12,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "13": {
+    "participant_id": 13,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "14": {
+    "participant_id": 14,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "15": {
+    "participant_id": 15,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "16": {
+    "participant_id": 16,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "17": {
+    "participant_id": 17,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "18": {
+    "participant_id": 18,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "19": {
+    "participant_id": 19,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "20": {
+    "participant_id": 20,
+    "supporters_count": 0,
+    "is_favorite": false
+  },
+  "21": {
+    "participant_id": 21,
+    "supporters_count": 0,
+    "is_favorite": false
+  }
+}

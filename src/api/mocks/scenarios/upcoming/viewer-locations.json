@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "name": "Главная сцена",
+    "kind": "festival",
+    "category": "stages",
+    "glyph": "mic",
+    "lat": 53.096,
+    "lon": 158.637,
+    "address": "Камчатский край",
+    "description": "Концерты и главные события фестиваля",
+    "directions": null,
+    "travel_time_minutes": null,
+    "parking_info": "Бесплатная парковка у площадки.",
+    "facilities": [
+      "Парковка",
+      "Пункт обогрева",
+      "Кафе"
+    ],
+    "photo_url": null,
+    "first_arrival_planned_at": "2026-11-06T13:10:39.050553Z",
+    "safety_notes": ""
+  },
+  {
+    "id": 5,
+    "name": "Детская зона",
+    "kind": "festival",
+    "category": "kids",
+    "glyph": "smile",
+    "lat": 53.0949,
+    "lon": 158.6378,
+    "address": "Камчатский край",
+    "description": "Анимация и игры для детей",
+    "directions": null,
+    "travel_time_minutes": null,
+    "parking_info": "Бесплатная парковка у площадки.",
+    "facilities": [
+      "Парковка",
+      "Пункт обогрева",
+      "Кафе"
+    ],
+    "photo_url": null,
+    "first_arrival_planned_at": "2026-11-06T17:10:39.050553Z",
+    "safety_notes": ""
+  },
+  {
+    "id": 2,
+    "name": "Фотозона",
+    "kind": "festival",
+    "category": "areas",
+    "glyph": "image",
+    "lat": 53.0954,
+    "lon": 158.6362,
+    "address": "Камчатский край",
+    "description": "Оформленная площадка для фото",
+    "directions": null,
+    "travel_time_minutes": null,
+    "parking_info": "Бесплатная парковка у площадки.",
+    "facilities": [
+      "Парковка",
+      "Пункт обогрева",
+      "Кафе"
+    ],
+    "photo_url": null,
+    "first_arrival_planned_at": "2026-11-06T14:10:39.050553Z",
+    "safety_notes": ""
+  },
+  {
+    "id": 4,
+    "name": "Фудкорт",
+    "kind": "festival",
+    "category": "food",
+    "glyph": "food",
+    "lat": 53.0968,
+    "lon": 158.6364,
+    "address": "Камчатский край",
+    "description": "Горячее питание и напитки",
+    "directions": null,
+    "travel_time_minutes": null,
+    "parking_info": "Бесплатная парковка у площадки.",
+    "facilities": [
+      "Парковка",
+      "Пункт обогрева",
+      "Кафе"
+    ],
+    "photo_url": null,
+    "first_arrival_planned_at": "2026-11-06T16:10:39.050553Z",
+    "safety_notes": ""
+  },
+  {
+    "id": 3,
+    "name": "Этнозона",
+    "kind": "festival",
+    "category": "areas",
+    "glyph": "globe",
+    "lat": 53.0959,
+    "lon": 158.6356,
+    "address": "Камчатский край",
+    "description": "Традиционные ремёсла и выставки",
+    "directions": null,
+    "travel_time_minutes": null,
+    "parking_info": "Бесплатная парковка у площадки.",
+    "facilities": [
+      "Парковка",
+      "Пункт обогрева",
+      "Кафе"
+    ],
+    "photo_url": null,
+    "first_arrival_planned_at": "2026-11-06T15:10:39.050553Z",
+    "safety_notes": ""
+  }
+]

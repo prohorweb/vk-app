@@ -8,6 +8,7 @@ import {
   type DevScenarioName,
 } from '../../api/devScenarios.ts'
 import { ApiError } from '../../api/client.ts'
+import { useMockApi } from '../../api/mocks/useMockApi.ts'
 import { enableDevKineticPolling } from '../../lib/devKinetic.ts'
 import {
   canStartDevKinetic,
@@ -109,7 +110,10 @@ export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
   return (
     <>
       <Separator />
-      <SimpleCell disabled subtitle="Только ENV=dev на бэке">
+      <SimpleCell
+        disabled
+        subtitle={useMockApi ? 'Презентация на моках' : 'Только ENV=dev на бэке'}
+      >
         Демо
       </SimpleCell>
       {(Object.keys(SCENARIO_LABELS) as DevScenarioName[]).map((name) => (

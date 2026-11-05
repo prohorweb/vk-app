@@ -37,6 +37,21 @@ import {
 } from './favorites.ts'
 import { fetchStageCheckpoints, fetchStageMapPositions, fetchStageTrack } from './map.ts'
 import { trackPoints } from './mock.ts'
+import {
+  mockDisciplines,
+  mockFaq,
+  mockNews,
+  mockParticipant,
+  mockParticipants,
+  mockSchedule,
+  mockSeason,
+  mockStageProtocol,
+  mockStages,
+  mockStandings,
+  mockSupporters,
+  mockSupportersRating,
+} from './mocks/demoStore.ts'
+import { useMockApi } from './mocks/useMockApi.ts'
 import { fetchSpectatorLocations } from './viewerLocations.ts'
 
 const TRACK_REFETCH_MS = 2 * 60 * 1000
@@ -59,6 +74,9 @@ export function isListedStage(stage: { status: string }): boolean {
 export async function fetchParticipants(
   filters: ParticipantFilters = {},
 ): Promise<ParticipantListItem[]> {
+  if (useMockApi) {
+    return mockParticipants(filters)
+  }
   const search = filters.search?.trim()
   const result = await api.GET('/api/v1/participants', {
     params: {
@@ -73,6 +91,9 @@ export async function fetchParticipants(
 }
 
 export async function fetchParticipant(id: number): Promise<ParticipantDetail | null> {
+  if (useMockApi) {
+    return mockParticipant(id)
+  }
   const result = await api.GET('/api/v1/participants/{participant_id}', {
     params: { path: { participant_id: id } },
   })
@@ -83,6 +104,13 @@ export async function fetchParticipant(id: number): Promise<ParticipantDetail | 
 }
 
 export async function fetchSupporters(id: number): Promise<ParticipantSupporters> {
+  if (useMockApi) {
+    const payload = mockSupporters(id)
+    return {
+      ...payload,
+      is_favorite: withLocalFavoriteFlag(id, payload.is_favorite),
+    }
+  }
   const result = await api.GET('/api/v1/participants/{participant_id}/supporters', {
     params: { path: { participant_id: id } },
   })
@@ -94,6 +122,9 @@ export async function fetchSupporters(id: number): Promise<ParticipantSupporters
 }
 
 export async function fetchNews(): Promise<NewsPostListResponse> {
+  if (useMockApi) {
+    return mockNews()
+  }
   const result = await api.GET('/api/v1/content/news', {
     params: { query: { limit: 50, offset: 0 } },
   })
@@ -101,6 +132,9 @@ export async function fetchNews(): Promise<NewsPostListResponse> {
 }
 
 export async function fetchSchedule(stageId?: number | null): Promise<ScheduleEventListResponse> {
+  if (useMockApi) {
+    return mockSchedule(stageId)
+  }
   const result = await api.GET('/api/v1/content/schedule', {
     params: {
       query: {
@@ -114,6 +148,9 @@ export async function fetchSchedule(stageId?: number | null): Promise<ScheduleEv
 }
 
 export async function fetchActiveSeason(): Promise<SeasonPublic | null> {
+  if (useMockApi) {
+    return mockSeason()
+  }
   const result = await api.GET('/api/v1/directory/seasons/active')
   if (result.response.status === 404) {
     return null
@@ -122,6 +159,9 @@ export async function fetchActiveSeason(): Promise<SeasonPublic | null> {
 }
 
 export async function fetchPublicStages(seasonId: number): Promise<StagePublic[]> {
+  if (useMockApi) {
+    return mockStages(seasonId)
+  }
   const result = await api.GET('/api/v1/directory/stages', {
     params: { query: { season_id: seasonId } },
   })
@@ -131,6 +171,9 @@ export async function fetchPublicStages(seasonId: number): Promise<StagePublic[]
 }
 
 export async function fetchDisciplines(seasonId: number): Promise<DisciplinePublic[]> {
+  if (useMockApi) {
+    return mockDisciplines(seasonId)
+  }
   const result = await api.GET('/api/v1/directory/disciplines', {
     params: { query: { season_id: seasonId } },
   })
@@ -140,6 +183,9 @@ export async function fetchDisciplines(seasonId: number): Promise<DisciplinePubl
 }
 
 export async function fetchFaq(): Promise<FAQListResponse> {
+  if (useMockApi) {
+    return mockFaq()
+  }
   const result = await api.GET('/api/v1/content/faq', {
     params: { query: { limit: 50, offset: 0 } },
   })
@@ -197,6 +243,9 @@ type ResultsFilters = {
 }
 
 export async function fetchStandings(filters: ResultsFilters = {}): Promise<RaceStandings> {
+  if (useMockApi) {
+    return mockStandings(filters)
+  }
   const result = await api.GET('/api/v1/results/standings', {
     params: {
       query: {
@@ -212,6 +261,9 @@ export async function fetchStageProtocol(
   stageId: number,
   filters: Pick<ResultsFilters, 'disciplineId'> = {},
 ): Promise<StageProtocol | null> {
+  if (useMockApi) {
+    return mockStageProtocol(stageId, filters)
+  }
   const result = await api.GET('/api/v1/results/stage/{stage_id}', {
     params: {
       path: { stage_id: stageId },
@@ -254,6 +306,9 @@ export function useStageProtocolQuery(
 }
 
 export async function fetchSupportersRating(): Promise<SupporterRatingEntry[]> {
+  if (useMockApi) {
+    return mockSupportersRating()
+  }
   const result = await api.GET('/api/v1/participants/supporters/rating', {
     params: { query: { limit: 200 } },
   })
