@@ -68,7 +68,11 @@ VITE_USE_MOCK=true npm run build
 VITE_USE_MOCK=true npm run preview
 ```
 
-Публикация: push в `deploy` запускает workflow Pages → `https://prohorweb.github.io/vk-app/`.
+Публикация: push в `deploy` собирает моки и заливает артефакт в ветку `gh-pages`.
+
+В **Settings → Pages → Source**: `Deploy from a branch` → ветка **`gh-pages`** → папка **`/ (root)`** → Save.
+
+Сайт: `https://prohorweb.github.io/vk-app/`.
 
 На карте в меню «⋯» блок **Демо**:
 - «До старта» / «Гонка идёт» / «Финиш» — переключают фикстуры;
