@@ -85,6 +85,9 @@
   --vkui--color_text_accent: #3d8fd1;
   --vkui--color_icon_accent_themed: #3d8fd1;
   --vkui--color_text_accent_themed: #3d8fd1;
+  /* Вторичный текст/иконки VKUI в dark слишком бледные — поднимаем контраст. */
+  --vkui--color_text_secondary: #c2c5cc;
+  --vkui--color_icon_secondary: #c2c5cc;
   --avacha-warning-tint: #33200f;
   --avacha-icon-disabled: #4f5257;
   --avacha-results-bg: #1f272b;

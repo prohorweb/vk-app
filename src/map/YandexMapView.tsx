@@ -9,6 +9,11 @@ import type {
 } from './mapTypes.ts'
 import type { YmapsApi, YmapsLatLng, YmapsMap } from './yandexTypes.ts'
 import { PARTICIPANT_COLOR_BY_STATUS, TRACK_COLOR_BY_KIND } from './yandexColors.ts'
+import {
+  PARTICIPANT_MARKER_OFFSET,
+  PARTICIPANT_MARKER_SIZE,
+  participantMarkerHref,
+} from './participantMarkerPins.ts'
 import { PLACEMARK_PIN_OFFSET, PLACEMARK_PIN_SIZE, placemarkPinHref } from './placemarkPins.ts'
 
 /** Центр по умолчанию — Петропавловск-Камчатский. */
@@ -124,12 +129,15 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
 
   for (const marker of props.markers ?? []) {
     const label = marker.bib !== undefined ? String(marker.bib) : ''
+    const color = PARTICIPANT_COLOR_BY_STATUS[marker.status]
     const placemark = new ymaps.Placemark(
       [marker.lat, marker.lng],
-      { hintContent: label ? `№${label}` : '', iconContent: label },
+      { hintContent: label ? `№${label}` : '' },
       {
-        preset: 'islands#circleIcon',
-        iconColor: PARTICIPANT_COLOR_BY_STATUS[marker.status],
+        iconLayout: 'default#image',
+        iconImageHref: participantMarkerHref(label || '•', color),
+        iconImageSize: [...PARTICIPANT_MARKER_SIZE],
+        iconImageOffset: [...PARTICIPANT_MARKER_OFFSET],
         cursor: 'pointer',
       },
     )

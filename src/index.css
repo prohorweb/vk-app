@@ -636,6 +636,8 @@ body {
   border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--avacha-map-control-shadow);
+  /* Поверх карты secondary слишком бледный — берём primary. */
+  color: var(--vkui--color_icon_primary);
 }
 
 /* VKUI закладывает иконке padding 12px под кнопку 48px — для 36px ставим 6px, чтобы иконка встала по центру. */
@@ -675,6 +677,7 @@ body {
   border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--avacha-map-control-shadow);
+  color: var(--vkui--color_icon_primary);
 }
 
 .route-map-controls__menu.route-map-controls__btn--active.vkuiIconButton__host {
@@ -3532,9 +3535,10 @@ html.app-hide-tabbar .app-tabbar {
 
 .about-text {
   margin: 0 0 20px;
-  color: var(--vkui--color_text_secondary);
+  color: var(--vkui--color_text_primary);
   font-size: 15px;
   line-height: 22px;
+  font-weight: 500;
 }
 
 .about-gallery {
