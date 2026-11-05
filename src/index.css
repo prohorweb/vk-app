@@ -636,8 +636,12 @@ body {
   border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--avacha-map-control-shadow);
-  /* Поверх карты secondary слишком бледный — берём primary. */
-  color: var(--vkui--color_icon_primary);
+  /* Белые кнопки на карте: цвет иконок всегда как в light-теме. */
+  color: var(--avacha-map-control-icon);
+}
+
+.route-map-controls .vkuiIconButton__host .vkuiIcon {
+  color: inherit;
 }
 
 /* VKUI закладывает иконке padding 12px под кнопку 48px — для 36px ставим 6px, чтобы иконка встала по центру. */
@@ -677,7 +681,7 @@ body {
   border-radius: var(--avacha-map-control-radius);
   background: var(--vkui--color_background_contrast);
   box-shadow: var(--avacha-map-control-shadow);
-  color: var(--vkui--color_icon_primary);
+  color: var(--avacha-map-control-icon);
 }
 
 .route-map-controls__menu.route-map-controls__btn--active.vkuiIconButton__host {
@@ -696,8 +700,8 @@ body {
 }
 
 .route-map-controls__group .route-map-controls__btn--active.vkuiIconButton__host {
-  background: color-mix(in srgb, var(--vkui--color_background_accent_themed) 12%, transparent);
-  color: var(--vkui--color_icon_accent_themed);
+  background: color-mix(in srgb, var(--avacha-map-control-icon-active) 12%, transparent);
+  color: var(--avacha-map-control-icon-active);
 }
 
 /* Поповер выбора у кнопок тулбара: этапы и дисциплины на карте. */

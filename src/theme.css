@@ -10,6 +10,9 @@
   /* Кнопки управления картой: размер и радиус из макета «Карта». */
   --avacha-map-control-size: 36px;
   --avacha-map-control-radius: 8px;
+  /* Фон кнопок всегда светлый (contrast) — иконки как в light, даже в dark. */
+  --avacha-map-control-icon: #2c2d2e;
+  --avacha-map-control-icon-active: var(--avacha-brand-dark-blue);
   /* Тень кнопок из Figma («Button Map VK Avacha»): Dark/Elevation 1. */
   --avacha-map-control-shadow: 0 0 2px rgba(0, 0, 0, 0.1), 0 2px 2px rgba(0, 0, 0, 0.2);
   /* Высота карточки зума из макета: 36×77. */
