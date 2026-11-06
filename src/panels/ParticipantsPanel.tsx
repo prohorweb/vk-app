@@ -9,7 +9,13 @@ import {
 } from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, Radio, Search } from '@vkontakte/vkui'
 import { trackerGap } from '../api/gaps.ts'
-import { useDisciplinesQuery, useParticipantsQuery, useStandingsQuery } from '../api/queries.ts'
+import {
+  useDisciplinesQuery,
+  useParticipantsQuery,
+  usePublicStagesQuery,
+  useStageProtocolQuery,
+  useStandingsQuery,
+} from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
 import { BottomSheet } from '../components/BottomSheet.tsx'
 import { ParticipantAvatar } from '../components/ParticipantAvatar.tsx'
@@ -100,10 +106,18 @@ export function ParticipantsPanel({ id }: ParticipantsPanelProps) {
   const disciplines = disciplinesQuery.data ?? []
   const participantsQuery = useParticipantsQuery({ search: debouncedSearch, disciplineId })
   const standingsQuery = useStandingsQuery()
+  const stagesQuery = usePublicStagesQuery()
+  const activeStageId = (stagesQuery.data ?? []).find((stage) => stage.status === 'active')?.id ?? null
+  const activeProtocolQuery = useStageProtocolQuery(activeStageId)
   const participants = participantsQuery.data ?? []
   const positions = new Map(
     (standingsQuery.data?.rows ?? []).map((row) => [row.participant_id, row.position ?? null]),
   )
+  for (const row of activeProtocolQuery.data?.rows ?? []) {
+    if (row.position != null && positions.get(row.participant_id) == null) {
+      positions.set(row.participant_id, row.position)
+    }
+  }
   const groups = groupByDiscipline(participants, positions, sort, disciplines)
   const isLoading = participantsQuery.isLoading
   const isError = participantsQuery.isError

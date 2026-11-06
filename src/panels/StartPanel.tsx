@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Button, Checkbox, Link, Panel } from '@vkontakte/vkui'
+import { Button, Checkbox, Panel } from '@vkontakte/vkui'
 import startBg from '../assets/start/bg.jpg'
 import startLogo from '../assets/start/logo.png'
+import { applyDevScenario } from '../api/devScenarios.ts'
+import { applyStartNotificationConsent } from '../lib/notificationSettings.ts'
 import { isStartSeen, markStartConsent, markStartSeen } from '../lib/startGate.ts'
 import { PATH } from '../routes.ts'
-
-const POLICY_URL = 'https://vk.com/privacy'
 
 type StartPanelProps = {
   id: string
@@ -15,7 +16,8 @@ type StartPanelProps = {
 
 export function StartPanel({ id, onBegin }: StartPanelProps) {
   const routeNavigator = useRouteNavigator()
-  const [consentChecked, setConsentChecked] = useState(false)
+  const queryClient = useQueryClient()
+  const [pushChecked, setPushChecked] = useState(false)
   const [pending, setPending] = useState(false)
   const skipStartRedirected = useRef(false)
 
@@ -32,18 +34,31 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
   }
 
   const handleBegin = () => {
-    if (!consentChecked || pending) {
+    if (pending) {
       return
     }
     setPending(true)
-    try {
-      markStartConsent()
-      markStartSeen()
-      onBegin()
-      void routeNavigator.replace(PATH.map)
-    } finally {
-      setPending(false)
-    }
+    void (async () => {
+      try {
+        applyStartNotificationConsent(pushChecked)
+        if (pushChecked) {
+          markStartConsent()
+        }
+        // Сценарий 1: после старта — «до гонки ~3 мес», не finished/live.
+        try {
+          await applyDevScenario('upcoming')
+          sessionStorage.removeItem('avacha-vk-app.map-filters')
+          await queryClient.invalidateQueries()
+        } catch {
+          // Вне ENV=dev сценарии недоступны — идём на карту как есть.
+        }
+        markStartSeen()
+        onBegin()
+        void routeNavigator.replace(PATH.map)
+      } finally {
+        setPending(false)
+      }
+    })()
   }
 
   return (
@@ -68,20 +83,11 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
         </p>
         <Checkbox
           className="start-screen__consent"
-          checked={consentChecked}
-          onChange={(event) => setConsentChecked(event.target.checked)}
+          checked={pushChecked}
+          onChange={(event) => setPushChecked(event.target.checked)}
         >
           <span className="start-screen__consent-text">
-            Принимаю условия{' '}
-            <Link
-              className="start-screen__consent-link"
-              href={POLICY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(event) => event.stopPropagation()}
-            >
-              политики конфиденциальности
-            </Link>
+            Согласен(а) на получение push-уведомлений
           </span>
         </Checkbox>
         <Button
@@ -90,10 +96,10 @@ export function StartPanel({ id, onBegin }: StartPanelProps) {
           size="l"
           mode="primary"
           loading={pending}
-          disabled={!consentChecked || pending}
+          disabled={pending}
           onClick={handleBegin}
         >
-          Продолжить
+          Начать
         </Button>
       </div>
     </Panel>

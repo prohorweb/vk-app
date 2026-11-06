@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Panel, PanelHeader } from '@vkontakte/vkui'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
+import { usePublicStagesQuery } from '../api/queries.ts'
 import { RouteActiveBanner } from '../components/route/RouteActiveBanner.tsx'
 import { RouteFilterSheet } from '../components/route/RouteFilterSheet.tsx'
 import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
@@ -29,8 +30,15 @@ export function RoutePanel({ id }: RoutePanelProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [infoOpen, setInfoOpen] = useState(false)
   const [bannerDismissed, setBannerDismissed] = useState(false)
+  const stagesQuery = usePublicStagesQuery()
+  const selectedStageIsActive =
+    typeof mapFilter === 'number' &&
+    (stagesQuery.data ?? []).some(
+      (stage) => stage.number === mapFilter && stage.status === 'active',
+    )
 
-  const showStageBanner = mapFilter !== 'all' && !bannerDismissed
+  // Баннер только для реально идущего этапа — не для любого выбранного фильтра.
+  const showStageBanner = selectedStageIsActive && !bannerDismissed
 
   // Геометрия — те же этапы, что рисует главный экран: все этапы красным,
   // выбранный этап толще, остальные остаются жёлтыми.

@@ -52,6 +52,8 @@ export type MapPositionMarker = {
   lat: number
   status: TrackPointStatus
   recordedAt: string
+  kmFromStart: number | null
+  averageSpeedKmh: number | null
 }
 
 export type MapPositionsSource = 'api' | 'mock'

@@ -16,6 +16,8 @@ const rawMarkers: MapPositionMarker[] = [
     lat: 53.031,
     status: 'confirmed',
     recordedAt: '2026-02-10T10:16:00.000+03:00',
+    kmFromStart: 12.4,
+    averageSpeedKmh: 11.2,
   },
   {
     id: 'p-2',
@@ -27,6 +29,8 @@ const rawMarkers: MapPositionMarker[] = [
     lat: 53.044,
     status: 'estimated',
     recordedAt: '2026-02-10T10:08:00.000+03:00',
+    kmFromStart: 10.1,
+    averageSpeedKmh: 9.8,
   },
   {
     id: 'p-3',
@@ -38,6 +42,8 @@ const rawMarkers: MapPositionMarker[] = [
     lat: 53.052,
     status: 'confirmed',
     recordedAt: '2026-02-10T10:14:00.000+03:00',
+    kmFromStart: 11.6,
+    averageSpeedKmh: 10.5,
   },
   {
     id: 'p-4',
@@ -49,6 +55,8 @@ const rawMarkers: MapPositionMarker[] = [
     lat: 53.028,
     status: 'stale',
     recordedAt: '2026-02-10T08:50:00.000+03:00',
+    kmFromStart: 4.2,
+    averageSpeedKmh: 7.1,
   },
   {
     id: 'p-5',
@@ -60,6 +68,8 @@ const rawMarkers: MapPositionMarker[] = [
     lat: 53.039,
     status: 'estimated',
     recordedAt: '2026-02-10T10:11:00.000+03:00',
+    kmFromStart: 9.7,
+    averageSpeedKmh: 9.2,
   },
 ]
 

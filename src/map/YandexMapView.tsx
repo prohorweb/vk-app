@@ -8,7 +8,12 @@ import type {
   MapViewHandle,
 } from './mapTypes.ts'
 import type { YmapsApi, YmapsLatLng, YmapsMap } from './yandexTypes.ts'
-import { PARTICIPANT_COLOR_BY_STATUS, TRACK_COLOR_BY_KIND } from './yandexColors.ts'
+import {
+  CHECKPOINT_PIN_OFFSET,
+  CHECKPOINT_PIN_SIZE,
+  checkpointPinHref,
+} from './checkpointPins.ts'
+import { PARTICIPANT_COLOR_BY_STATUS } from './yandexColors.ts'
 import {
   PARTICIPANT_MARKER_OFFSET,
   PARTICIPANT_MARKER_SIZE,
@@ -119,8 +124,10 @@ function drawContent(map: YmapsMap, props: YandexMapViewProps, ymaps: YmapsApi) 
         [checkpoint.lat, checkpoint.lng],
         { hintContent: checkpoint.label ?? '' },
         {
-          preset: 'islands#circleDotIcon',
-          iconColor: TRACK_COLOR_BY_KIND[checkpoint.kind],
+          iconLayout: 'default#image',
+          iconImageHref: checkpointPinHref(checkpoint.kind),
+          iconImageSize: [...CHECKPOINT_PIN_SIZE],
+          iconImageOffset: [...CHECKPOINT_PIN_OFFSET],
           cursor: 'default',
         },
       ),

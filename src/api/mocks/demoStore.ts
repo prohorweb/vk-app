@@ -84,8 +84,8 @@ const bundles: Record<DevScenarioName, ScenarioBundle> = {
   finished: loadBundle('finished'),
 }
 
-/** Default presentation state: race in progress. */
-let activeScenario: DevScenarioName = 'live'
+/** Default presentation state: до старта (~3 мес.), как сценарий 1. */
+let activeScenario: DevScenarioName = 'upcoming'
 const scenarioListeners = new Set<() => void>()
 
 function notifyScenario(): void {

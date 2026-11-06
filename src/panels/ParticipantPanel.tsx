@@ -16,7 +16,7 @@ import {
   Icon28HistoryBackwardOutline,
   Icon28WristWatchOutline,
 } from '@vkontakte/icons'
-import { Button, Panel, PanelHeader, PanelHeaderBack } from '@vkontakte/vkui'
+import { Button, Panel, PanelHeader, PanelHeaderBack, Snackbar } from '@vkontakte/vkui'
 import { trackerGap } from '../api/gaps.ts'
 import {
   isListedStage,
@@ -25,13 +25,22 @@ import {
   useFavoriteMutation,
   useParticipantQuery,
   usePublicStagesQuery,
+  useStageMapPositionsQuery,
   useStageProtocolQuery,
   useStandingsQuery,
   useSupportersQuery,
+  useSupportersRatingQuery,
 } from '../api/queries.ts'
 import { AsyncView } from '../components/AsyncView.tsx'
 import { NoticeCard } from '../components/NoticeCard.tsx'
 import { ParticipantCover } from '../components/ParticipantAvatar.tsx'
+import { getActiveDevScenario } from '../lib/devScenarioState.ts'
+import { guessGender } from '../lib/gender.ts'
+import {
+  demoSupportersCount,
+  demoSupportersDelta,
+  liveStandingFromMap,
+} from '../lib/liveDemoStats.ts'
 import {
   disciplineCardLabel,
   formatCount,
@@ -43,7 +52,6 @@ import {
   participantFirstNameAccusative,
 } from '../lib/labels.ts'
 import type { StageProtocolRow, StandingRow } from '../types/index.ts'
-import { guessGender } from '../lib/gender.ts'
 
 type ParticipantPanelProps = {
   id: string
@@ -198,10 +206,13 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const [expanded, setExpanded] = useState(false)
   const [mountedAt] = useState(() => Date.now())
   const [bioOverflow, setBioOverflow] = useState(false)
+  const [favoriteToast, setFavoriteToast] = useState<string | null>(null)
+  const [localDelta, setLocalDelta] = useState(0)
   const bioRef = useRef<HTMLParagraphElement>(null)
 
   const query = useParticipantQuery(participantId)
   const supportersQuery = useSupportersQuery(participantId)
+  const ratingQuery = useSupportersRatingQuery()
   const standingsQuery = useStandingsQuery()
   const stagesQuery = usePublicStagesQuery()
   const disciplinesQuery = useDisciplinesQuery()
@@ -212,6 +223,8 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const activeStageId = stages.find((item) => item.status === 'active')?.id
   const stage: StageSelection = selectedStage ?? activeStageId ?? 'all'
   const protocolQuery = useStageProtocolQuery(stage === 'all' ? null : stage)
+  const mapStageId = typeof stage === 'number' ? stage : (activeStageId ?? null)
+  const mapPositionsQuery = useStageMapPositionsQuery(mapStageId)
   const favorite = useFavoriteMutation(participantId ?? 0)
 
   // Лайк считаем локально: счётчик меняется ровно на единицу от показанного значения.
@@ -222,12 +235,30 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   } | null>(null)
   const local = like && like.id === participantId ? like : null
   const isFavorite = local?.favorite ?? supportersQuery.data?.is_favorite ?? false
+  const apiSupportersCount =
+    supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
+  const liveDemoFans =
+    participantId != null &&
+    apiSupportersCount === 0 &&
+    (getActiveDevScenario() === 'live' || stages.some((item) => item.status === 'active'))
   const supportersCount =
-    local?.count ?? supportersQuery.data?.supporters_count ?? participant?.supporters_count ?? 0
+    local?.count ?? (liveDemoFans ? demoSupportersCount(participantId) : apiSupportersCount)
+  const ratingDelta =
+    ratingQuery.data?.find((row) => row.participant_id === participantId)?.delta_24h ?? 0
+  const demoDelta =
+    liveDemoFans && participantId != null ? demoSupportersDelta(participantId) : 0
+  const delta24h = (ratingDelta || demoDelta) + localDelta
   const gap = participant ? trackerGap(participant.id, participant.dogs_count ?? null) : null
   const standing = standingsQuery.data?.rows.find((row) => row.participant_id === participantId)
   const protocolRow = protocolQuery.data?.rows.find((row) => row.participant_id === participantId)
+  const mapMarkers = mapPositionsQuery.data?.markers ?? []
+  const mapMarker = mapMarkers.find((marker) => marker.participantId === participantId)
   const stageInfo = typeof stage === 'number' ? stages.find((item) => item.id === stage) : undefined
+  const viewingActiveStage = stageInfo?.status === 'active'
+  const liveMapStanding =
+    viewingActiveStage && participantId != null
+      ? liveStandingFromMap(mapMarkers, participantId)
+      : null
   const discipline = disciplinesQuery.data?.find((item) => item.id === participant?.discipline_id)
 
   const seasonStartsAt = seasonQuery.data?.starts_at
@@ -287,11 +318,35 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
   const peers: (StandingRow | StageProtocolRow)[] =
     stage === 'all' ? (standingsQuery.data?.rows ?? []) : (protocolQuery.data?.rows ?? [])
   const leader = peers.find((row) => row.position === 1) ?? peers[0]
-  const position = source?.position ?? null
-  const result = source?.final_time_seconds ?? null
+  const finishedResult =
+    stage === 'all'
+      ? (standing?.final_time_seconds ?? null)
+      : (protocolRow?.final_time_seconds ?? null)
+  const liveElapsed =
+    stage === 'all' ? null : (protocolRow?.elapsed_time_seconds ?? null)
+  const protocolResult = finishedResult ?? liveElapsed
+  const protocolPosition = source?.position ?? null
+  const protocolLeaderTime =
+    stage === 'all'
+      ? (leader && 'final_time_seconds' in leader ? leader.final_time_seconds : null)
+      : ((leader as StageProtocolRow | undefined)?.final_time_seconds ??
+        (leader as StageProtocolRow | undefined)?.elapsed_time_seconds ??
+        null)
+  // Live этап без мест в протоколе — эмулируем результат/позицию/отрыв по карте.
+  const result = protocolResult ?? liveMapStanding?.elapsedSeconds ?? null
+  const position = protocolPosition ?? liveMapStanding?.position ?? null
+  const leaderTime = protocolLeaderTime ?? liveMapStanding?.leaderElapsedSeconds ?? null
   const penalty = source?.total_penalty_seconds ?? 0
-  const statsLoading = stage !== 'all' && protocolQuery.isLoading
-  const statsReady = Boolean(source) && !statsLoading
+  const statsLoading =
+    (stage !== 'all' && protocolQuery.isLoading) ||
+    (mapStageId != null && mapPositionsQuery.isLoading && !mapMarker && !liveMapStanding)
+  const statsReady =
+    !statsLoading &&
+    (Boolean(source) ||
+      liveElapsed != null ||
+      mapMarker != null ||
+      finishedResult != null ||
+      liveMapStanding != null)
 
   const totalStages = stages.length
   const finishedStages = standing?.stages_finished ?? 0
@@ -304,14 +359,18 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
             .slice(0, Math.min(finishedStages, totalStages))
             .reduce((sum, item) => sum + item.distance_km, 0)
         : null
-      : result != null
-        ? stageDistance
-        : null
+      : (mapMarker?.kmFromStart ??
+        liveMapStanding?.kmFromStart ??
+        (finishedResult != null ? stageDistance : null))
   const distanceLimit = stage === 'all' ? totalDistance : stageDistance
-  const speed =
+  const computedSpeed =
     result != null && coveredDistance != null && result > 0
       ? coveredDistance / (result / 3600)
       : null
+  const markerSpeed = mapMarker?.averageSpeedKmh ?? liveMapStanding?.averageSpeedKmh ?? null
+  // Kinetic-демо Дорохова даёт завышенную скорость — для UI берём расчётную.
+  const speed =
+    markerSpeed != null && markerSpeed > 0 && markerSpeed < 80 ? markerSpeed : computedSpeed
   const progress =
     coveredDistance != null && distanceLimit
       ? Math.min(100, Math.max(0, (coveredDistance / distanceLimit) * 100))
@@ -463,7 +522,7 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                         <span className="participant-tile__label">отрыв от лидера</span>
                       </span>
                       <span className="participant-tile__value">
-                        {formatLeaderGap(leader?.final_time_seconds ?? null, result)}
+                        {formatLeaderGap(leaderTime, result)}
                       </span>
                     </article>
                     <article className="participant-tile">
@@ -550,6 +609,11 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
             <div className={`participant-fans${isFavorite ? ' is-liked' : ''}`}>
               {isFavorite ? <Icon20Like aria-hidden /> : <Icon20LikeOutline aria-hidden />}
               <span className="participant-fans__count">{formatCount(supportersCount)}</span>
+              {delta24h !== 0 ? (
+                <span className="participant-fans__delta">
+                  {delta24h > 0 ? `+${delta24h}` : delta24h} за сутки
+                </span>
+              ) : null}
             </div>
             <div className="participant-actions">
               <Button
@@ -563,6 +627,12 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
                     count: Math.max(0, supportersCount + (nextFavorite ? 1 : -1)),
                     favorite: nextFavorite,
                   })
+                  setLocalDelta((value) => value + (nextFavorite ? 1 : -1))
+                  setFavoriteToast(
+                    nextFavorite
+                      ? `Вы болеете за ${favoriteName}`
+                      : `Вы больше не болеете за ${favoriteName}`,
+                  )
                   favorite.mutate(nextFavorite)
                 }}
               >
@@ -592,6 +662,11 @@ export function ParticipantPanel({ id }: ParticipantPanelProps) {
           }
           onClose={() => setStaleDismissedAt(lastUpdatedAt)}
         />
+      ) : null}
+      {favoriteToast ? (
+        <Snackbar onClose={() => setFavoriteToast(null)} onClosed={() => setFavoriteToast(null)}>
+          {favoriteToast}
+        </Snackbar>
       ) : null}
     </Panel>
   )

@@ -414,12 +414,16 @@ function useMapMarkersRefetchInterval(): number {
   return intervalMs
 }
 
-export function useStageMapPositionsQuery(stageId: number, disciplineId: number | null = null) {
+export function useStageMapPositionsQuery(
+  stageId: number | null,
+  disciplineId: number | null = null,
+) {
   const disciplineIds = disciplineId === null ? null : [disciplineId]
   const refetchInterval = useMapMarkersRefetchInterval()
   return useQuery({
     queryKey: ['map', 'positions', stageId, disciplineId],
-    queryFn: () => fetchStageMapPositions(stageId, disciplineIds),
+    queryFn: () => fetchStageMapPositions(stageId ?? 0, disciplineIds),
+    enabled: stageId !== null,
     refetchInterval,
     placeholderData: keepPreviousData,
   })

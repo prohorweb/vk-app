@@ -16,6 +16,7 @@ import {
   setActiveDevScenario,
   subscribeDevScenarioState,
 } from '../../lib/devScenarioState.ts'
+import { clearMapFilters } from '../../lib/mapFiltersStorage.ts'
 
 type DevScenariosMenuProps = {
   onClose: () => void
@@ -70,9 +71,11 @@ export function DevScenariosMenu({ onClose, onNotice }: DevScenariosMenuProps) {
     },
     onSuccess: async (_data, name) => {
       setActiveDevScenario(name)
+      // Сброс фильтра карты: live → активный этап (2), не «все» / старый выбор.
+      clearMapFilters()
       await queryClient.invalidateQueries()
       if (name === 'live') {
-        onNotice('Сценарий: Гонка идёт. Подождите ~6 с, затем «Движение Дорохова»')
+        onNotice('Сценарий: Гонка идёт · этап 2. Подождите ~6 с, затем «Движение Дорохова»')
       } else {
         onNotice(`Сценарий: ${SCENARIO_LABELS[name]}`)
       }

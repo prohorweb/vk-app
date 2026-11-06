@@ -1,10 +1,16 @@
-import { useMemo, useRef, useState } from 'react'
-import { Icon24ErrorCircleOutline } from '@vkontakte/icons'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Icon24Cancel,
+  Icon24CalendarOutline,
+  Icon24CheckCircleOutline,
+  Icon24ErrorCircleOutline,
+} from '@vkontakte/icons'
 import { Button, Panel, PanelHeader, Snackbar } from '@vkontakte/vkui'
 import { findMapMarker } from '../api/map.ts'
 import type { RouteMapFilter } from '../api/mocks/route.ts'
 import { showDevScenariosMenu } from '../api/mocks/useMockApi.ts'
 import {
+  useActiveSeasonQuery,
   useDisciplinesQuery,
   useFavoriteIdsQuery,
   usePublicStagesQuery,
@@ -22,7 +28,13 @@ import { RouteMapControls } from '../components/route/RouteMapControls.tsx'
 import { RouteMapMenu } from '../components/route/RouteMapMenu.tsx'
 import { useOnline } from '../hooks/useOnline.ts'
 import { formatFullDateTime } from '../lib/labels.ts'
+import {
+  getActiveDevScenario,
+  subscribeDevScenarioState,
+} from '../lib/devScenarioState.ts'
+import { clearMapFilters, readMapFilters, writeMapFilters } from '../lib/mapFiltersStorage.ts'
 import { readMapMarkerFromUrl } from '../lib/mapScreenParams.ts'
+import { countdownLabel } from '../lib/raceCountdown.ts'
 import { routeStageCheckpoints, routeStageTracks } from '../map/data/route.ts'
 import { allRouteCheckpoints } from '../map/routeCheckpoints.ts'
 import { MapView } from '../map/MapView.tsx'
@@ -47,58 +59,113 @@ export function MapPanel({ id }: MapPanelProps) {
   const mapRef = useRef<MapViewHandle>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
-  const [stageFilter, setStageFilter] = useState<RouteMapFilter>('all')
-  const [disciplineId, setDisciplineId] = useState<number | null>(null)
-  const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const storedFilters = useMemo(() => readMapFilters(), [])
+  /** `pending` — ждём stages, чтобы выбрать активный этап по умолчанию. */
+  const [stageFilter, setStageFilter] = useState<RouteMapFilter | 'pending'>(
+    storedFilters?.stageFilter ?? 'pending',
+  )
+  const [disciplineId, setDisciplineId] = useState<number | null>(
+    storedFilters?.disciplineId ?? null,
+  )
+  const [favoritesOnly, setFavoritesOnly] = useState(storedFilters?.favoritesOnly ?? false)
   const [filterOpen, setFilterOpen] = useState(false)
   const [disciplineFilterOpen, setDisciplineFilterOpen] = useState(false)
   const [favoritesFilterOpen, setFavoritesFilterOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [devNotice, setDevNotice] = useState<string | null>(null)
+  const [connectionNotice, setConnectionNotice] = useState<string | null>(null)
+  const [countdownClosed, setCountdownClosed] = useState(false)
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(() =>
     readMapMarkerFromUrl(),
   )
   const [staleDismissedAt, setStaleDismissedAt] = useState<number | null>(null)
+  const [now] = useState(() => Date.now())
   const online = useOnline()
+  const wasOnlineRef = useRef(online)
 
+  const seasonQuery = useActiveSeasonQuery()
   const stagesQuery = usePublicStagesQuery()
   const disciplinesQuery = useDisciplinesQuery()
   const favoriteIdsQuery = useFavoriteIdsQuery()
+  const stages = useMemo(() => stagesQuery.data ?? [], [stagesQuery.data])
   const disciplines = disciplinesQuery.data ?? []
-  const favoriteIds = favoriteIdsQuery.data ?? []
+  const favoriteIds = useMemo(() => favoriteIdsQuery.data ?? [], [favoriteIdsQuery.data])
+
   const activeStageId = useMemo(() => {
-    const stages = stagesQuery.data ?? []
     const active = stages.find((stage) => stage.status === 'active')
-    return active?.id ?? stages[0]?.id ?? 1
-  }, [stagesQuery.data])
+    return active?.id ?? null
+  }, [stages])
+
+  const resolvedFilter: RouteMapFilter =
+    stageFilter === 'pending'
+      ? stagesQuery.isSuccess
+        ? (activeStageId ?? 'all')
+        : 'all'
+      : stageFilter
+
+  useEffect(() => {
+    if (stageFilter === 'pending' && !stagesQuery.isSuccess) {
+      return
+    }
+    writeMapFilters({ stageFilter: resolvedFilter, disciplineId, favoritesOnly })
+  }, [stageFilter, resolvedFilter, disciplineId, favoritesOnly, stagesQuery.isSuccess])
+
+  useEffect(() => {
+    if (wasOnlineRef.current === online) {
+      return
+    }
+    wasOnlineRef.current = online
+    setConnectionNotice(
+      online ? 'Данные обновлены' : 'Нет соединения. Проверьте сеть и обновите данные',
+    )
+  }, [online])
+
+  // После смены демо-сценария: live → pending (резолв в активный этап 2), иначе «все».
+  useEffect(() => {
+    return subscribeDevScenarioState(() => {
+      const scenario = getActiveDevScenario()
+      clearMapFilters()
+      setSelectedMarkerId(null)
+      if (scenario === 'live') {
+        setStageFilter('pending')
+        return
+      }
+      if (scenario === 'upcoming' || scenario === 'finished') {
+        setStageFilter('all')
+      }
+    })
+  }, [])
 
   // Публичный API позиций требует stage_id, поэтому «Все этапы» показывает активный этап.
-  const stageId = typeof stageFilter === 'number' ? stageFilter : activeStageId
+  const stageId =
+    typeof resolvedFilter === 'number' ? resolvedFilter : (activeStageId ?? stages[0]?.id ?? 1)
+  const selectedStage = stages.find((stage) => stage.id === stageId)
+  const stageNumber = selectedStage?.number ?? null
+
   const positionsQuery = useStageMapPositionsQuery(stageId, disciplineId)
   const trackQuery = useStageTrackQuery(stageId)
   const checkpointsQuery = useStageCheckpointsQuery(stageId)
 
   const snapshot = positionsQuery.data
   const markers = snapshot?.markers
-  const stageNumber = typeof stageFilter === 'number' ? stageFilter : null
   // «Все этапы» показывает КП всего маршрута, как на экране «Маршрут».
   const checkpoints = useMemo(() => {
-    if (stageNumber === null) {
+    if (resolvedFilter === 'all') {
       return allRouteCheckpoints()
     }
     const apiCheckpoints = checkpointsQuery.data
     if (apiCheckpoints?.length) {
       return apiCheckpoints
     }
-    return routeStageCheckpoints[stageNumber] ?? []
-  }, [stageNumber, checkpointsQuery.data])
+    return stageNumber != null ? (routeStageCheckpoints[stageNumber] ?? []) : []
+  }, [resolvedFilter, checkpointsQuery.data, stageNumber])
 
   // «Все этапы» — весь маршрут красным, выбранный этап толще, остальные жёлтые.
-  // Геометрию выбранного этапа берём из API, если он её отдал.
   const stageTracks = useMemo(() => {
     const tracks = routeStageTracks.map((track, index) => {
-      const selected = stageNumber === index + 1
-      const all = stageNumber === null
+      const number = index + 1
+      const selected = stageNumber === number
+      const all = resolvedFilter === 'all'
       const apiTrack = selected ? trackQuery.data?.coordinates : undefined
       return {
         ...track,
@@ -109,9 +176,8 @@ export function MapPanel({ id }: MapPanelProps) {
         width: all ? 3 : selected ? 4 : 2,
       }
     })
-    // Выбранный этап рисуем последним, иначе общий маршрут перекрывает его.
     return tracks.sort((left, right) => Number(left.selected) - Number(right.selected))
-  }, [stageNumber, trackQuery.data])
+  }, [stageNumber, resolvedFilter, trackQuery.data])
 
   const favoriteIdSet = useMemo(() => new Set(favoriteIds), [favoriteIds])
 
@@ -170,6 +236,13 @@ export function MapPanel({ id }: MapPanelProps) {
   )
   const showStale = stale && lastUpdatedAt > 0 && staleDismissedAt !== lastUpdatedAt
 
+  const raceStarted = stages.some((stage) => stage.status !== 'planned')
+  const startsAtMs = seasonQuery.data?.starts_at ? Date.parse(seasonQuery.data.starts_at) : Number.NaN
+  const msToStart = Number.isFinite(startsAtMs) ? startsAtMs - now : null
+  // Показываем при каждом заходе на карту в upcoming, пока не закроют.
+  const showCountdown =
+    !raceStarted && !countdownClosed && msToStart !== null && msToStart > 0
+
   const closePopovers = () => {
     setFilterOpen(false)
     setDisciplineFilterOpen(false)
@@ -186,9 +259,9 @@ export function MapPanel({ id }: MapPanelProps) {
           checkpoints={checkpoints}
           markers={participantMarkers}
           fitBounds
-          fitTo={stageFilter === 'all' ? 'content' : 'markers'}
+          fitTo={resolvedFilter === 'all' ? 'content' : 'markers'}
           fitBottomInset={0.25}
-          fitKey={`${stageFilter}:${snapshot?.stageId ?? trackQuery.data?.id ?? ''}`}
+          fitKey={`${resolvedFilter}:${snapshot?.stageId ?? trackQuery.data?.id ?? ''}`}
           onMarkerClick={(markerId) => setSelectedMarkerId(markerId)}
         />
         <RouteMapControls
@@ -239,7 +312,7 @@ export function MapPanel({ id }: MapPanelProps) {
           <MapMiniCard marker={selectedMarker} onClose={() => setSelectedMarkerId(null)} />
         ) : (
           <MapSummarySheet
-            filter={stageFilter}
+            filter={resolvedFilter}
             disciplineId={disciplineId}
             viewportRef={viewportRef}
             headerRef={headerRef}
@@ -247,7 +320,8 @@ export function MapPanel({ id }: MapPanelProps) {
         )}
         <MapStagePopover
           open={filterOpen}
-          value={stageFilter}
+          value={resolvedFilter}
+          stages={stages}
           onClose={() => setFilterOpen(false)}
           onChange={(value) => {
             setStageFilter(value)
@@ -287,6 +361,40 @@ export function MapPanel({ id }: MapPanelProps) {
           text={`Последнее обновление ${formatFullDateTime(lastUpdatedAt)}`}
           onClose={() => setStaleDismissedAt(lastUpdatedAt)}
         />
+      ) : null}
+      {showCountdown && msToStart !== null ? (
+        <aside className="results-toast results-toast--countdown" role="status">
+          <span className="results-toast__icon" aria-hidden>
+            <Icon24CalendarOutline />
+          </span>
+          <div className="results-toast__content">
+            <p className="results-toast__title">До старта гонки осталось:</p>
+            <p className="results-toast__text">{countdownLabel(msToStart)}</p>
+          </div>
+          <button
+            type="button"
+            className="results-toast__close"
+            aria-label="Закрыть"
+            onClick={() => setCountdownClosed(true)}
+          >
+            <Icon24Cancel aria-hidden />
+          </button>
+        </aside>
+      ) : null}
+      {connectionNotice ? (
+        <Snackbar
+          onClose={() => setConnectionNotice(null)}
+          onClosed={() => setConnectionNotice(null)}
+          before={
+            online ? (
+              <Icon24CheckCircleOutline fill="var(--vkui--color_icon_positive)" />
+            ) : (
+              <Icon24ErrorCircleOutline fill="var(--vkui--color_icon_negative)" />
+            )
+          }
+        >
+          {connectionNotice}
+        </Snackbar>
       ) : null}
       {devNotice ? (
         <Snackbar onClose={() => setDevNotice(null)} onClosed={() => setDevNotice(null)}>

@@ -35,8 +35,8 @@ export function AppConfig({ children }: AppConfigProps) {
 
   useEffect(() => {
     if (useMockApi) {
-      // Presentation default: live fixtures; kinetic available immediately.
-      setActiveDevScenario('live', 0)
+      // Presentation default: сценарий 1 — до старта (~3 мес.).
+      setActiveDevScenario('upcoming', 0)
       return
     }
     void signInWithVk().catch(() => {

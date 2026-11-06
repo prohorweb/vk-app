@@ -1,23 +1,37 @@
 [
   {
+    "participant_id": 7,
+    "name": "Дорохов Кирилл",
+    "number": 7,
+    "supporters_count": 41,
+    "delta_24h": 4
+  },
+  {
+    "participant_id": 1,
+    "name": "Иванов Иван",
+    "number": 1,
+    "supporters_count": 25,
+    "delta_24h": 3
+  },
+  {
+    "participant_id": 10,
+    "name": "Евстигнеева Елена",
+    "number": 10,
+    "supporters_count": 49,
+    "delta_24h": 2
+  },
+  {
     "participant_id": 2,
     "name": "Везунчикова Наталья",
     "number": 2,
-    "supporters_count": 1,
-    "delta_24h": 1
+    "supporters_count": 42,
+    "delta_24h": 2
   },
   {
     "participant_id": 5,
     "name": "Комсомолева Ирина",
     "number": 5,
-    "supporters_count": 1,
-    "delta_24h": 1
-  },
-  {
-    "participant_id": 7,
-    "name": "Дорохов Кирилл",
-    "number": 7,
-    "supporters_count": 1,
+    "supporters_count": 50,
     "delta_24h": 1
   }
 ]

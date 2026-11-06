@@ -46,6 +46,8 @@ function toMapPositionMarker(item: MapParticipant): MapPositionMarker | null {
     lat: position.lat,
     status: freshnessToStatus[item.freshness_status],
     recordedAt: position.recorded_at,
+    kmFromStart: position.km_from_start ?? null,
+    averageSpeedKmh: position.average_speed_kmh ?? null,
   }
 }
 

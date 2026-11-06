@@ -36,6 +36,7 @@ import {
   formatRaceClock,
   formatShortDateTime,
 } from '../lib/labels.ts'
+import { countdownLabel } from '../lib/raceCountdown.ts'
 import type {
   ParticipantListItem,
   StageProtocol,
@@ -79,25 +80,6 @@ function splitName(name: string) {
 
 function hasProtocolRows(protocol: StageProtocol | undefined): boolean {
   return (protocol?.rows.length ?? 0) > 0
-}
-
-/** «2 мес. 3 д.» — до старта гонки. */
-function countdownLabel(ms: number): string {
-  if (ms <= 0) {
-    return '0 д.'
-  }
-  const totalMinutes = Math.floor(ms / 60000)
-  const days = Math.floor(totalMinutes / 1440)
-  const months = Math.floor(days / 30)
-  if (months > 0) {
-    return `${months} мес. ${days % 30} д.`
-  }
-  if (days > 0) {
-    return `${days} д.`
-  }
-  const hours = Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
-  return hours > 0 ? `${hours} ч. ${minutes} мин.` : `${minutes} мин.`
 }
 
 function speedLabel(distanceKm: number | null, seconds: number | null | undefined): string {
@@ -238,7 +220,12 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
   const activeStage = stages.find((item) => item.status === 'active')
   const stagesWithResults = stages.filter((item) => hasProtocolRows(protocolByStage.get(item.id)))
   const lastResultsStage = stagesWithResults[stagesWithResults.length - 1]
-  const defaultStage: StageSelection = activeStage?.id ?? lastResultsStage?.id ?? 'all'
+  // Finished: по умолчанию «Все этапы»; live — активный этап.
+  const defaultStage: StageSelection =
+    activeStage?.id ??
+    (stages.length > 0 && stages.every((item) => item.status === 'finished')
+      ? 'all'
+      : (lastResultsStage?.id ?? 'all'))
   const stage = selectedStage ?? defaultStage
   const stageKey = String(stage)
 
@@ -444,7 +431,6 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
             <button
               type="button"
               className={`results-stage${stage === 'all' ? ' is-selected' : ''}`}
-              disabled={!raceStarted}
               onClick={() => setSelectedStage('all')}
             >
               Все этапы
@@ -454,7 +440,6 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
                 key={item.id}
                 type="button"
                 className={`results-stage${stage === item.id ? ' is-selected' : ''}`}
-                disabled={!raceStarted}
                 onClick={() => setSelectedStage(item.id)}
               >
                 {item.number}
@@ -534,15 +519,20 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
                               <span>общее время</span>
                             </span>
                           </div>
-                          {group.rows.map((row) => {
+                          {group.rows.map((row, rowIndex) => {
                             const name = splitName(row.participant.name)
                             const outcome = row.gap.outcome
-                            const showMetrics = !outcome && (stage === 'all' || stageHasResults)
+                            const showMetrics =
+                              !outcome &&
+                              (stage === 'all' ||
+                                stageHasResults ||
+                                stageInfo?.status === 'active')
                             const seconds =
                               stage === 'all'
                                 ? row.standing?.final_time_seconds
                                 : (row.protocol?.elapsed_time_seconds ??
                                   row.protocol?.final_time_seconds)
+                            const rowNumber = rowIndex + 1
                             return (
                               <div
                                 key={row.participant.id}
@@ -559,7 +549,7 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
                                   }
                                 }}
                               >
-                                <span className="results-row__num">{positionOf(row) ?? '—'}</span>
+                                <span className="results-row__num">{rowNumber}</span>
                                 <ParticipantAvatar
                                   className="avatar-40 results-row__avatar"
                                   id={row.participant.id}
@@ -620,7 +610,7 @@ export function ResultsPanel({ id }: ResultsPanelProps) {
                                       </li>
                                       <li className="results-metric">
                                         <Icon20PinOutline width={16} height={16} aria-hidden />
-                                        <span>место: {positionOf(row) ?? '—'}</span>
+                                        <span>место: {positionOf(row) ?? rowNumber}</span>
                                       </li>
                                     </ul>
                                   ) : null}

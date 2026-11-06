@@ -11,13 +11,13 @@
         "discipline_id": 2,
         "discipline_code": "sled_8",
         "discipline_name": "Нарта 8",
-        "start_time": null,
+        "start_time": "2026-11-05T00:00:00.000000Z",
         "finish_time": "2026-11-05T01:10:44.418034Z",
-        "elapsed_time_seconds": null,
+        "elapsed_time_seconds": 4244,
         "total_penalty_seconds": 0,
         "total_mandatory_stop_seconds": 0,
-        "final_time_seconds": null,
-        "position": null
+        "final_time_seconds": 4244,
+        "position": 1
       },
       {
         "participant_id": 12,
@@ -26,13 +26,13 @@
         "discipline_id": 3,
         "discipline_code": "sled_8plus",
         "discipline_name": "Нарта более 8",
-        "start_time": null,
+        "start_time": "2026-11-05T00:00:00.000000Z",
         "finish_time": "2026-11-05T01:10:44.418034Z",
-        "elapsed_time_seconds": null,
+        "elapsed_time_seconds": 4510,
         "total_penalty_seconds": 0,
         "total_mandatory_stop_seconds": 0,
-        "final_time_seconds": null,
-        "position": null
+        "final_time_seconds": 4510,
+        "position": 2
       },
       {
         "participant_id": 13,
@@ -41,13 +41,13 @@
         "discipline_id": 3,
         "discipline_code": "sled_8plus",
         "discipline_name": "Нарта более 8",
-        "start_time": null,
+        "start_time": "2026-11-05T00:00:00.000000Z",
         "finish_time": "2026-11-05T01:10:44.418034Z",
-        "elapsed_time_seconds": null,
+        "elapsed_time_seconds": 4688,
         "total_penalty_seconds": 0,
         "total_mandatory_stop_seconds": 0,
-        "final_time_seconds": null,
-        "position": null
+        "final_time_seconds": 4688,
+        "position": 3
       }
     ]
   },

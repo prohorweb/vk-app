@@ -400,6 +400,37 @@ body {
   box-shadow: var(--vkui--elevation3);
 }
 
+.map-mini-card__open {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.map-mini-card__titles {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.map-mini-card__metrics {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  color: var(--vkui--color_text_primary);
+  font-size: 13px;
+  line-height: 16px;
+}
+
 .map-mini-card__head {
   display: flex;
   align-items: flex-start;
@@ -2117,6 +2148,12 @@ body {
   font-size: 13px;
   line-height: 16px;
   letter-spacing: 0.2px;
+}
+
+.participant-fans__delta {
+  color: var(--vkui--color_text_secondary);
+  font-size: 12px;
+  line-height: 14px;
 }
 
 .participant-actions {
